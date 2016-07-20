@@ -1,0 +1,59 @@
+.ms-font-big {
+    font-size:17px;
+}
+
+.ms-font-extra-big {
+    font-size:22px;
+}
+
+.ms-font-medium {
+    font-size:14px;
+}
+
+.ms-font-little {
+    font-size:12px;
+}
+
+.ms-font-white {
+    color:#FFFFFF;
+}
+
+.ms-font-light-gray {
+    color:#999999;
+}
+
+.ms-font-dark-gray {
+    color:#333333;
+}
+
+.ms-font-black {
+    color:#000000;
+}
+
+.ms-font-multisongs {
+    color:#FD6631;
+}
+
+.no-padding {
+    padding: 0px !important;
+}
+
+.small-button, .small-button:hover{
+    color:#FD6631 !important;
+    border-color:#FD6631 !important;
+    background-color: #FFFFFF !important;
+    line-height: 5px !important;
+    min-height: 32px !important;
+}
+
+.small-button.active, .small-button.activated{
+    color:#FFFFFF !important;
+    border-color:#FD6631 !important;
+    background-color:#FD6631 !important;
+    line-height: 5px !important;
+    min-height: 32px !important;
+}
+
+.tabs-positive > .tabs{
+    background-color: #FD6631 !important;
+}

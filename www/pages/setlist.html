@@ -1,0 +1,168 @@
+<style>
+    
+    ms-setlist .item-thumbnail-left, ms-setlist .item-thumbnail-left .item-content{
+        padding-left: 65px;
+        min-height: 68px;
+        height:68px;
+    }
+
+    ms-setlist .item-divider {
+        border-top:0px;
+    }
+    
+    .toggle .track {
+      height: 20px;
+      width: 42px;
+    }
+    
+    .toggle input:checked + .track{
+        background-color:#FD6631;
+        border-color:#FD6631;        
+    }
+
+    .toggle .handle {
+      height: 17px;
+      width: 17px;
+    }
+
+
+</style>
+
+<ion-view>
+
+    <ion-nav-title>
+      {{mySetlistsTitle}}
+    </ion-nav-title>
+    
+    <ion-content class="has-header">
+
+        <ms-setlist>
+        
+        <div class="row" style="margin:0px;border:0px;padding:0px;">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            SHOWS
+                        </p>
+                    </div>
+                    
+                    {{debugTxt}}
+                    
+                    <ion-list>
+                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="setList in setLists" href="#/setlistDetail/{{setList.id}}">
+                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;"> 
+                            <h2 style="line-height:20px;">{{setList.title}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
+                            <ion-option-button ng-click="openModal(setList)">
+                                Editar
+                            </ion-option-button>
+                            <ion-option-button class="button-assertive" ng-click="showConfirm({{setList.id}})">
+                                Remover
+                            </ion-option-button>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                        </ion-item>
+                    </ion-list>
+                    
+<!--
+                    <div ng-repeat="setList in setLists">
+                        
+                        <div class="item item-thumbnail-left item-complex item-icon-right">
+                            
+                          <a class="item-content" href="#/setlistDetail/{{setList.id}}">
+                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{setList.title}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                              
+                            </a>
+
+                            
+                        </div>
+
+                    </div>
+-->
+                    <div class="item item-thumbnail-left item-complex item-icon-right">
+                      <a class="item-content" ng-click="openModal(null)">
+                        <img src="./img/ios7-plus-outline.png" style="width:45px;height:45px"/>
+
+                        <h2 class="ms-font-multisongs" style="line-height:34px;">Adicionar Setlist</h2>
+
+                      </a>
+                    </div>
+                    
+                </div>
+                
+            </div>
+
+        </div>
+        
+            </ms-setlist>
+    
+
+        
+    </ion-content>
+    
+        <script id="templates/changeSetlists.html" type="text/ng-template">
+    
+        <ion-modal-view>
+            
+            <div class="modal">
+            
+                <ion-content>
+
+                    <div class="row" style="margin:0px;border:0px;padding:0px;">
+
+                        <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+
+                            <div class="list" >
+
+                                <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
+                                    <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                                        CRIAR NOVA SETLIST
+                                    </p><a></a>
+                                    <i class="icon ion-ios-close-outline ms-font-multisongs" style="font-size:2em;" ng-click="closeModal()"></i>
+                                </div>
+
+                              <label class="item item-input item-stacked-label">
+                                <span class="input-label">Nome da Setlist</span>
+                                <input type="text" placeholder="Setlist" ng-model="setlist.name">
+                              </label>
+                              
+                                <label class="item item-input item-stacked-label">
+                                <span class="input-label">Tipo de Setlist</span>
+                                    <select ng-model="setlist.type">
+                                        <option value="SHOWS_SETLIST_GROUP">Show</option>
+                                        <option value="REHEARSALS_SETLIST_GROUP">Ensaio</option>
+                                        <option value="PRESENTATIONS_SETLIST_GROUP">Apresentação</option>
+                                        <option value="TRAINING_SETLIST_GROUP">Treino</option>
+                                        <option value="CLASSES_SETLIST_GROUP">Aula</option>
+                                        <option value="OTHERS_SETLIST_GROUP">Outro</option>
+                                    </select>
+                              </label>
+                                
+                            </div>
+                            <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
+                                <div class="col">
+                                    <button class="button small-button" ng-click="persistSetlist()">
+                                      Salvar
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </ion-content>
+                
+            </div>
+            
+        </ion-modal-view>
+        
+    </script>
+
+</ion-view>

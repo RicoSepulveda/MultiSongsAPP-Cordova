@@ -1,0 +1,82 @@
+<!-- View used to load group of selected musics as Featured Musics or Top Downloads -->
+
+<style>
+
+    .item-thumbnail-left, .item-thumbnail-left .item-content {
+        padding-left: 85px;
+        min-height: 88px;
+        height:88px;
+    }
+
+    .item-divider {
+        border-top:0px;
+    }
+
+</style>
+
+<ion-view>
+    
+    <ion-nav-title>
+      {{storeBarTitle}}
+    </ion-nav-title>
+
+    <ion-content class="has-header">
+
+        <div class="row" style="margin:0px;border:0px;padding:0px;">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                
+                    <ion-list>
+            
+                        <div class="item item-divider">
+                            <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                                {{listTitle}}
+                            </p>
+                        </div>
+                    
+                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in musics" href="#/setlistDetail/{{setList.id}}">
+
+                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
+
+                            <h2 style="line-height:20px;">{{music.musicName}}</h2>
+
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
+                            <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
+
+                            <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
+                                Favoritos
+                            </ion-option-button>
+
+                            <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
+                                Comprar {{music.price}}
+                            </ion-option-button>
+
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+
+                        </ion-item>
+
+                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="artist in artists" href="#/searchByType/4/{{artist.artistName}}">
+                            
+                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{artist.artistPhotoPath}}" style="width:65px;height:65px;">
+                            
+                            <h2 style="line-height:20px;">{{artist.artistName}}</h2>
+                            
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{artist.style}}</p>
+                            <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{artist.style}}</p>
+
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                            
+                        </ion-item>
+
+                        
+                </ion-list>
+                
+            </div>
+
+        </div>
+        
+        {{teste}}
+
+    </ion-content>
+    
+</ion-view>
