@@ -30,6 +30,7 @@ module.controller('IndexController', function($scope,
                                               $ionicNavBarDelegate,
                                               $ionicListDelegate,
                                               $rootScope,
+                                              $ionicModal,
                                               featuredMusicService, 
                                               musicService, 
                                               artistService, 
@@ -40,6 +41,12 @@ module.controller('IndexController', function($scope,
 
     
     //$ionicNavBarDelegate.showBar(true);
+
+    $scope.openMusicModal = function(music){
+
+        $scope.modal.show();
+
+    }
     
     $scope.changeFavorite = function(music){
         
@@ -63,11 +70,16 @@ module.controller('IndexController', function($scope,
 
     
     $scope.$watch('$viewContentLoaded', function() {
+
+        $ionicModal.fromTemplateUrl('templates/level.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
             
         var key = 'rsepulveda';
         var password = '567825';
-
-$scope.debugTxt = "Configurando debug...";
         
         //$ionicNavBarDelegate.setTitle(msSessionConfig.storeBarTitle);
         
@@ -89,8 +101,6 @@ $scope.debugTxt = "Configurando debug...";
             $q.all(promises).then(
                 function(response) { 
                     
-
-$ionicNavBarDelegate.setTitle("recebeu resposta dos promisses");
 
                     msSessionConfig.storeBarTitle = response[0].storeBarTitle;
                     msSessionConfig.myWishlistBarTitle = response[0].myWishlistSongsBarTitle;
@@ -354,6 +364,66 @@ module.controller('MyMusicsController', function($scope,
                 }else{
                     $scope.recentlyAddedMusics = response[0].musicas;
                 }
+            },
+            function() { 
+                $scope.debugTxt = 'Failed'; 
+            }
+        ).finally(function() {
+        });
+        
+        
+    });
+
+});
+
+module.controller('TrackController', function($scope, 
+                                              $q,
+                                              $ionicNavBarDelegate,
+                                              $rootScope,
+                                              $stateParams,
+                                              musicService,
+                                              auth,
+                                              msSessionConfig) {
+
+    $scope.changeSolo = function(track){
+
+        if (track.solo == true){
+            track.solo = false;
+        } else {
+            track.solo = true;
+        }
+
+    };
+
+    $scope.changeEnabled = function(track){
+
+        if (track.enabled == true){
+            track.enabled = false;
+            track.solo = false;
+        } else {
+            track.enabled = true;
+        }
+
+    };
+
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+
+    $scope.$watch('$viewContentLoaded', function() {
+
+        //$ionicNavBarDelegate.showBar(false);
+    
+        var promises = [];
+        
+        $scope.token = auth.token;
+        
+        $ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
+        
+        promises.push(musicService.getMusicDetails($scope, auth.token, $stateParams.musicId));
+        
+        $q.all(promises).then(
+            function(response) { 
             },
             function() { 
                 $scope.debugTxt = 'Failed'; 

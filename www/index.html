@@ -12,6 +12,8 @@
 
         <link href="lib/ionicframework/ionicons.min.css" rel="stylesheet"/>
         <link href="css/multisongs.css" rel="stylesheet"/>
+
+        <link href="css/level.css" rel="stylesheet"/>
         
         <link href="lib/ionicframework/css/ionic.min.css" rel="stylesheet"/>
         <script src="lib/ionicframework/js/ionic.bundle.js"></script>
@@ -38,7 +40,6 @@
 
         </ion-nav-bar>
         
-        
         {{debugTxt}}
         
         <ion-tabs class="tabs-icon-top tabs-positive">
@@ -59,11 +60,13 @@
                 <ion-nav-view name='musics-view'></ion-nav-view>
             </ion-tab>
 
-            <ion-tab title="Config." icon="ion-gear-a" ng-click="go('/tab/about')">
+            <ion-tab title="Config." icon="ion-gear-a" ng-click="go('/config')">
                 <ion-nav-view name='config-view'></ion-nav-view>
             </ion-tab>
 
         </ion-tabs>
+
+
         
 
     </body>

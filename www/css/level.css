@@ -1,0 +1,346 @@
+.ms-levels {
+
+	width: 100%;
+	overflow: hidden;
+
+}
+
+.ms-levels-right {
+	width: 80px;
+	float:right;
+}
+
+.ms-levels-background {
+  width: 100%;
+  height:80px;
+  float:left;
+}
+
+.ms-level {
+
+	position: relative;
+	width:80px;
+	float:left;
+
+}
+
+.ms-level-base {
+	position: relative;
+	top:0px;
+	left:0px;
+}
+
+.ms-level-level-btn {
+
+	position: absolute;
+	top: 65px;
+	left : 31px;
+
+}
+
+.ms-level-mute-btn {
+
+	position: absolute;
+	top: 6px;
+	left : 42px;
+
+}
+
+.ms-level-solo-btn {
+
+	position: absolute;
+	top: 6px;
+	left : 42px;
+
+}
+
+.ms-level-leds-left {
+
+	position: absolute;
+	top: 43px;
+	left : 53px;
+	width: 7px;
+
+}
+
+.ms-level-leds-right {
+
+	position: absolute;
+	top: 43px;
+	left : 61px;
+	width: 7px;
+
+}
+
+.ms-level-instrument-name{
+
+	position: absolute;
+	top: 288px;
+	left: 0px;
+	width: 100%;
+	text-align: center;
+	font-family: Arial;
+	color: #333333;
+	font-size: 11px;
+
+}
+
+.ms-level-instrument {
+
+	position: absolute;
+	top: 232px;
+	left : 15px;
+	width: 50px;
+	height: 50px;
+
+}
+
+.ms-level-pan {
+  position: absolute;
+	top: 200px;
+	left : 11px;
+	padding:0px;
+	margin:0px;
+}
+
+.ms-level-pan input[type=range]{
+  -webkit-appearance: none;
+  background: none;
+  width:58px;
+  height:40px;
+  margin:0px;
+  padding:0px;
+}
+
+/* Tracks Start */
+.ms-level-pan input[type=range]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+.ms-level-pan input[type=range]::-ms-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+.ms-level-pan input[type=range]::-moz-range-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+/* Tracks End */
+
+/* Thumbs Start */
+
+/* Safari, Chrome, Opera */
+.ms-level-pan input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+/* IE */
+.ms-level-pan input[type=range]::-ms-thumb { 
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+/* Firefox */
+.ms-level-pan input[type=range]::-moz-range-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+
+/* Thumbs End */
+
+.ms-level-pan input[type=range]:focus {
+  outline: none;
+}
+
+.ms-level-level {
+	
+	-ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);	position: absolute;
+
+	top: 100px;
+	left : -42px;
+	padding:0px;
+	margin:0px;
+}
+
+.ms-level-level input[type=range]{
+  -webkit-appearance: none;
+  background: none;
+  height:40px;
+  width:167px;
+  margin:0px;
+  padding:0px;
+}
+
+/* Tracks Start */
+.ms-level-level input[type=range]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+.ms-level-level input[type=range]::-ms-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+.ms-level-level input[type=range]::-moz-range-track {
+  height: 3px;
+  background: #333;
+  border: none;
+}
+
+/* Tracks End */
+
+/* Thumbs Start */
+
+/* Safari, Chrome, Opera */
+.ms-level-level input[type=range]::-webkit-slider-thumb {
+  -ms-transform: rotate(-90deg); /* IE 9 */
+  -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+  transform: rotate(-90deg);
+  position: absolute;
+  border: none;
+  margin-top: -9px;
+  position: relative;
+}
+
+/* IE */
+.ms-level-level input[type=range]::-ms-thumb { 
+  -ms-transform: rotate(-90deg); /* IE 9 */
+  -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+  transform: rotate(-90deg);	
+  position: absolute;
+  margin-top: -9px;
+  position: relative;
+}
+
+/* Firefox */
+.ms-level-level input[type=range]::-moz-range-thumb {
+  -ms-transform: rotate(-90deg); /* IE 9 */
+  -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+  transform: rotate(-90deg);	
+  position: absolute;
+  margin-top: -9px;
+  position: relative;
+}
+
+
+/* Thumbs End */
+
+.ms-level-level input[type=range]:focus {
+  outline: none;
+}
+
+
+
+.ms-level-pan {
+  position: absolute;
+  top: 200px;
+  left : 11px;
+  padding:0px;
+  margin:0px;
+}
+
+.ms-player-slider {
+  height:20px;
+  line-height: 20px;
+}
+
+.ms-player-slider input[type=range]{
+  -webkit-appearance: none;
+  background: none;
+  width:70%;
+  height:20px;
+  margin:0px;
+  margin-top:7px;
+  padding:0px;
+}
+
+/* Tracks Start */
+.ms-player-slider input[type=range]::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #FFFFFF;
+  border: none;
+}
+
+.ms-player-slider input[type=range]::-ms-track {
+  height: 2px;
+  background: #FFFFFF;
+  border: none;
+}
+
+.ms-player-slider input[type=range]::-moz-range-track {
+  height: 2px;
+  background: #FFFFFF;
+  border: none;
+}
+
+/* Tracks End */
+
+/* Thumbs Start */
+
+/* Safari, Chrome, Opera */
+.ms-player-slider input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+/* IE */
+.ms-player-slider input[type=range]::-ms-thumb { 
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+/* Firefox */
+.ms-player-slider input[type=range]::-moz-range-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 3px;
+  background: #FD6631;
+  margin-top: -6px;
+  position: relative;
+}
+
+
+/* Thumbs End */
+
+.ms-player-slider input[type=range]:focus {
+  outline: none;
+}

@@ -58,11 +58,15 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
 
             <div ng-repeat="music in newSongsRow1" ng-if="newSongsRow1">
 
-                <div class="col" style="{{music.margin}};border:0px;padding:0px;">
-                    <img class="full-image" ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" width="100%"/>
-                    <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
-                    <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
-                </div>
+                <a href="#/tracks/{{music.musicId}}">
+
+                    <div class="col" style="{{music.margin}};border:0px;padding:0px;">
+                        <img class="full-image" ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" width="100%"/>
+                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
+                        <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
+                    </div>
+
+                </a>
 
             </div>
 

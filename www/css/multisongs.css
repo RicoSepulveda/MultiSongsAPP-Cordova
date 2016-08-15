@@ -54,6 +54,22 @@
     min-height: 32px !important;
 }
 
+.small-button-buy, .small-button-buy:hover{
+    color:#FFFFFF !important;
+    border-color:#FD6631 !important;
+    background-color: #FD6631 !important;
+    line-height: 5px !important;
+    min-height: 32px !important;
+}
+
+.small-button-buy.active, .small-button-buy.activated{
+    color:#FD6631 !important;
+    border-color:#FD6631 !important;
+    background-color: #FFFFFF !important;
+    line-height: 5px !important;
+    min-height: 32px !important;
+}
+
 .tabs-positive > .tabs{
     background-color: #FD6631 !important;
 }

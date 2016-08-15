@@ -1,7 +1,9 @@
 var module = angular.module('ionicApp', ['ionic']);
 
 
-module.config(function($stateProvider, $urlRouterProvider) {
+module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+
+  $ionicConfigProvider.tabs.position('bottom');
 
    $stateProvider
    .state('index', { 
@@ -46,6 +48,26 @@ module.config(function($stateProvider, $urlRouterProvider) {
             "store-view": {
                 templateUrl: "pages/searchResult.html",
                 controller: "SearchController"
+            }
+        }
+   })
+   .state('config', { 
+       cache: false,
+       url: '/config', 
+       views: {
+            "config-view": {
+                templateUrl: "templates/level.html",
+                controller: "TrackController"
+            }
+        }
+   })
+   .state('showTracks', { 
+       cache: false,
+       url: '/tracks/:musicId', 
+       views: {
+            "store-view": {
+                templateUrl: "templates/level.html",
+                controller: "TrackController"
             }
         }
    })
@@ -101,6 +123,8 @@ module.provider("auth", [function () {
   };
     
 }]);
+
+
 
 module.provider("msSession", [function () {
     
