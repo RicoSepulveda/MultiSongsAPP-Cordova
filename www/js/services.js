@@ -794,10 +794,35 @@ module.factory('musicService', function($http, $q){
 
                 function( response ) {
 
+                    var context = new AudioContext();
+
+                    var getSound = new XMLHttpRequest();
+
+                    getSound.open("GET", "audio/teste.mp3", true);
+
+                    getSound.responseType = "arraybuffer";
+
+                    getSound.onload = function() {
+                        context.decodeAudioData(getSound.response, function(buffer){
+                            electro = buffer;
+                            var playSound = context.createBufferSource();
+                            playSound.buffer = electro;
+                            playSound.connect(context.destination);
+                            playSound.start(0);
+                        });
+
+                    }
+
+                    getSound.send();
+
                     deferred.resolve(response);
                     $scope.musicDetails = response;
 
                 }
+
+ 
+
+ 
 
             );
 

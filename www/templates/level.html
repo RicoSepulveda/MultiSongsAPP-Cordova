@@ -13,7 +13,7 @@
 
 <ion-view>
 
-	<ion-content class="has-header" ng-controller="TrackController">
+	<ion-content class="has-header">
 
 		<div class="ms-levels">
 
@@ -21,21 +21,22 @@
 
 				<ion-list>
 
-					<ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" style="background:#333333;">
+						<ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" style="background:#333333;">
 
-						<img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicDetails.artistPhotoPath}}" style="width:58px;height:58px;">
+							<img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicDetails.artistPhotoPath}}" style="width:58px;height:58px;">
 
-                        <h2 style="line-height:18px;color:#FFFFFF;">{{musicDetails.musicName}}</h2>
+	                        <h2 style="line-height:18px;color:#FFFFFF;">{{musicDetails.musicName}}</h2>
 
-                        <p style="padding:0px;margin:0px;line-height:18px;">{{musicDetails.artistName}}</p>
-						<!--<span style="vertical-align: middle;color:#FFFFFF !important;"><p class="ms-player-slider" style="padding:0px;margin:0px;line-height:20px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;{{musicDetails.totalTime}}</p></span>-->
-						
-						<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;&nbsp;{{musicDetails.totalTime}}</div>
+	                        <p style="padding:0px;margin:0px;line-height:18px;">{{musicDetails.artistName}}</p>
+							<!--<span style="vertical-align: middle;color:#FFFFFF !important;"><p class="ms-player-slider" style="padding:0px;margin:0px;line-height:20px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;{{musicDetails.totalTime}}</p></span>-->
+							
+							<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;&nbsp;{{musicDetails.totalTime}}</div>
 
+							<i class = "icon ion-play" style="color:#FD6631;font-size:48px;"></i>
 
-                    </ion-item>
+	                    </ion-item>
 
-				</ion-list>
+					</ion-list>
 
 			</div>
 
@@ -109,7 +110,10 @@
                 <div class="col" ng-if="musicDetails.status != 1">
                 	<button class="button small-button-buy" ng-click="go('/searchByType/1/')">
                     	Compre Agora por R$ {{musicDetails.price}}
+
                     </button>
+
+                    {{debugTxt2}}
                 </div>
             </div>
         </div>
@@ -117,3 +121,4 @@
 	</ion-content>
 
 </ion-view>
+
