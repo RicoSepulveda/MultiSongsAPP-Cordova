@@ -1,9 +1,22 @@
 <style>
-
-    .item-thumbnail-left, .item-thumbnail-left .item-content {
+/*
+    ms-setlist .item-content {
         padding-left: 65px;
         min-height: 68px;
         height:68px;
+    }
+*/
+    ms-setlist .item-thumbnail-left {
+
+        padding-left: 0px;
+        min-height: 68px;
+        height:68px;
+
+    }
+
+    a {
+        margin:0px;
+        padding:0px;
     }
     
     select {
@@ -11,20 +24,21 @@
         border: none;
         color: #FD6631;
         background: none;
+        z-index: -1;
         
     }
 
-    .item-note {
+    ms-setlist .item-note {
         padding:0px;
         margin:0px;
-
+        z-index: -1;
     }
     
-    .item-divider {
+    ms-setlist .item-divider {
         border-top:0px;
     }
     
-    .item-icon-left {
+    ms-setlist .item-icon-left {
     padding-left: 65px;
     min-height: 68px;
     height:68px;
@@ -46,13 +60,13 @@
     }
 
 
-    .setlist-item.ng-enter{
+    .setlist-item .ng-enter{
         -webkit-animation: fadeInLeft 1s;
         animation: fadeInLeft 1s;
     }
     
     
-    .setlist-item.ng-enter-stagger {
+    .setlist-item .ng-enter-stagger {
         -webkit-animation-delay:200ms;
         animation-delay:200ms;
 
@@ -68,110 +82,121 @@
 
     <ion-content class="has-header">
 
-        <div style="background-color:#000000;">
-            
-            <div class="row">
-                <div class="col col-20" style="">
-                    <img src="./img/play.png" width="100%" style="padding-top:8px;"/>
-                </div>
-                <div class="col">
-                    <div style="padding-right:0px">
-                        <p class="ms-font-extra-big ms-font-white" style="margin-bottom: 0px;padding-bottom:15px;padding-top:0px;text-align:right;">{{setlistName}}</p>
-                        <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistMusics.length}} Músicas com 3 canais de saída</p>
-                        <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistTime}}s de música no total</p>
+        <ms-setlist>
+
+            <div style="background-color:#000000;">
+                
+                <div class="row">
+                    <div class="col col-20" style="">
+                        <img src="./img/play.png" width="100%" style="padding-top:8px;"/>
+                    </div>
+                    <div class="col">
+                        <div style="padding-right:0px">
+                            <p class="ms-font-extra-big ms-font-white" style="margin-bottom: 0px;padding-bottom:15px;padding-top:0px;text-align:right;">{{setlistName}}</p>
+                            <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistMusics.length}} Músicas com 3 canais de saída</p>
+                            <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistTime}}s de música no total</p>
+                        </div>
                     </div>
                 </div>
+
             </div>
+    {{debugTxt}}
+            <div class="row" style="margin:0px;border:0px;padding:0px;">
 
-        </div>
-{{debugTxt}}
-        <div class="row" style="margin:0px;border:0px;padding:0px;">
+                <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
 
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                    <div class="list">
 
-                <div class="list">
-
-                    <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            MÚSICAS DESSE SETLIST
-                            <i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>
-                        </p>
-                    </div>
-
-                    <playbacks>
-
-                        
-                        
-                        <!--
-                        <div ng-repeat="music in setlistMusics">
-
-                            <div class="item setlist-item item-thumbnail-left item-complex item-icon-right">
-                              <a class="item-content">
-                                <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
-                                
-                                <h2 style="line-height:16px;">{{music.musicName}}</h2>
-
-                                <p style="padding:0px;margin:0px;line-height:16px;">{{music.artistName}}</p>
-                                  
-                                <i class="icon ms-font-multisongs" style="font-size:1.5em;">
-                                    <span class="item-note">
-                                        <select ng-init="musicMode = music.inicio" ng-model="musicMode" ng-change="changeMode($index, musicMode)">
-                                            <option value="0">automático</option>
-                                            <option value="1">manual</option>
-                                        </select>
-                                    </span>
-                                </i>
-                              </a>
-                            </div>
--->
-                        
-                        
-                        
-                        <ion-list>
-
-                            <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in setlistMusics">
-
-                                <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
-
-                                <h2 style="line-height:18px;">{{music.musicName}}</h2>
-
-                                <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
-
-                                <ion-option-button class="button-assertive" ng-click="remover({{music}})">
-                                    Remover
-                                </ion-option-button>
-
-                                <i class="icon ms-font-multisongs" style="font-size:1.5em;">
-                                    <span class="item-note">
-
-                                        <select ng-model="musicMode" ng-change="changeMode($index, musicMode)">
-                                            <option value="0" ng-selected="music.inicio == 0">automático</option>
-                                            <option value="1" ng-selected="music.inicio == 1">manual</option>
-                                        </select>
-
-                                    </span>
-                                </i>
-
-                            </ion-item>
-
-                        </ion-list>
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content" ng-click="modal.show()">
-                            <img src="./img/ios7-plus-outline.png" style="width:45px;height:45px;"/>
-
-                            <h2 class="ms-font-multisongs" style="line-height:34px;">Adicionar/Remover músicas</h2>
-
-                          </a>
+                        <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
+                            <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                                MÚSICAS DESSE SETLIST
+                                <i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>
+                            </p>
                         </div>
 
-                    </playbacks>
+                        <playbacks>
+
+                            
+                            
+                            <!--
+                            <div ng-repeat="music in setlistMusics">
+
+                                <div class="item setlist-item item-thumbnail-left item-complex item-icon-right">
+                                  <a class="item-content">
+                                    <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
+                                    
+                                    <h2 style="line-height:16px;">{{music.musicName}}</h2>
+
+                                    <p style="padding:0px;margin:0px;line-height:16px;">{{music.artistName}}</p>
+                                      
+                                    <i class="icon ms-font-multisongs" style="font-size:1.5em;">
+                                        <span class="item-note">
+                                            <select ng-init="musicMode = music.inicio" ng-model="musicMode" ng-change="changeMode($index, musicMode)">
+                                                <option value="0">automático</option>
+                                                <option value="1">manual</option>
+                                            </select>
+                                        </span>
+                                    </i>
+                                  </a>
+                                </div>
+    -->
+                            
+                            
+                            
+                            <ion-list>
+
+                                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in setlistMusics">
+
+                                    
+
+                                    <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
+
+                                    <a href="#/tracks/{{music.musicId}}">
+
+                                        <h2 style="line-height:18px;">{{music.musicName}}</h2>
+
+                                        <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
+
+                                    </a>
+
+<!--
+                                    <ion-option-button class="button-assertive" ng-click="remover({{music}})">
+                                        Remover
+                                    </ion-option-button>
+-->
+                                    <i class="icon ms-font-multisongs" style="font-size:1.5em;z-index:-1;">
+                                        <div class="item-note">
+
+                                            <select ng-model="musicMode" ng-change="changeMode($index, musicMode)">
+                                                <option value="0" ng-selected="music.inicio == 0">automático</option>
+                                                <option value="1" ng-selected="music.inicio == 1">manual</option>
+                                            </select>
+
+                                        </div>
+                                    </i>
+
+                                </ion-item>
+
+                            </ion-list>
+
+                            <div class="item item-thumbnail-left item-complex item-icon-right">
+                              <a class="item-content" ng-click="modal.show()">
+                                <img src="./img/ios7-plus-outline.png" style="width:45px;height:45px;"/>
+
+                                <h2 class="ms-font-multisongs" style="line-height:34px;">Adicionar/Remover músicas</h2>
+
+                              </a>
+                            </div>
+
+                        </playbacks>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </ms-setlist>
         
     </ion-content>
     
@@ -182,6 +207,8 @@
             <div class="modal">
             
                 <ion-content>
+
+                <ms-setlist>
 
                     <div class="row" style="margin:0px;border:0px;padding:0px;">
 
@@ -237,6 +264,8 @@
                     </div>
                         
                     </div>
+
+                    </ms-setlist>
 
                 </ion-content>
                 

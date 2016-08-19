@@ -73,3 +73,8 @@
 .tabs-positive > .tabs{
     background-color: #FD6631 !important;
 }
+
+
+a {
+    text-decoration: none;
+}
