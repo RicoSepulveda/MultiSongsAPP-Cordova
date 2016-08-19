@@ -381,16 +381,22 @@ module.controller('TrackController', function($scope,
                                               $ionicNavBarDelegate,
                                               $rootScope,
                                               $stateParams,
+                                              $interval, 
                                               musicService,
                                               auth,
-                                              msSessionConfig) {
+                                              msSessionConfig,
+                                              msPlayer) {
+
+    var intervalToMusicPosition;
 
     $scope.changeSolo = function(track){
 
         if (track.solo == true){
             track.solo = false;
+            msPlayer.unactivateSolo($scope, track);
         } else {
             track.solo = true;
+            msPlayer.activateSolo($scope, track);
         }
 
     };
@@ -398,11 +404,74 @@ module.controller('TrackController', function($scope,
     $scope.changeEnabled = function(track){
 
         if (track.enabled == true){
-            track.enabled = false;
-            track.solo = false;
+            msPlayer.mute($scope, track);
         } else {
             track.enabled = true;
+            msPlayer.unMute($scope, track);
         }
+
+    };
+
+    $scope.changeLevel = function(track){
+
+        msPlayer.changeLevel($scope, track);
+
+    };
+
+    $scope.changeMasterLevel = function(){
+
+        msPlayer.changeMasterLevel($scope);
+
+    };
+
+    $scope.changeMasterPan = function(){
+
+        msPlayer.changeMasterPan($scope);
+
+    };
+
+    $scope.changePan = function(track){
+
+        msPlayer.changePan($scope, track);
+
+    };
+
+    $scope.suspend = function(){
+
+        msPlayer.suspend($scope);
+        //$interval.cancel(intervalToMusicPosition);
+
+        $scope.isPlaying = false;
+
+    };
+
+    $scope.changePosition = function(){
+
+        //$interval.cancel(intervalToMusicPosition);
+
+        msPlayer.changePosition($scope);
+
+        //$scope.debugTxt2 = "posicao alterada para: " + ((240 / 100) * $scope.timer.value);
+
+        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
+
+    };
+
+    $scope.play = function(musicDetail){
+
+        if ($scope.msPlayer.status == 3){ //IS_SUSPENDED_STATUS
+
+            msPlayer.resume($scope);
+
+        } else {
+            
+            msPlayer.play($scope);
+
+        }
+
+        $scope.isPlaying = true;
+
+        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
 
     };
 
@@ -413,10 +482,14 @@ module.controller('TrackController', function($scope,
     $scope.$watch('$viewContentLoaded', function() {
 
         //$ionicNavBarDelegate.showBar(false);
+
+        //msPlayer.new();
     
         var promises = [];
         
         $scope.token = auth.token;
+
+        $scope.isPlaying = false;
         
         $ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
         
@@ -424,6 +497,8 @@ module.controller('TrackController', function($scope,
         
         $q.all(promises).then(
             function(response) { 
+                //$scope.debugTxt2 = "response: " + response;
+                msPlayer.loadTracks($scope, $q, response[0], auth.token);
             },
             function() { 
                 $scope.debugTxt = 'Failed'; 

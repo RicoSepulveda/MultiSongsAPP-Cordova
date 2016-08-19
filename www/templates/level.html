@@ -30,9 +30,13 @@
 	                        <p style="padding:0px;margin:0px;line-height:18px;">{{musicDetails.artistName}}</p>
 							<!--<span style="vertical-align: middle;color:#FFFFFF !important;"><p class="ms-player-slider" style="padding:0px;margin:0px;line-height:20px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;{{musicDetails.totalTime}}</p></span>-->
 							
-							<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input type="range" min=0 max=100 step=1 value=0/>&nbsp;&nbsp;{{musicDetails.totalTime}}</div>
+							<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input type="range" min=0 max=100 step=1 ng-model="timer.value" ng-change="changePosition()"/>&nbsp;&nbsp;{{musicDetails.totalTime}}</div>
 
-							<i class = "icon ion-play" style="color:#FD6631;font-size:48px;"></i>
+							<i ng-if="msPlayer.status == 0 || msPlayer.status == 3" class = "icon ion-play" style="color:#FD6631;font-size:48px;" ng-click="play()"></i>
+
+							<i ng-if="msPlayer.status == 2" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
+
+							<i ng-if="msPlayer.status == 1" class = "icon ion-loading-c" style="color:#FD6631;font-size:48px;"></i>
 
 	                    </ion-item>
 
@@ -55,21 +59,22 @@
 						</a>
 
 						<div class="ms-level-pan">
-								<input ng-if="track.enabled == true" type="range" min=-10 max=10 step=1 value={{track.pan}}/>
-								<input ng-if="track.enabled == false" type="range" min=-10 max=10 step=1 value={{track.pan}} disabled/>
+								<input ng-if="track.enabled == true" type="range" min=-1 max=1 step=0.05 ng-model="track.pan" ng-change="changePan(track)"/>
+								<input ng-if="track.enabled == false" type="range" min=-1 max=1 step=0.05 disabled/>
 						</div>
 
 						<div class="ms-level-level">
-								<input ng-if="track.enabled == true"  type="range" min=0 max=100 step=1 value={{track.level}}/>
-								<input ng-if="track.enabled == false"  type="range" min=0 max=100 step=1 value={{track.level}} disabled/>
+								<input ng-if="track.enabled == true"  type="range" min=0 max=1 step=0.05 ng-model="track.level" ng-change="changeLevel(track)"/>
+								<input ng-if="track.enabled == false"  type="range" min=0 max=1 step=0.05 disabled/>
 						</div>
 
 						<img class="ms-level-leds-left" src="img/level-led-0.png"/>
 						<img class="ms-level-leds-right" src="img/level-led-0.png"/>
 
 						<a ng-click="changeEnabled(track)">
-							<img ng-if="track.enabled == true" class="ms-level-instrument" src="img/instruments/drum.jpg"/>
-							<img ng-if="track.enabled == false" class="ms-level-instrument" src="img/instruments/drum-disabled.jpg"/>
+							<img ng-if="msPlayer.status != 1 && track.enabled == true" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentEnabledImagePath}}"/>
+							<img ng-if="track.enabled == false" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentDisabledImagePath}}"/>
+							<img ng-if="msPlayer.status == 1" class="ms-level-instrument" src="img/loading.gif"/>
 						</a>
 						
 						<div class="ms-level-instrument-name">{{track.instrumentName}}</div>
@@ -87,10 +92,10 @@
 					<img class="ms-level-base" src="img/level.png"/>
 
 					<div class="ms-level-pan">
-							<input type="range" min=-1 max=1 step=0.1 value=-5/>
+							<input type="range" min=-1 max=1 step=0.1 ng-model="msPlayer.masterPan" ng-change="changeMasterPan()"/>
 					</div>
 					<div class="ms-level-level">
-							<input type="range" min=-60 max=10 step=1 value=0/>
+							<input type="range" min=0 max=1 step=0.05 ng-model="msPlayer.masterLevel" ng-change="changeMasterLevel()"/>
 					</div>
 
 					<img class="ms-level-leds-left" src="img/level-led-6.png"/>

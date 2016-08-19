@@ -794,11 +794,19 @@ module.factory('musicService', function($http, $q){
 
                 function( response ) {
 
+/*
+                    _msPlayer.loadFiles($scope, $q, $http, callback, response, token);
+*/
+                    //_msPlayer.loadFiles($scope, function(){$scope.debugTxt2 = "Chamou o callback...";_msPlayer.play($scope)});
+/*
+
                     var context = new AudioContext();
 
                     var getSound = new XMLHttpRequest();
 
-                    getSound.open("GET", "audio/teste.mp3", true);
+                    //getSound.open("GET", "audio/teste.mp3", true);
+
+                    getSound.open("GET", "http://app.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + "1", true);
 
                     getSound.responseType = "arraybuffer";
 
@@ -814,7 +822,7 @@ module.factory('musicService', function($http, $q){
                     }
 
                     getSound.send();
-
+*/
                     deferred.resolve(response);
                     $scope.musicDetails = response;
 
