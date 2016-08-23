@@ -7,12 +7,13 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
 
    $stateProvider
    .state('index', { 
-       cache: true,
+       cache: false,
        url: '/', 
        views: {
             "store-view": {
                 templateUrl: "pages/store.html",
                 controller: "IndexController",
+                controllerAs: "IndexController",
                 onEnter: function($rootScope){
                   $rootScope.$broadcast('storeEnter', '');
                   //$scope.debugTxt = "Legal!!";
@@ -32,7 +33,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
         }
    })
    .state('musics', { 
-       cache: true,
+       cache: false,
        url: '/musics', 
        views: {
             "musics-view": {
@@ -42,7 +43,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
         }
    })
    .state('search', { 
-       cache: true,
+       cache: false,
        url: '/search/:keyword', 
        views: {
             "store-view": {
@@ -72,7 +73,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
         }
    })
    .state('searchByType', { 
-       cache: true,
+       cache: false,
        url: '/searchByType/:type/:keyword', 
        views: {
             "store-view": {
@@ -82,7 +83,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
         }
    })
    .state('setlistDetail', { 
-       cache: true,
+       cache: false,
        url: '/setlistDetail/:id', 
        views: {
             "setlists-view": {
@@ -92,7 +93,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
         }
    })
    .state('setlist', { 
-       cache: true,
+       cache: false,
        url: '/setlist', 
        views: {
             "setlists-view": {

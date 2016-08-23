@@ -6,31 +6,190 @@ module.factory('msPlayer', function($interval){
 
 	var gainNodeMaster;
 	var panNodeMaster;
+	var analyserNodeMaster;
+	var analyserNodeBufferLength;
 
-	//var currentMusicDetails;
+	var currentMusicDetails;
 
 	var IS_STOPED_STATUS = 0;
 	var IS_LOADING_STATUS = 1;
 	var IS_PLAYING_STATUS = 2;
 	var IS_SUSPENDED_STATUS = 3;
 	var IS_UNAVAILABLE_STATUS = 4;
-	var IS_CHANGING_POSITION_STATUS = 4;
+	var IS_CHANGING_POSITION_STATUS = 5;
 
 	var intervalToMusicPosition;
+	var intervalToLeds;
 
-	var onEnded = function($scope){
-/*
-		if ($scope.msPlayer.status != IS_CHANGING_POSITION_STATUS){
+	var secondsUntilNow;
 
-			$scope.msPlayer.status = IS_STOPED_STATUS; 
-			$scope.timer.value = 0; 
-			$interval.cancel(intervalToMusicPosition);
+	var _lastMainDecibels = 128;
+	var _minDecibels = -90;
+	var _maxDecibels = -10;
+	var _fftSize = 256
+
+	var intervalFunction = function($scope){
+
+		//calculateLeds($scope);
+
+		secondsUntilNow++;
+
+		$scope.timer.value = (parseFloat($scope.timer.value) + 100 / currentMusicDetails.totalTimeInSeconds);
+
+		var minutes = Math.floor((secondsUntilNow) / 60);
+		var seconds = secondsUntilNow - minutes * 60;
+
+		if ((seconds + "").length == 1){
+			seconds = "0" + seconds;
+		}
+
+		currentMusicDetails.currentTimeAsString = minutes + ":" + seconds;
+
+		if ($scope.timer.value >= 100){
+			onEnded($scope);
+		}
+
+
+
+	};
+
+
+	var calculateLeds = function($scope){
+
+		_lastMainDecibels = getDecibels(analyserNodeMaster, _lastMainDecibels);
+
+		//$scope.debugTxt2 = _lastMainDecibels;
+
+		$scope.leds.left = "img/level-led-" + Math.floor((_lastMainDecibels - 128)/ 4) + ".png";
+		$scope.leds.right = "img/level-led-" + Math.floor((_lastMainDecibels - 128)/ 4) + ".png";
+
+		buffers.forEach(function (entry){
+			entry.lastDecibels = getDecibels(entry.analyserNode, entry.lastDecibels);
+			entry.track.leds.left = "img/level-led-" + Math.floor((entry.lastDecibels - 128)/ 4) + ".png";
+			entry.track.leds.right = "img/level-led-" + Math.floor((entry.lastDecibels - 128)/ 4) + ".png";
+		});
+
+	};
+
+	var getDecibels = function(analyser, lastDecibels){
+
+
+		var dataArray = new Uint8Array(analyserNodeBufferLength);
+
+		analyser.getByteTimeDomainData(dataArray);
+
+		if (lastDecibels == 128) {
+
+			lastDecibels = Math.max.apply(null, dataArray);
+
+		} else {
+
+			if  (lastDecibels > Math.max.apply(null, dataArray)){
+				lastDecibels = lastDecibels - 1;
+			}
+
+			if (lastDecibels < Math.max.apply(null, dataArray)) {
+				lastDecibels = Math.max.apply(null, dataArray);
+			}
 
 		};
-*/
+
+		return lastDecibels;
+
 	}
 
-	var loadMP3 = function($scope, $q, track, token){
+
+	var onEnded = function($scope){
+
+		//$scope.debugTxt2 = "Finalizou...";
+
+		$scope.msPlayer.status = IS_STOPED_STATUS; 
+		$scope.timer.value = 0; 
+
+		$interval.cancel(intervalToMusicPosition);
+		$interval.cancel(intervalToLeds);
+
+		buffers.forEach(function (entry){
+			entry.track.leds.left = "img/level-led-0.png";
+			entry.track.leds.right = "img/level-led-0.png";
+			entry.source.stop(0);
+		});
+
+		$scope.leds.left = "img/level-led-0.png";
+		$scope.leds.right = "img/level-led-0.png";
+
+		refreshBuffers($scope, false);
+
+		if (currentMusicDetails.status != 1){
+			if (currentMusicDetails.demoStartingTime == "00:30"){
+				secondsUntilNow = 30;
+				currentMusicDetails.currentTimeAsString = "0:30";
+			}else{
+				secondsUntilNow = 0;
+				currentMusicDetails.currentTimeAsString = "0:00";
+			}
+			
+		} else {
+			secondsUntilNow = 0;
+			currentMusicDetails.currentTimeAsString = "0:00";
+		}
+
+
+
+
+		//$scope.debugTxt2 += " - Status: " + $scope.msPlayer.status + "; value: " + $scope.timer.value;
+
+	}
+
+	var refreshBuffers = function($scope, startPlaying){
+
+
+            var playSound;
+            var gainNode;
+            var panNode;
+            var analyserNode;
+
+	       	buffers.forEach(function (entry){
+
+	            playSound = context.createBufferSource();
+	            gainNode = context.createGain();
+	            panNode = context.createStereoPanner();
+	            analyserNode = context.createAnalyser();
+
+                playSound.connect(panNode);
+                panNode.connect(gainNode);
+                gainNode.connect(analyserNode);
+                analyserNode.connect(panNodeMaster);
+
+	            analyserNode.fftSize = _fftSize;
+	            analyserNode.minDecibels = _minDecibels;
+				analyserNode.maxDecibels = _maxDecibels;
+
+	            playSound.buffer = entry.buffer;
+
+                //playSound.onended = entry.source.onended;
+
+		        entry.source = playSound;
+                entry.panNode = panNode;
+                entry.gainNode = gainNode;
+                entry.analyserNode = analyserNode;
+
+                entry.gainNode.gain.value = entry.track.level;
+                entry.panNode.pan.value = entry.track.pan;
+
+                if (startPlaying){
+                	entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
+                }
+/*
+                if (previousStatus == IS_PLAYING_STATUS || previousStatus == IS_SUSPENDED_STATUS){
+                	entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
+                }
+*/
+			});
+
+	};
+
+	var loadMP3 = function($scope, $q, track, token, isDemo){
 
 		// $scope.debugTxt2 = $scope.debugTxt2 + "Chegou no loadMP3...";
 
@@ -40,15 +199,18 @@ module.factory('msPlayer', function($interval){
         var playSound = context.createBufferSource();
         var gainNode = context.createGain();
         var panNode = context.createStereoPanner();
+        var analyserNode = context.createAnalyser();
 
         var result = {};
 
         track.instrumentDisabledImagePath = track.instrumentImagePath + "-disabled.jpg";
         track.instrumentEnabledImagePath = track.instrumentImagePath + ".jpg";
 
-        getSound.open("GET", "http://app.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + track.id, true);
+        getSound.open("GET", "http://app.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + track.id + "/" + isDemo, true);
 
         getSound.responseType = "arraybuffer";
+
+        track.isLoaded = false;
 
         getSound.onload = function() {
         	
@@ -58,16 +220,29 @@ module.factory('msPlayer', function($interval){
 
                 playSound.connect(panNode);
                 panNode.connect(gainNode);
-                gainNode.connect(panNodeMaster);
+                gainNode.connect(analyserNode);
+                analyserNode.connect(panNodeMaster);
+
+	            analyserNode.fftSize = _fftSize;
+	            analyserNode.minDecibels = _minDecibels;
+				analyserNode.maxDecibels = _maxDecibels;
 
                 result.source = playSound;
                 result.panNode = panNode;
                 result.gainNode = gainNode;
+                result.analyserNode = analyserNode;
+
+                result.lastDecibels = 128;
+
                 result.track = track;
                 result.buffer = buffer;
 
                 result.gainNode.gain.value = track.level;
                 result.panNode.pan.value = track.pan;
+
+				track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
+
+				track.isLoaded = true;
 
                 deferred.resolve(result);
 
@@ -93,11 +268,15 @@ module.factory('msPlayer', function($interval){
 
 			if (buffers.length > 0){
 
-				buffers.forEach(function (entry){
+				if ($scope.msPlayer && $scope.msPlayer.status == IS_PLAYING_STATUS){
 
-					entry.source.stop(0);
+					buffers.forEach(function (entry){
 
-				});
+						entry.source.stop(0);
+
+					});
+
+				}
 
 				buffers = [];
 				promisses = [];
@@ -107,7 +286,19 @@ module.factory('msPlayer', function($interval){
 
 			//};
 
-			//currentMusicDetails = musicDetails
+			currentMusicDetails = musicDetails;
+
+			if (musicDetails.status != 1){
+				musicDetails.finishTime = musicDetails.demoFinishTime;
+				musicDetails.totalTimeInSeconds = 30;
+				musicDetails.currentTimeAsString = "0:30";
+
+				secondsUntilNow = 30;
+
+			}else{
+				musicDetails.finishTime = musicDetails.totalTime;
+				musicDetails.currentTimeAsString = "0:00";
+			}
 
 			$scope.msPlayer = {status: IS_LOADING_STATUS, masterLevel: 0.8, masterPan: 0};
 			$scope.timer = {value: 0};
@@ -116,12 +307,23 @@ module.factory('msPlayer', function($interval){
 
 	        gainNodeMaster = context.createGain();
             panNodeMaster = context.createStereoPanner();
+            analyserNodeMaster = context.createAnalyser();
 
             panNodeMaster.connect(gainNodeMaster);
-            gainNodeMaster.connect(context.destination);
+            gainNodeMaster.connect(analyserNodeMaster);
+            analyserNodeMaster.connect(context.destination);
+
+            analyserNodeMaster.fftSize = _fftSize;
+            analyserNodeMaster.minDecibels = _minDecibels;
+			analyserNodeMaster.maxDecibels = _maxDecibels;
+
+			$scope.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
+
+            analyserNodeBufferLength = analyserNodeMaster.frequencyBinCount;
+
 
 			musicDetails.tracks.forEach(function (entry){
-				promisses.push(loadMP3($scope, $q, entry, token));
+				promisses.push(loadMP3($scope, $q, entry, token, musicDetails.status != 1));
 			});
 
 			$q.all(promisses).then(
@@ -296,7 +498,7 @@ module.factory('msPlayer', function($interval){
 
 		play: function($scope){
 
-			var onEndedAlreadySet = false;
+			//var onEndedAlreadySet = false;
 
 			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
 				context.resume();
@@ -305,20 +507,21 @@ module.factory('msPlayer', function($interval){
 			$scope.msPlayer.status = IS_PLAYING_STATUS;
 
 	       	buffers.forEach(function (entry){
-
+/*
 	       		if (!onEndedAlreadySet){
 
-	       			//entry.source.onended = function(){onEnded($scope)};
+	       			entry.source.onended = function(){$scope.debugTxt2 = "Finalizou..."; onEnded($scope)};
 
 	       			onEndedAlreadySet = true;
 
 	       		}
-
-				entry.source.start(0, (240 / 100) * $scope.timer.value);
+*/
+				entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
 
 			});
 
-			intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
+			intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 100 - $scope.timer.value);
+			intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
 
 		},
 
@@ -328,6 +531,7 @@ module.factory('msPlayer', function($interval){
 			promisses = [];
 
 			$interval.cancel(intervalToMusicPosition);
+			$interval.cancel(intervalToLeds);
 
 			//$scope.msPlayer.status = IS_STOPED_STATUS;
 
@@ -336,7 +540,8 @@ module.factory('msPlayer', function($interval){
 		resume: function($scope){
 
 			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
-				intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
+				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 100 - $scope.timer.value);
+				intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
 				context.resume();
 			}
 
@@ -348,16 +553,13 @@ module.factory('msPlayer', function($interval){
 
 			$scope.msPlayer.status = IS_SUSPENDED_STATUS;
 			$interval.cancel(intervalToMusicPosition);
+			$interval.cancel(intervalToLeds);
 
 			context.suspend();
 
 		},
 
 		changePosition: function($scope){
-
-            var playSound;
-            var gainNode;
-            var panNode;
 
             var previousStatus;
 
@@ -369,6 +571,8 @@ module.factory('msPlayer', function($interval){
 
 				buffers.forEach(function (entry){
 
+					//entry.source.onended = function(){};
+
 					entry.source.stop(0);
 
 				});
@@ -378,37 +582,28 @@ module.factory('msPlayer', function($interval){
             if (previousStatus == IS_PLAYING_STATUS){
 
             	$interval.cancel(intervalToMusicPosition);
+            	$interval.cancel(intervalToLeds);
 
-				intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
-            
+            	//$scope.debugTxt2 = "scope -> " + $scope.timer.value + "; " + (100 / currentMusicDetails.totalTimeInSeconds) + "; " + ($scope.timer.value + (100 / currentMusicDetails.totalTimeInSeconds));
+
+				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 100 - $scope.timer.value);
+            	intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+
             }
 
-	       	buffers.forEach(function (entry){
+            refreshBuffers($scope, (previousStatus == IS_PLAYING_STATUS || previousStatus == IS_SUSPENDED_STATUS));
 
-	            playSound = context.createBufferSource();
-	            gainNode = context.createGain();
-	            panNode = context.createStereoPanner();
+			secondsUntilNow = Math.floor(parseFloat($scope.timer.value) * currentMusicDetails.totalTimeInSeconds / 100);
 
-	            playSound.buffer = entry.buffer;
+			if (currentMusicDetails.status != 1){
+				if (currentMusicDetails.demoStartingTime == "00:30"){
+					secondsUntilNow = secondsUntilNow + 30;
+				}else{
+				}
+				
+			};
 
-                playSound.connect(panNode);
-                panNode.connect(gainNode);
-                gainNode.connect(panNodeMaster);
-
-                playSound.onended = entry.source.onended;
-
-		        entry.source = playSound;
-                entry.panNode = panNode;
-                entry.gainNode = gainNode;
-
-                entry.gainNode.gain.value = entry.track.level;
-                entry.panNode.pan.value = entry.track.pan;
-
-                if (previousStatus == IS_PLAYING_STATUS || previousStatus == IS_SUSPENDED_STATUS){
-                	entry.source.start(0, (240 / 100) * $scope.timer.value);
-                }
-
-			});
+			intervalFunction($scope);
 
 			$scope.msPlayer.status = previousStatus;
 
