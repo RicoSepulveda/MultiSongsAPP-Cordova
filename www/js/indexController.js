@@ -931,6 +931,7 @@ var isInPlaylist = function(musicId){
                 
                 $scope.setlistName = response[1].title;
                 $scope.setlistTime = response[1].totalTime;
+                $scope.setlistId = response[1].id;
                 
                 for (var idx = 0; idx < $scope.musics.length; idx++){
                     

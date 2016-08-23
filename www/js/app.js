@@ -82,6 +82,16 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
             }
         }
    })
+   .state('player', { 
+       cache: false,
+       url: '/player/:id', 
+       views: {
+            "setlists-view": {
+                templateUrl: "pages/player.html",
+                controller: "SetlistDetailController"
+            }
+        }
+   })
    .state('setlistDetail', { 
        cache: false,
        url: '/setlistDetail/:id', 

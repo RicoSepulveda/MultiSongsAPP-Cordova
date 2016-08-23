@@ -1,0 +1,123 @@
+<style>
+
+ms-setlist-player .ms-player-slider input[type=range]{
+	width:100%;
+}
+
+ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .item-content{
+    padding-left: 65px;
+    min-height: 68px;
+    height:68px;
+}
+
+.top-image-div {
+	background-image: url('img/show.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 0;
+    padding-bottom: 60%;
+    border:0px;
+    margin:00px;
+
+}
+
+</style>
+
+<ion-view>
+
+
+	<ion-content>
+
+	<ms-setlist-player>
+
+        <div style="background-color:#000000;">
+
+        	<div class="top-image-div">
+        	</div>
+
+        	<div class="row" style="position:absolute;top:0px;left:0px;width:100%;height:120px;">
+    			<div class="col-33" style="margin-top:10px;margin-bottom:0px;margin-left:10px;">
+    				<i class="icon ion-ios-unlocked-outline ms-font-white ms-font-little" style="vertical-align:top;">&nbsp;Modo ensaio</i>
+    			</div>
+    			<div class="col-33" style="margin-top:85px;margin-bottom:0px;text-align:center;">
+    				<i class="icon ion-play ms-font-multisongs" style="font-size:40pt;"></i>
+    			</div>
+    			<div class="col-33" style="margin-top:0px;margin-bottom:0px;">
+    			</div>
+        	</div>
+
+            <!--<img ng-src="img/show.jpg" style="border:0px;margin:0px;width:100%;">-->
+            <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
+            <div style="padding-left:10px;padding-right:10px">
+
+            	<div class="row">
+            		<div class="col" style="margin-top:0px;margin-bottom:0px;">
+            			<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input type="range" min=0 max=100 step=1 ng-model="timer.value" ng-change="changePosition()"/></div>
+            		</div>
+            	</div>
+            	<div class="row">
+            		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
+            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">1:12</p>
+            		</div>
+            		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
+            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">4:32</p>
+            		</div>
+            	</div>
+            	<div class="row">
+            		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
+            			<p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Quando voce for embora</p>
+            		</div>
+            		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
+            			<p class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Prox. 15s</p>
+            		</div>
+            	</div>
+            	<div class="row">
+            		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
+            			<p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Luan Santana</p>
+            		</div>
+            		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
+            			<p class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Procurando voce</p>
+            		</div>
+            	</div>
+                
+                
+            </div>
+
+            <div class="list">
+
+    	        <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
+                    <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                        MÚSICAS DESSE SETLIST
+                        <i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>
+                    </p>
+                </div>
+
+	            <ion-list>
+
+	                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in setlistMusics">
+
+                        <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
+
+                        <h2 style="line-height:18px;">{{music.musicName}}</h2>
+
+                        <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
+
+	                    <i class="icon ms-font-multisongs" style="font-size:1.5em;z-index:-1;">
+							<div ng-if="music.inicio == 0" class="ms-font-little ms-font-light-gray">automático</div>
+							<div ng-if="music.inicio == 1" class="ms-font-little ms-font-light-gray">manual</div>
+	                    </i>
+
+	                </ion-item>
+
+	            </ion-list>
+
+	        </div>
+
+        </div>
+
+	</ms-setlist-player>
+
+	</ion-content>
+
+</ion-view>

@@ -91,8 +91,6 @@ module.factory('loginService', function($http){
     return {
         
         login: function($scope, key, password, callbackFunction) { 
-
-            $scope.debugTxt = "chamando login..."; 
             
              var request = $http({
                 method: "post",
@@ -110,8 +108,6 @@ module.factory('loginService', function($http){
                 function( response ) {
 
                     this.token = response.token;
-
-                    $scope.debugTxt = response; 
 
                     callbackFunction(response);
                 }
