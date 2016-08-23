@@ -747,14 +747,34 @@ module.controller('SetlistDetailController', function($scope,
 
     };
 
-      $scope.moveItem = function(item, fromIndex, toIndex) {
+    $scope.moveItem = function(item, fromIndex, toIndex) {
         //Move the item in the array
+
+        var newSetlistMusics = [];
+        var promises = [];
         
         $scope.setlistMusics.splice(fromIndex, 1);
         $scope.setlistMusics.splice(toIndex, 0, item);
+
+       $scope.setlistMusics.forEach(function (entry){
+
+            newSetlistMusics.push(entry.musicId);
+
+        });
+
+        promises.push(setlistService.updateSetlist($scope, auth.token, $scope.setlistId, newSetlistMusics));
         
-        //$scope.debugTxt = "item: " + item + "; fromIndex: " + fromIndex + "; toIndex: " + toIndex;
-      };
+        $q.all(promises).then(
+            function(response) { 
+                
+            }, 
+            function(x) { 
+                $scope.debugTxt = x; 
+            }
+        ).finally(function() {
+        });
+
+    };
 
 
     /*
@@ -783,22 +803,24 @@ module.controller('SetlistDetailController', function($scope,
     $scope.changeSetList = function() {
         
         var newSetlistMusics = [];
+        var orderedSetlistMusics = [];
         var promises = [];
-        /*
-        for (var idx = 0; idx < $scope.addedIds.length; idx++){
-            
-            if ($scope.addedIds[idx].checked == true){
-                newSetlistMusics.push($scope.musics[idx].musicId);
-            }
-            
-        }
-        */
-        $scope.musics.forEach(function (entry){
 
-            //$scope.debugTxt = "Musica " + entry.musicName + " possui entry.added == " + entry.added;
+        $scope.setlistMusics.forEach(function (entry){
+
+            if (wasSelected(entry.musicId)){
+                newSetlistMusics.push(entry.musicId);
+            }
+
+
+        });
+
+       $scope.musics.forEach(function (entry){
 
             if (entry.added == true){
-                newSetlistMusics.push(entry.musicId);
+                if (!isInPlaylist(entry.musicId)){
+                    newSetlistMusics.push(entry.musicId);
+                }   
             }
 
         });
@@ -826,19 +848,76 @@ module.controller('SetlistDetailController', function($scope,
         
         
     };
-    
+
+var wasSelected = function(musicId){
+
+    var returnValue;
+
+    returnValue = false;
+
+    $scope.musics.forEach(function (entry){
+
+        if(entry.musicId == musicId){
+
+            if (entry.added == true){
+                returnValue = true;
+            }
+            
+        }
+
+    });
+
+    return returnValue;
+
+}
+
+var isInPlaylist = function(musicId){
+
+    var returnValue;
+
+    returnValue = false;
+
+    $scope.setlistMusics.forEach(function (entry){
+
+        if(entry.musicId == musicId){
+            returnValue = true;
+        }
+
+    });
+
+    return returnValue;
+
+}
+
+/*
+    var getPositionOnSetlist = function(musicId){
+
+        var finalIdx;
+
+        finalIdx = -1;
+
+        $scope.setlistMusics.forEach(function (entry){
+
+            if(entry.musicId != musicId){
+                finalIdx++;
+            }
+
+        });
+
+        return finalIdx;
+
+    };
+*/
     $scope.$watch('$viewContentLoaded', function() {
         
         $scope.$parent.showSearch = false;
         $scope.showChangeItemPosition = false;
 
         var promises = [];
-        //var addedIds = [];
         
         $scope.token = auth.token;
         $scope.setlistId = $stateParams.id;
         
-        //$ionicNavBarDelegate.setTitle("Setlist");
         $ionicNavBarDelegate.showBar(false);
 
         promises.push(musicService.getMyMusics($scope, auth.token));
