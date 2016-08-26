@@ -10,6 +10,10 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
     height:68px;
 }
 
+.active{
+    background-color: #999999;
+}
+
 .top-image-div {
 	background-image: url('img/show.jpg');
     background-size: contain;
@@ -41,7 +45,13 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
     				<i class="icon ion-ios-unlocked-outline ms-font-white ms-font-little" style="vertical-align:top;">&nbsp;Modo ensaio</i>
     			</div>
     			<div class="col-33" style="margin-top:85px;margin-bottom:0px;text-align:center;">
-    				<i class="icon ion-play ms-font-multisongs" style="font-size:40pt;"></i>
+
+                    <i ng-if="msPlayer.status == 0 || msPlayer.status == 3" class = "icon ion-play" style="color:#FD6631;font-size:48px;" ng-click="play()"></i>
+
+                    <i ng-if="msPlayer.status == 2" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
+
+                    <i ng-if="msPlayer.status == 1" class = "icon ion-loading-d" style="color:#FFFFFF;font-size:48px;"></i>
+
     			</div>
     			<div class="col-33" style="margin-top:0px;margin-bottom:0px;">
     			</div>
@@ -58,7 +68,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             	</div>
             	<div class="row">
             		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
-            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">1:12</p>
+            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.currentTimeAsString}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
             			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">4:32</p>
@@ -66,18 +76,18 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             	</div>
             	<div class="row">
             		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
-            			<p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Quando voce for embora</p>
+            			<p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.musicName}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-            			<p class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Prox. 15s</p>
+            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Prox. {{msPlayer.timeToNext}}s</p>
             		</div>
             	</div>
             	<div class="row">
             		<div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
-            			<p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Luan Santana</p>
+            			<p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.artistName}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-            			<p class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Procurando voce</p>
+            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Procurando voce</p>
             		</div>
             	</div>
                 
@@ -93,9 +103,11 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
                     </p>
                 </div>
 
+
+
 	            <ion-list>
 
-	                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in setlistMusics">
+	                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-class="{'activeItem': active}" ng-repeat="music in setlistMusics" ng-click="loadMusic(music.musicId)">
 
                         <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
 
@@ -112,7 +124,11 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
 
 	            </ion-list>
 
+
+
 	        </div>
+
+            <div style="color:#FFFFFF;font-size:20px;">{{debugTxt}}</div>
 
         </div>
 

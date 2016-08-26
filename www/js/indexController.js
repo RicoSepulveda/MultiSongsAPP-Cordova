@@ -10,22 +10,12 @@ module.controller('MainController', function($scope,
     $scope.go = function ( path ) {
         $scope.showSearch = false;
         $scope.search = {keyword: ""};
-        /*
-        if (path == "/wishlist"){
-            $ionicNavBarDelegate.setTitle("Lista de Desejos");
-        }else{
-            $ionicNavBarDelegate.setTitle("Merda...");
-        }
-        */
         
         $location.path(path);
     };
 
     $scope.$watch('$viewContentLoaded', function() {
-        
-        //$ionicNavBarDelegate.setTitle("Loading...");
-        
-        //$location.path("/");
+
         
     });
     
@@ -441,7 +431,6 @@ module.controller('TrackController', function($scope,
     $scope.suspend = function(){
 
         msPlayer.suspend($scope);
-        //$interval.cancel(intervalToMusicPosition);
 
         $scope.isPlaying = false;
 
@@ -449,13 +438,7 @@ module.controller('TrackController', function($scope,
 
     $scope.changePosition = function(){
 
-        //$interval.cancel(intervalToMusicPosition);
-
         msPlayer.changePosition($scope);
-
-        //$scope.debugTxt2 = "posicao alterada para: " + ((240 / 100) * $scope.timer.value);
-
-        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
 
     };
 
@@ -502,7 +485,7 @@ module.controller('TrackController', function($scope,
         $q.all(promises).then(
             function(response) { 
                 //$scope.debugTxt2 = "response: " + response;
-                msPlayer.loadTracks($scope, $q, response[0], auth.token);
+                msPlayer.loadMusic($scope, $q, response[0], auth.token);
             },
             function() { 
                 $scope.debugTxt = 'Failed'; 
@@ -703,6 +686,65 @@ module.controller('SearchByTypeController', function($scope,
 
 });
 
+module.controller('SetlistPlayerController', function($scope, 
+                                                      $q,
+                                                      $ionicNavBarDelegate,
+                                                      $rootScope,
+                                                      $stateParams,
+                                                      auth, 
+                                                      musicService,
+                                                      msSessionConfig, 
+                                                      setlistService,
+                                                      msPlayer) {
+
+
+    $scope.suspend = function(){
+
+        msPlayer.suspend($scope);
+
+    };
+
+    $scope.changePosition = function(){
+
+        msPlayer.changePosition($scope);
+
+    };
+
+    $scope.play = function(){
+
+        if ($scope.msPlayer.status == 3){ //IS_SUSPENDED_STATUS
+
+            msPlayer.resume($scope);
+
+        } else {
+            
+            msPlayer.play($scope);
+
+        }
+
+    };
+
+    $scope.loadMusic = function(musicId){
+
+        msPlayer.setCurrentMusic($q, $scope, auth.token, musicId);
+
+
+    };
+
+    $scope.$watch('$viewContentLoaded', function() {
+        
+        $scope.$parent.showSearch = false;
+
+        $scope.token = auth.token;
+
+        msPlayer.loadSetlist($scope, $q, auth.token, $stateParams.id);
+
+    });
+
+
+
+});
+
 module.controller('SetlistDetailController', function($scope, 
                                                       $q,
                                                       $ionicNavBarDelegate,
@@ -723,17 +765,7 @@ module.controller('SetlistDetailController', function($scope,
     }).then(function(modal) {
         $scope.modal = modal;
     });
-    /*
-    $scope.toggleChange = function(music) {
-        
-        //$scope.addedIds[idx].checked = $scope.addedIds[idx].checked == false;
 
-        $scope.debugTxt = "Alterando music " + music.musicName + " eh " + music.added;
-
-        music.added = (music.added == false);
-        
-    };
-    */
     $scope.changeMode = function(music) {
         
         var promises = [];
@@ -775,26 +807,6 @@ module.controller('SetlistDetailController', function($scope,
         });
 
     };
-
-
-    /*
-    $scope.remover = function(music) {
-        
-        for (var idx = 0; idx < $scope.addedIds.length; idx++){
-            if ($scope.musics[idx].musicId == music.musicId){
-                
-                $scope.addedIds[idx].checked = false;
-                //$scope.debugTxt = "musicId = " + music.musicId + " idx = " + idx + " checked = " + $scope.addedIds[idx].checked;
-            }
-        }
-        
-
-        music.added = false;
-        
-        $scope.changeSetList();
-        
-    };
-    */
 
     $scope.alterChangePositionStatus = function(){
         $scope.showChangeItemPosition = ($scope.showChangeItemPosition == false);
@@ -889,25 +901,6 @@ var isInPlaylist = function(musicId){
 
 }
 
-/*
-    var getPositionOnSetlist = function(musicId){
-
-        var finalIdx;
-
-        finalIdx = -1;
-
-        $scope.setlistMusics.forEach(function (entry){
-
-            if(entry.musicId != musicId){
-                finalIdx++;
-            }
-
-        });
-
-        return finalIdx;
-
-    };
-*/
     $scope.$watch('$viewContentLoaded', function() {
         
         $scope.$parent.showSearch = false;

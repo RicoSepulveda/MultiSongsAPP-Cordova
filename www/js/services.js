@@ -773,7 +773,7 @@ module.factory('musicService', function($http, $q){
         getMusicDetails : function($scope, token, musicId) {
             
             var deferred = $q.defer();
-            
+
              var request = $http({
                 method: "post",
                 url: "http://app.multisongs.audio/MultiSongs/api/music/details",
@@ -790,44 +790,11 @@ module.factory('musicService', function($http, $q){
 
                 function( response ) {
 
-/*
-                    _msPlayer.loadFiles($scope, $q, $http, callback, response, token);
-*/
-                    //_msPlayer.loadFiles($scope, function(){$scope.debugTxt2 = "Chamou o callback...";_msPlayer.play($scope)});
-/*
-
-                    var context = new AudioContext();
-
-                    var getSound = new XMLHttpRequest();
-
-                    //getSound.open("GET", "audio/teste.mp3", true);
-
-                    getSound.open("GET", "http://app.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + "1", true);
-
-                    getSound.responseType = "arraybuffer";
-
-                    getSound.onload = function() {
-                        context.decodeAudioData(getSound.response, function(buffer){
-                            electro = buffer;
-                            var playSound = context.createBufferSource();
-                            playSound.buffer = electro;
-                            playSound.connect(context.destination);
-                            playSound.start(0);
-                        });
-
-                    }
-
-                    getSound.send();
-*/
                     deferred.resolve(response);
                     $scope.musicDetails = response;
 
                 }
-
  
-
- 
-
             );
 
             request.error(

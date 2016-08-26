@@ -84,11 +84,11 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
    })
    .state('player', { 
        cache: false,
-       url: '/player/:id', 
+       url: '/player/:id/:firstMusicId', 
        views: {
             "setlists-view": {
                 templateUrl: "pages/player.html",
-                controller: "SetlistDetailController"
+                controller: "SetlistPlayerController"
             }
         }
    })
