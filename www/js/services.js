@@ -12,8 +12,7 @@ module.factory('featuredMusicService', function($http, $q){
                 method: "post",
                 url: "http://app.multisongs.audio/MultiSongs/api/featured/list",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                 },
                 dataType:"json",
                 data: {token : token}

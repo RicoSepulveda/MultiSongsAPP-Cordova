@@ -69,7 +69,7 @@ module.controller('IndexController', function($scope,
             $scope.modal = modal;
         });
             
-        var key = 'rsepulveda';
+        var key = 'rico.sepulveda@gmail.com';
         var password = '567825';
         
         loginService.login($scope, key, password, function(response){
