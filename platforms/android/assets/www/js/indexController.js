@@ -5,20 +5,17 @@ module.controller('MainController', function($scope,
     
     $scope.openSearch = function ( path ) {
       $location.path('/search/');
-        $ionicNavBarDelegate.setTitle("clicou...");
     };
 
     $scope.go = function ( path ) {
         $scope.showSearch = false;
+        $scope.search = {keyword: ""};
+        
         $location.path(path);
-        $scope.search.keyword = "";
     };
 
     $scope.$watch('$viewContentLoaded', function() {
-        
-        $ionicNavBarDelegate.setTitle("teste");
-        
-        //$location.path("/");
+
         
     });
     
@@ -30,6 +27,7 @@ module.controller('IndexController', function($scope,
                                               $ionicNavBarDelegate,
                                               $ionicListDelegate,
                                               $rootScope,
+                                              $ionicModal,
                                               featuredMusicService, 
                                               musicService, 
                                               artistService, 
@@ -40,6 +38,12 @@ module.controller('IndexController', function($scope,
 
     
     //$ionicNavBarDelegate.showBar(true);
+
+    $scope.openMusicModal = function(music){
+
+        $scope.modal.show();
+
+    }
     
     $scope.changeFavorite = function(music){
         
@@ -55,21 +59,18 @@ module.controller('IndexController', function($scope,
         );
         
     };
-  
-    $scope.$on('storeEnter', function(event, data) {
-        $ionicNavBarDelegate.setTitle("storeEnter...");
-    });
 
+    $scope.$watch("$viewContentLoaded", function() {
 
-    
-    $scope.$watch('$viewContentLoaded', function() {
+        $ionicModal.fromTemplateUrl('templates/level.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
             
-        var key = 'rsepulveda';
+        var key = 'rico.sepulveda@gmail.com';
         var password = '567825';
-
-$scope.debugTxt = "Configurando debug...";
-        
-        //$ionicNavBarDelegate.setTitle(msSessionConfig.storeBarTitle);
         
         loginService.login($scope, key, password, function(response){
             
@@ -89,8 +90,6 @@ $scope.debugTxt = "Configurando debug...";
             $q.all(promises).then(
                 function(response) { 
                     
-
-$ionicNavBarDelegate.setTitle("recebeu resposta dos promisses");
 
                     msSessionConfig.storeBarTitle = response[0].storeBarTitle;
                     msSessionConfig.myWishlistBarTitle = response[0].myWishlistSongsBarTitle;
@@ -139,24 +138,28 @@ $ionicNavBarDelegate.setTitle("recebeu resposta dos promisses");
 
                     $scope.topArtists = response[4].artistas;
                     
+                    $ionicNavBarDelegate.showBar(true);
                     $ionicNavBarDelegate.setTitle(msSessionConfig.storeBarTitle);
                     
                     $scope.wishlist = response[5];
-                    
-                    for (var idx = 0; idx < $scope.wishlist.length; idx++){
-                        
-                        $scope.topMusics[idy].favorite = false;
-                        
-                        for (var idy = 0; idy < $scope.topMusics.length; idy++){
+
+                    if ($scope.wishlist) {
+
+                        for (var idx = 0; idx < $scope.wishlist.length; idx++){
                             
-                            if ($scope.topMusics[idy].id == $scope.wishlist[idx].id){
-                                $scope.topMusics[idy].favorite = true;
+                            $scope.topMusics[idy].favorite = false;
+                            
+                            for (var idy = 0; idy < $scope.topMusics.length; idy++){
+                                
+                                if ($scope.topMusics[idy].id == $scope.wishlist[idx].id){
+                                    $scope.topMusics[idy].favorite = true;
+                                }
+                                
                             }
                             
                         }
-                        
+
                     }
-                    
                     
                 },
                 function() { 
@@ -191,8 +194,6 @@ module.controller('SetlistController', function($scope,
     }).then(function(modal) {
         $scope.modal = modal;
     });
-
-    $ionicNavBarDelegate.setTitle(msSessionConfig.mySetListsBarTitle);
     
     $scope.openModal = function(setlist){
         
@@ -315,6 +316,9 @@ module.controller('SetlistController', function($scope,
      };
     
     $scope.$watch('$viewContentLoaded', function() {
+
+        $ionicNavBarDelegate.showBar(true);
+        $ionicNavBarDelegate.setTitle(msSessionConfig.mySetListsBarTitle);
         
         $scope.$parent.showSearch = false;
         $scope.token = auth.token;
@@ -335,14 +339,15 @@ module.controller('MyMusicsController', function($scope,
                                                  msSessionConfig) {
 
     $scope.$watch('$viewContentLoaded', function() {
+
+        $ionicNavBarDelegate.showBar(true);
+        $ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
         
         $scope.$parent.showSearch = false;
     
         var promises = [];
         
         $scope.token = auth.token;
-        
-        $ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
         
         promises.push(musicService.getRecentlyAdded($scope, auth.token));
         promises.push(musicService.getMyMusics($scope, auth.token));
@@ -354,6 +359,136 @@ module.controller('MyMusicsController', function($scope,
                 }else{
                     $scope.recentlyAddedMusics = response[0].musicas;
                 }
+            },
+            function() { 
+                $scope.debugTxt = 'Failed'; 
+            }
+        ).finally(function() {
+        });
+        
+        
+    });
+
+});
+
+module.controller('TrackController', function($scope, 
+                                              $q,
+                                              $ionicNavBarDelegate,
+                                              $rootScope,
+                                              $stateParams,
+                                              $interval, 
+                                              musicService,
+                                              auth,
+                                              msSessionConfig,
+                                              msPlayer) {
+
+    var intervalToMusicPosition;
+
+    $scope.changeSolo = function(track){
+
+        if (track.solo == true){
+            track.solo = false;
+            msPlayer.unactivateSolo($scope, track);
+        } else {
+            track.solo = true;
+            msPlayer.activateSolo($scope, track);
+        }
+
+    };
+
+    $scope.changeEnabled = function(track){
+
+        if (track.enabled == true){
+            msPlayer.mute($scope, track);
+        } else {
+            track.enabled = true;
+            msPlayer.unMute($scope, track);
+        }
+
+    };
+
+    $scope.changeLevel = function(track){
+
+        msPlayer.changeLevel($scope, track);
+
+    };
+
+    $scope.changeMasterLevel = function(){
+
+        msPlayer.changeMasterLevel($scope);
+
+    };
+
+    $scope.changeMasterPan = function(){
+
+        msPlayer.changeMasterPan($scope);
+
+    };
+
+    $scope.changePan = function(track){
+
+        msPlayer.changePan($scope, track);
+
+    };
+
+    $scope.suspend = function(){
+
+        msPlayer.suspend($scope);
+
+        $scope.isPlaying = false;
+
+    };
+
+    $scope.changePosition = function(){
+
+        msPlayer.changePosition($scope);
+
+    };
+
+    $scope.play = function(musicDetail){
+
+        if ($scope.msPlayer.status == 3){ //IS_SUSPENDED_STATUS
+
+            msPlayer.resume($scope);
+
+        } else {
+            
+            msPlayer.play($scope);
+
+        }
+
+        $scope.isPlaying = true;
+
+        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
+
+    };
+
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+
+    $scope.$watch('$viewContentLoaded', function() {
+
+        //$ionicNavBarDelegate.showBar(false);
+
+        $ionicNavBarDelegate.showBar(false);
+
+        msPlayer.new($scope);
+
+        var promises = [];
+        
+        $scope.token = auth.token;
+
+        $scope.isPlaying = false;
+        
+        //$ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
+        
+        promises.push(musicService.getMusicDetails($scope, auth.token, $stateParams.musicId));
+        
+        $q.all(promises).then(
+            function(response) { 
+                //$scope.debugTxt2 = "response: " + response;
+                msPlayer.loadMusic($scope, $q, response[0], auth.token);
             },
             function() { 
                 $scope.debugTxt = 'Failed'; 
@@ -396,6 +531,9 @@ module.controller('WishlistController', function($scope,
     $scope.$watch('$viewContentLoaded', function() {
     
         $scope.$parent.showSearch = false;
+
+        $ionicNavBarDelegate.showBar(true);
+        $ionicNavBarDelegate.setTitle(msSessionConfig.myWishlistBarTitle);
         
         var promises = [];
         
@@ -403,7 +541,7 @@ module.controller('WishlistController', function($scope,
 
         promises.push(wishlistService.getWishlists($scope, auth.token));
         
-        $ionicNavBarDelegate.setTitle(msSessionConfig.myWishlistBarTitle);
+        //$ionicNavBarDelegate.setTitle(msSessionConfig.myWishlistBarTitle);
         
         $q.all(promises).then(
             function(response) { 
@@ -432,8 +570,9 @@ module.controller('SearchController', function($scope,
     
     
     $scope.closeSearchWindow = function(){
-        //msSession.tempTitle = $ionicNavBarDelegate.getTitle();
+        
         $ionicNavBarDelegate.showBar(true);
+        //
         $location.path('/');
     };
     
@@ -464,6 +603,7 @@ module.controller('SearchController', function($scope,
     $scope.$watch('$viewContentLoaded', function() {
       
         $ionicNavBarDelegate.showBar(false);
+        //$ionicNavBarDelegate.setTitle("Resultado da busca");
         $scope.search = {};
         $scope.search.keyword = "";
         
@@ -501,6 +641,8 @@ module.controller('SearchByTypeController', function($scope,
     };
 
     $scope.$watch('$viewContentLoaded', function() {
+
+        $ionicNavBarDelegate.showBar(true);
         
         var promises = [];
     
@@ -547,6 +689,65 @@ module.controller('SearchByTypeController', function($scope,
 
 });
 
+module.controller('SetlistPlayerController', function($scope, 
+                                                      $q,
+                                                      $ionicNavBarDelegate,
+                                                      $rootScope,
+                                                      $stateParams,
+                                                      auth, 
+                                                      musicService,
+                                                      msSessionConfig, 
+                                                      setlistService,
+                                                      msPlayer) {
+
+
+    $scope.suspend = function(){
+
+        msPlayer.suspend($scope);
+
+    };
+
+    $scope.changePosition = function(){
+
+        msPlayer.changePosition($scope);
+
+    };
+
+    $scope.play = function(){
+
+        if ($scope.msPlayer.status == 3){ //IS_SUSPENDED_STATUS
+
+            msPlayer.resume($scope);
+
+        } else {
+            
+            msPlayer.play($scope);
+
+        }
+
+    };
+
+    $scope.loadMusic = function(musicId){
+
+        msPlayer.setCurrentMusic($q, $scope, auth.token, musicId);
+
+
+    };
+
+    $scope.$watch('$viewContentLoaded', function() {
+        
+        $scope.$parent.showSearch = false;
+
+        $scope.token = auth.token;
+
+        msPlayer.loadSetlist($scope, $q, auth.token, $stateParams.id);
+
+    });
+
+
+
+});
+
 module.controller('SetlistDetailController', function($scope, 
                                                       $q,
                                                       $ionicNavBarDelegate,
@@ -558,24 +759,21 @@ module.controller('SetlistDetailController', function($scope,
                                                       msSessionConfig, 
                                                       setlistService) {
     
+    
+
     $ionicModal.fromTemplateUrl('templates/addMusicToSetlist.html', {
         scope: $scope,
+        controller: 'SetlistDetailController',
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.modal = modal;
     });
-    
-    $scope.toggleChange = function(idx) {
-        
-        $scope.addedIds[idx].checked = $scope.addedIds[idx].checked == false;
-        
-    };
-    
-    $scope.changeMode = function(idx, mode) {
+
+    $scope.changeMode = function(music) {
         
         var promises = [];
         
-        promises.push(setlistService.updateMode($scope, auth.token, $scope.setlistId, $scope.setlistMusics[idx].musicId, mode));
+        promises.push(setlistService.updateMode($scope, auth.token, $scope.setlistId, music.musicId, music.inicio));
         
         $q.all(promises).then(
             function(response) {
@@ -583,35 +781,65 @@ module.controller('SetlistDetailController', function($scope,
         );
 
     };
-    
-    $scope.remover = function(music) {
-        
-        for (var idx = 0; idx < $scope.addedIds.length; idx++){
-            if ($scope.musics[idx].musicId == music.musicId){
-                
-                $scope.addedIds[idx].checked = false;
-                //$scope.debugTxt = "musicId = " + music.musicId + " idx = " + idx + " checked = " + $scope.addedIds[idx].checked;
-            }
-        }
-        
-        
-        $scope.changeSetList();
-        
-    };
-    
-    $scope.changeSetList = function() {
-        
+
+    $scope.moveItem = function(item, fromIndex, toIndex) {
+        //Move the item in the array
+
         var newSetlistMusics = [];
         var promises = [];
         
-        for (var idx = 0; idx < $scope.addedIds.length; idx++){
-            
-            if ($scope.addedIds[idx].checked == true){
-                newSetlistMusics.push($scope.musics[idx].musicId);
-            }
-            
-        }
+        $scope.setlistMusics.splice(fromIndex, 1);
+        $scope.setlistMusics.splice(toIndex, 0, item);
+
+       $scope.setlistMusics.forEach(function (entry){
+
+            newSetlistMusics.push(entry.musicId);
+
+        });
+
+        promises.push(setlistService.updateSetlist($scope, auth.token, $scope.setlistId, newSetlistMusics));
         
+        $q.all(promises).then(
+            function(response) { 
+                
+            }, 
+            function(x) { 
+                $scope.debugTxt = x; 
+            }
+        ).finally(function() {
+        });
+
+    };
+
+    $scope.alterChangePositionStatus = function(){
+        $scope.showChangeItemPosition = ($scope.showChangeItemPosition == false);
+    };
+
+    $scope.changeSetList = function() {
+        
+        var newSetlistMusics = [];
+        var orderedSetlistMusics = [];
+        var promises = [];
+
+        $scope.setlistMusics.forEach(function (entry){
+
+            if (wasSelected(entry.musicId)){
+                newSetlistMusics.push(entry.musicId);
+            }
+
+
+        });
+
+       $scope.musics.forEach(function (entry){
+
+            if (entry.added == true){
+                if (!isInPlaylist(entry.musicId)){
+                    newSetlistMusics.push(entry.musicId);
+                }   
+            }
+
+        });
+
         promises.push(setlistService.updateSetlist($scope, auth.token, $scope.setlistId, newSetlistMusics));
         
         $scope.modal.hide();
@@ -635,18 +863,58 @@ module.controller('SetlistDetailController', function($scope,
         
         
     };
-    
+
+var wasSelected = function(musicId){
+
+    var returnValue;
+
+    returnValue = false;
+
+    $scope.musics.forEach(function (entry){
+
+        if(entry.musicId == musicId){
+
+            if (entry.added == true){
+                returnValue = true;
+            }
+            
+        }
+
+    });
+
+    return returnValue;
+
+}
+
+var isInPlaylist = function(musicId){
+
+    var returnValue;
+
+    returnValue = false;
+
+    $scope.setlistMusics.forEach(function (entry){
+
+        if(entry.musicId == musicId){
+            returnValue = true;
+        }
+
+    });
+
+    return returnValue;
+
+}
+
     $scope.$watch('$viewContentLoaded', function() {
         
         $scope.$parent.showSearch = false;
+        $scope.showChangeItemPosition = false;
 
         var promises = [];
-        var addedIds = [];
         
         $scope.token = auth.token;
         $scope.setlistId = $stateParams.id;
         
-        $ionicNavBarDelegate.setTitle("Setlist");
+        $ionicNavBarDelegate.showBar(false);
 
         promises.push(musicService.getMyMusics($scope, auth.token));
         promises.push(setlistService.getSetlistDetail($scope, auth.token, $stateParams.id));
@@ -659,22 +927,26 @@ module.controller('SetlistDetailController', function($scope,
                 
                 $scope.setlistName = response[1].title;
                 $scope.setlistTime = response[1].totalTime;
+                $scope.setlistId = response[1].id;
                 
                 for (var idx = 0; idx < $scope.musics.length; idx++){
                     
-                    addedIds[idx] = {"checked": false};
+                    //addedIds[idx] = {"checked": false};
+
+                    $scope.musics[idx].added = false;
                     
                     for (var idy = 0; idy < $scope.setlistMusics.length; idy++){
                         
                         if ($scope.musics[idx].musicId == $scope.setlistMusics[idy].musicId){
-                            addedIds[idx] = {"checked": true};
+                            //addedIds[idx] = {"checked": true};
+                            $scope.musics[idx].added = true;
                         }
                         
                     }
                     
                 }
                 
-                $scope.addedIds = addedIds;
+                //$scope.addedIds = addedIds;
                 
             }, 
             function() { 

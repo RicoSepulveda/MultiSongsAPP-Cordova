@@ -142,21 +142,24 @@ module.controller('IndexController', function($scope,
                     $ionicNavBarDelegate.setTitle(msSessionConfig.storeBarTitle);
                     
                     $scope.wishlist = response[5];
-                    
-                    for (var idx = 0; idx < $scope.wishlist.length; idx++){
-                        
-                        $scope.topMusics[idy].favorite = false;
-                        
-                        for (var idy = 0; idy < $scope.topMusics.length; idy++){
+
+                    if ($scope.wishlist) {
+
+                        for (var idx = 0; idx < $scope.wishlist.length; idx++){
                             
-                            if ($scope.topMusics[idy].id == $scope.wishlist[idx].id){
-                                $scope.topMusics[idy].favorite = true;
+                            $scope.topMusics[idy].favorite = false;
+                            
+                            for (var idy = 0; idy < $scope.topMusics.length; idy++){
+                                
+                                if ($scope.topMusics[idy].id == $scope.wishlist[idx].id){
+                                    $scope.topMusics[idy].favorite = true;
+                                }
+                                
                             }
                             
                         }
-                        
+
                     }
-                    
                     
                 },
                 function() { 
@@ -470,8 +473,8 @@ module.controller('TrackController', function($scope,
 
         $ionicNavBarDelegate.showBar(false);
 
-        //msPlayer.new();
-    
+        msPlayer.new($scope);
+
         var promises = [];
         
         $scope.token = auth.token;

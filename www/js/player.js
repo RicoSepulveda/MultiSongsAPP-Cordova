@@ -3,6 +3,7 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 	var buffers = [];
 	var promisses = [];
 	var context = new AudioContext();
+	//var _click = {};
 
 	var gainNodeMaster;
 	var panNodeMaster;
@@ -20,6 +21,8 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
 	var intervalToMusicPosition;
 	var intervalToLeds;
+	var intervalToRemoveMasterMessage;
+	//var intervalToClick;
 
 	var secondsUntilNow;
 
@@ -63,8 +66,6 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
 	var intervalFunction = function($scope){
 
-		//calculateLeds($scope);
-
 		secondsUntilNow++;
 
 		$scope.timer.value = (parseFloat($scope.timer.value) + 100 / currentMusicDetails.totalTimeInSeconds);
@@ -77,10 +78,8 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 		}
 
 		currentMusicDetails.currentTimeAsString = minutes + ":" + seconds;
-$scope.debugTxt = parseFloat($scope.timer.value);
+
 		if (parseFloat($scope.timer.value) >= 100){
-			//$scope.debugTxt = "status: " + currentMusicDetails.status + "; timer: " + $scope.timer.value + "; totalTime: " + currentMusicDetails.totalTimeInSeconds;
-$scope.debugTxt = "Chegou no fim...";
 
 			if ($scope.setlistMusics === null){
 
@@ -94,12 +93,9 @@ $scope.debugTxt = "Chegou no fim...";
 				} else {
 					onEnded($scope);
 				}
-
-
 				
 			}
 
-			
 		}
 
 		$scope.msPlayer.timeToNext = currentMusicDetails.totalTimeInSeconds - secondsUntilNow;
@@ -128,17 +124,32 @@ $scope.debugTxt = "Chegou no fim...";
 
 	var calculateLeds = function($scope){
 
+		var ledIdx;
+
 		_lastMainDecibels = getDecibels(analyserNodeMaster, _lastMainDecibels);
 
-		//$scope.debugTxt2 = _lastMainDecibels;
+		ledIdx = Math.floor((_lastMainDecibels - 128)/ 4);
 
-		$scope.leds.left = "img/level-led-" + Math.floor((_lastMainDecibels - 128)/ 4) + ".png";
-		$scope.leds.right = "img/level-led-" + Math.floor((_lastMainDecibels - 128)/ 4) + ".png";
+		if (ledIdx > 13){
+			ledIdx = 13;
+		}
+
+		$scope.leds.left = "img/level-led-" + ledIdx + ".png";
+		$scope.leds.right = "img/level-led-" + ledIdx + ".png";
 
 		buffers.forEach(function (entry){
+			
 			entry.lastDecibels = getDecibels(entry.analyserNode, entry.lastDecibels);
-			entry.track.leds.left = "img/level-led-" + Math.floor((entry.lastDecibels - 128)/ 4) + ".png";
-			entry.track.leds.right = "img/level-led-" + Math.floor((entry.lastDecibels - 128)/ 4) + ".png";
+			
+			ledIdx = Math.floor((entry.lastDecibels - 128)/ 4);
+
+			if (ledIdx > 13){
+				ledIdx = 13;
+			}
+
+			entry.track.leds.left = "img/level-led-" + ledIdx + ".png";
+			entry.track.leds.right = "img/level-led-" + ledIdx + ".png";
+
 		});
 
 	};
@@ -173,8 +184,6 @@ $scope.debugTxt = "Chegou no fim...";
 
 	var onEnded = function($scope){
 
-		//$scope.debugTxt2 = "Finalizou...";
-
 		var nextMusicIndex;
 
 		$scope.msPlayer.status = IS_STOPED_STATUS; 
@@ -182,6 +191,7 @@ $scope.debugTxt = "Chegou no fim...";
 
 		$interval.cancel(intervalToMusicPosition);
 		$interval.cancel(intervalToLeds);
+		//$interval.cancel(intervalToClick);
 
 		buffers.forEach(function (entry){
 			entry.track.leds.left = "img/level-led-0.png";
@@ -209,8 +219,6 @@ $scope.debugTxt = "Chegou no fim...";
 		}
 
 		$scope.msPlayer.timeToNext = -1;
-
-		//$scope.debugTxt2 += " - Status: " + $scope.msPlayer.status + "; value: " + $scope.timer.value;
 
 	}
 
@@ -253,20 +261,12 @@ $scope.debugTxt = "Chegou no fim...";
                 if (startPlaying){
                 	entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
                 }
-/*
-                if (previousStatus == IS_PLAYING_STATUS || previousStatus == IS_SUSPENDED_STATUS){
-                	entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
-                }
-*/
+
 			});
 
 	};
 
 	var loadTracks = function($scope, $q, musicDetails, token){
-
-			//if (!currentMusicDetails || (currentMusicDetails.id != musicDetails.id)){
-
-				//if ($scope.msPlayer && $scope.msPlayer.status == IS_PLAYING_STATUS){
 
 			if (buffers.length > 0){
 
@@ -284,9 +284,6 @@ $scope.debugTxt = "Chegou no fim...";
 				promisses = [];
 
 			};
-
-
-			//};
 
 			currentMusicDetails = musicDetails;
 
@@ -307,10 +304,8 @@ $scope.debugTxt = "Chegou no fim...";
 
 			}
 
-			$scope.msPlayer = {status: IS_LOADING_STATUS, masterLevel: 0.8, masterPan: 0, timeToNext: -1};
+			$scope.msPlayer = {status: IS_LOADING_STATUS, masterLevel: 0.8, masterPan: 0, timeToNext: -1, message: "", showMessage: false};
 			$scope.timer = {value: 0};
-
-			// $scope.debugTxt2 = "Chamou o loadTracks...";
 
 	        gainNodeMaster = context.createGain();
             panNodeMaster = context.createStereoPanner();
@@ -328,6 +323,7 @@ $scope.debugTxt = "Chegou no fim...";
 
             analyserNodeBufferLength = analyserNodeMaster.frequencyBinCount;
 
+            //createClickNode();
 
 			musicDetails.tracks.forEach(function (entry){
 				promisses.push(loadMP3($scope, $q, entry, token, musicDetails.status != 1));
@@ -336,8 +332,6 @@ $scope.debugTxt = "Chegou no fim...";
 			$q.all(promisses).then(
 
 	            function(response) { 
-
-	                // $scope.debugTxt2 = $scope.debugTxt2 + "; terminou todos os promisses: " + response.length;
 
 	                buffers = response;
 
@@ -355,13 +349,54 @@ $scope.debugTxt = "Chegou no fim...";
 	        });
 
 		};
+/*
+	var playClick = function(){
 
-	var loadMP3 = function($scope, $q, track, token, isDemo){
+        var oldBuffer = _click.source.buffer;
+        var playSound = context.createBufferSource();
 
-		// $scope.debugTxt2 = $scope.debugTxt2 + "Chegou no loadMP3...";
+        playSound.buffer = oldBuffer;
 
-		var deferred = $q.defer();
+        _click.source = playSound;
+
+        playSound.connect(_click.panNode);
+
+		try{
+			_click.source.stop(0);
+		}catch(err){
+
+		}
+
+		console.log("click...");
+
+		_click.source.start(0);
+
+	}
+
+	var createClickNode = function(){
+
+		var url;
 		
+        var result = {};
+
+        url = "../audio/click.mp3";
+
+        loadFile(url, function(result){
+
+        	_click = result;
+
+			_click.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
+			_click.isLoaded = true;
+
+            _click.gainNode.gain.value = 1;
+            _click.panNode.pan.value = 0;
+
+        });
+
+    };
+*/
+    var loadFile = function (url, callback){
+
         var getSound = new XMLHttpRequest();
         var playSound = context.createBufferSource();
         var gainNode = context.createGain();
@@ -370,14 +405,9 @@ $scope.debugTxt = "Chegou no fim...";
 
         var result = {};
 
-        track.instrumentDisabledImagePath = track.instrumentImagePath + "-disabled.jpg";
-        track.instrumentEnabledImagePath = track.instrumentImagePath + ".jpg";
-
-        getSound.open("GET", "http://app.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + track.id + "/" + isDemo, true);
+        getSound.open("GET", url, true);
 
         getSound.responseType = "arraybuffer";
-
-        track.isLoaded = false;
 
         getSound.onload = function() {
         	
@@ -401,17 +431,11 @@ $scope.debugTxt = "Chegou no fim...";
 
                 result.lastDecibels = 128;
 
-                result.track = track;
                 result.buffer = buffer;
 
-                result.gainNode.gain.value = track.level;
-                result.panNode.pan.value = track.pan;
-
-				track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
-
-				track.isLoaded = true;
-
-                deferred.resolve(result);
+                if (callback){
+                	callback(result);
+				}
 
             });
 
@@ -419,7 +443,35 @@ $scope.debugTxt = "Chegou no fim...";
 
         getSound.send();
 
-		// $scope.debugTxt2 = $scope.debugTxt2 + "Saindo do loadMP3...";
+    }
+
+	var loadMP3 = function($scope, $q, track, token, isDemo){
+
+		var deferred = $q.defer();
+		var url;
+		
+        var result = {};
+
+        url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + track.id + "/" + isDemo;
+
+        track.instrumentDisabledImagePath = track.instrumentImagePath + "-disabled.jpg";
+        track.instrumentEnabledImagePath = track.instrumentImagePath + ".jpg";
+
+        track.isLoaded = false;
+
+        loadFile(url, function(result){
+
+			track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
+			track.isLoaded = true;
+
+            result.track = track;
+
+            result.gainNode.gain.value = track.level;
+            result.panNode.pan.value = track.pan;
+
+            deferred.resolve(result);
+
+        });
 
 		return deferred.promise;
 
@@ -482,14 +534,28 @@ $scope.debugTxt = "Chegou no fim...";
 
 		changeLevel: function($scope, track){
 
-			// $scope.debugTxt2 = "Mudou nivel. track.level = " + track.level;
-			
-
 			buffers.forEach(function (entry){
 
 				if (entry.track.id == track.id){
 
 					entry.gainNode.gain.value = track.level;
+
+					entry.track.showMessage = true;
+
+					if (track.level == 0){
+						entry.track.message = "Off";
+					}else if (track.level == 1){
+						entry.track.message = "Max"; 
+					}else{
+						entry.track.message = parseInt(track.level * 100) + "%";
+					}
+
+
+					if (entry.intervalToRemoveMessage){
+						$interval.cancel(entry.intervalToRemoveMessage);
+					}
+
+					entry.intervalToRemoveMessage = $interval(function(){entry.track.showMessage = false;}, 2000, 1);
 
 				}
 
@@ -501,6 +567,23 @@ $scope.debugTxt = "Chegou no fim...";
 
 			gainNodeMaster.gain.value = $scope.msPlayer.masterLevel;
 
+				$scope.msPlayer.showMessage = true;
+
+				if (gainNodeMaster.gain.value == 0){
+					$scope.msPlayer.message = "Off";
+				}else if (gainNodeMaster.gain.value == 1){
+					$scope.msPlayer.message = "Max"; 
+				}else{
+					$scope.msPlayer.message = parseInt(gainNodeMaster.gain.value * 100) + "%";
+				}
+
+
+				if (intervalToRemoveMasterMessage){
+					$interval.cancel(intervalToRemoveMasterMessage);
+				}
+
+				intervalToRemoveMasterMessage = $interval(function(){$scope.msPlayer.showMessage = false;}, 2000, 1);
+
 		},
 
 		changeMasterPan: function($scope){
@@ -510,14 +593,36 @@ $scope.debugTxt = "Chegou no fim...";
 		},
 
 		changePan: function($scope, track){
-			
-			// $scope.debugTxt2 = "Mudou pan. track.pan = " + track.pan;
 
 			buffers.forEach(function (entry){
 
 				if (entry.track.id == track.id){
 
 					entry.panNode.pan.value = track.pan;
+
+					entry.track.showMessage = true;
+
+					if (track.pan > 0 && track.pan < 1){
+						entry.track.message = parseInt(track.pan * 100) + "%R";
+					}
+					if (track.pan == 0){
+						entry.track.message = "LR";
+					}
+					if (track.pan < 0 && track.pan > -1){
+						entry.track.message = parseInt(-1 * track.pan * 100) + "%L";
+					}
+					if (track.pan == -1){
+						entry.track.message = "LFT";
+					}
+					if (track.pan == 1){
+						entry.track.message = "RGT";
+					}
+
+					if (entry.intervalToRemoveMessage){
+						$interval.cancel(entry.intervalToRemoveMessage);
+					}
+
+					entry.intervalToRemoveMessage = $interval(function(){entry.track.showMessage = false;}, 2000, 1);
 
 				}
 
@@ -629,8 +734,6 @@ $scope.debugTxt = "Chegou no fim...";
 
 		play: function($scope){
 
-			//var onEndedAlreadySet = false;
-
 			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
 				context.resume();
 			}
@@ -638,33 +741,40 @@ $scope.debugTxt = "Chegou no fim...";
 			$scope.msPlayer.status = IS_PLAYING_STATUS;
 
 	       	buffers.forEach(function (entry){
-/*
-	       		if (!onEndedAlreadySet){
-
-	       			entry.source.onended = function(){$scope.debugTxt2 = "Finalizou..."; onEnded($scope)};
-
-	       			onEndedAlreadySet = true;
-
-	       		}
-*/
 				entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
-
 			});
 
 			intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
 			intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
 
+			//intervalToClick = $interval(playClick, 500, 2000);
+
 		},
 
 		new: function($scope){
+
+			if (buffers){
+
+				console.log("buffers.length: " + buffers.length);
+
+				buffers.forEach(function (entry){
+
+					try {
+						entry.source.stop(0);
+					} catch (err) {
+
+					}
+
+				});
+
+			}
 
 			buffers = [];
 			promisses = [];
 
 			$interval.cancel(intervalToMusicPosition);
 			$interval.cancel(intervalToLeds);
-
-			//$scope.msPlayer.status = IS_STOPED_STATUS;
+			//$interval.cancel(intervalToClick);
 
 		},
 
@@ -673,6 +783,7 @@ $scope.debugTxt = "Chegou no fim...";
 			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
 				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
 				intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+				//intervalToClick = $interval(playClick, 500, 2000);
 				context.resume();
 			}
 
@@ -685,8 +796,19 @@ $scope.debugTxt = "Chegou no fim...";
 			$scope.msPlayer.status = IS_SUSPENDED_STATUS;
 			$interval.cancel(intervalToMusicPosition);
 			$interval.cancel(intervalToLeds);
+			//$interval.cancel(intervalToClick);
 
 			context.suspend();
+
+			$scope.leds.left = "img/level-led-0.png";
+			$scope.leds.right = "img/level-led-0.png";
+
+			buffers.forEach(function (entry){
+
+				entry.track.leds.left = "img/level-led-0.png";
+				entry.track.leds.right = "img/level-led-0.png";
+
+			});
 
 		},
 
@@ -702,8 +824,6 @@ $scope.debugTxt = "Chegou no fim...";
 
 				buffers.forEach(function (entry){
 
-					//entry.source.onended = function(){};
-
 					entry.source.stop(0);
 
 				});
@@ -714,11 +834,11 @@ $scope.debugTxt = "Chegou no fim...";
 
             	$interval.cancel(intervalToMusicPosition);
             	$interval.cancel(intervalToLeds);
-
-            	//$scope.debugTxt2 = "scope -> " + $scope.timer.value + "; " + (100 / currentMusicDetails.totalTimeInSeconds) + "; " + ($scope.timer.value + (100 / currentMusicDetails.totalTimeInSeconds));
+				//$interval.cancel(intervalToClick);
 
 				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
             	intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+				//intervalToClick = $interval(playClick, 500, 2000);
 
             }
 

@@ -155,7 +155,7 @@ ms-setlist .item-right-edit {
                                     <ion-reorder-button ng-if="showChangeItemPosition" class="ion-navicon ms-font-multisongs" on-reorder="moveItem(music, $fromIndex, $toIndex)">
                                     </ion-reorder-button>
 
-                                        <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;" ng-if="showChangeItemPosition == false"/>
+                                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;" ng-if="showChangeItemPosition == false"/>
 
 
                                     <a href="#/tracks/{{music.musicId}}">
@@ -229,7 +229,7 @@ ms-setlist .item-right-edit {
                                 <ion-toggle ng-repeat="music in musics" style="padding:0px;" ng-model="music.added" ng-checked="music.added">
                                     <div class="item-thumbnail-left toggle-small" >
                                     
-                                      <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;">
+                                      <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;">
                                       <h2>{{music.musicName}}</h2>
                                       <p style="padding:0px;margin:0px;line-height:16px;">{{music.artistName}}</p>
                                     </div>

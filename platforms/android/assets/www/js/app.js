@@ -1,16 +1,19 @@
 var module = angular.module('ionicApp', ['ionic']);
 
 
-module.config(function($stateProvider, $urlRouterProvider) {
+module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+
+  $ionicConfigProvider.tabs.position('bottom');
 
    $stateProvider
    .state('index', { 
-       cache: true,
+       cache: false,
        url: '/', 
        views: {
             "store-view": {
                 templateUrl: "pages/store.html",
                 controller: "IndexController",
+                controllerAs: "IndexController",
                 onEnter: function($rootScope){
                   $rootScope.$broadcast('storeEnter', '');
                   //$scope.debugTxt = "Legal!!";
@@ -30,7 +33,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
         }
    })
    .state('musics', { 
-       cache: true,
+       cache: false,
        url: '/musics', 
        views: {
             "musics-view": {
@@ -40,7 +43,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
         }
    })
    .state('search', { 
-       cache: true,
+       cache: false,
        url: '/search/:keyword', 
        views: {
             "store-view": {
@@ -49,8 +52,28 @@ module.config(function($stateProvider, $urlRouterProvider) {
             }
         }
    })
+   .state('config', { 
+       cache: false,
+       url: '/config', 
+       views: {
+            "config-view": {
+                templateUrl: "templates/level.html",
+                controller: "TrackController"
+            }
+        }
+   })
+   .state('showTracks', { 
+       cache: false,
+       url: '/tracks/:musicId', 
+       views: {
+            "store-view": {
+                templateUrl: "templates/level.html",
+                controller: "TrackController"
+            }
+        }
+   })
    .state('searchByType', { 
-       cache: true,
+       cache: false,
        url: '/searchByType/:type/:keyword', 
        views: {
             "store-view": {
@@ -59,8 +82,18 @@ module.config(function($stateProvider, $urlRouterProvider) {
             }
         }
    })
+   .state('player', { 
+       cache: false,
+       url: '/player/:id/:firstMusicId', 
+       views: {
+            "setlists-view": {
+                templateUrl: "pages/player.html",
+                controller: "SetlistPlayerController"
+            }
+        }
+   })
    .state('setlistDetail', { 
-       cache: true,
+       cache: false,
        url: '/setlistDetail/:id', 
        views: {
             "setlists-view": {
@@ -70,7 +103,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
         }
    })
    .state('setlist', { 
-       cache: true,
+       cache: false,
        url: '/setlist', 
        views: {
             "setlists-view": {
@@ -101,6 +134,8 @@ module.provider("auth", [function () {
   };
     
 }]);
+
+
 
 module.provider("msSession", [function () {
     

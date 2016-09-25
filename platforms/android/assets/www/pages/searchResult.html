@@ -1,6 +1,6 @@
 <style>
 
-    ms-search .item-thumbnail-left, .item-thumbnail-left .item-content {
+    ms-search .item-thumbnail-left, ms-search .item-thumbnail-left .item-content {
         padding-left: 65px;
         min-height: 68px;
         height:68px;
@@ -12,7 +12,7 @@
 
 </style>
 
-<ion-view>
+<ion-view view-title="Resultado de Busca">
     
     <ion-nav-title>
       {{storeBarTitle}}
@@ -42,9 +42,10 @@
 
                     <div ng-repeat="playback in byNameResult">
 
+
                         <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                          <a class="item-content" href="#/tracks/{{playback.musicId}}">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
                             <h2 style="line-height:20px;">{{playback.musicName}}</h2>
                             <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
@@ -74,8 +75,8 @@
                     <div ng-repeat="playback in byArtistResult">
 
                         <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                          <a class="item-content" href="#/tracks/{{playback.musicId}}">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
                             <h2 style="line-height:20px;">{{playback.musicName}}</h2>
                             <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
@@ -106,8 +107,8 @@
                     <div ng-repeat="playback in byStyleResult">
 
                         <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                          <a class="item-content" href="#/tracks/{{playback.musicId}}">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
                             <h2 style="line-height:20px;">{{playback.musicName}}</h2>
                             <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estilo: {{playback.style}}</p>
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
@@ -137,8 +138,8 @@
                     <div ng-repeat="playback in byStudioResult">
 
                         <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                          <a class="item-content" href="#/tracks/{{playback.musicId}}">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
                             <h2 style="line-height:20px;">{{playback.musicName}}</h2>
                             <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estúdio: {{playback.studio}}</p>
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
@@ -170,8 +171,8 @@
                     <div ng-repeat="playback in byAlbumResult">
 
                         <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                          <a class="item-content" href="#/tracks/{{playback.musicId}}">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
                             <h2 style="line-height:20px;">{{playback.musicName}}</h2>
                             <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>

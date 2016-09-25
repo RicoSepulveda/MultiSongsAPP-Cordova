@@ -10,7 +10,7 @@ module.factory('featuredMusicService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/featured/list",
+                url: "http://www.multisongs.audio/MultiSongs/api/featured/list",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                 },
@@ -51,10 +51,9 @@ module.factory('configService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/general/config",
+                url: "http://www.multisongs.audio/MultiSongs/api/general/config",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                 },
                 dataType:"json",
                 data: {token : token}
@@ -93,10 +92,9 @@ module.factory('loginService', function($http){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/auth/login",
+                url: "http://www.multisongs.audio/MultiSongs/api/auth/login",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
                data: {key : key, password: password}
@@ -134,10 +132,9 @@ module.factory('artistService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/artist/top",
+                url: "http://www.multisongs.audio/MultiSongs/api/artist/top",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
 
@@ -184,10 +181,9 @@ module.factory('searchService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/search/keyword",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/search/keyword",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
 
@@ -233,10 +229,9 @@ module.factory('setlistService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/list",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/list",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -272,10 +267,9 @@ module.factory('setlistService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/get",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/get",
                     headers: {
                        "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
                    },
                    dataType:"json",
 
@@ -315,10 +309,9 @@ module.factory('setlistService', function($http, $q){
 
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/update/musics",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/update/musics",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -354,10 +347,9 @@ module.factory('setlistService', function($http, $q){
 
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/remove",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/remove",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -392,10 +384,9 @@ module.factory('setlistService', function($http, $q){
 
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/update",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/update",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -431,10 +422,9 @@ module.factory('setlistService', function($http, $q){
 
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/update/mode",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/update/mode",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -469,10 +459,9 @@ module.factory('setlistService', function($http, $q){
 
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/setlist/create",
+                url: "http://www.multisongs.audio/MultiSongs/api/setlist/create",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                 },
                 dataType:"json",
                 data: {token : token, name: name, groupCode: groupCode}
@@ -517,10 +506,9 @@ module.factory('wishlistService', function($http, $q){
             
             var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/wish",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/wish",
                     headers: {
-                       "Accept": "application/json;charset=utf-8",
-                       "Accept-Charset":"charset=utf-8"
+                       "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
 
@@ -566,10 +554,9 @@ module.factory('musicService', function($http, $q){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/news",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/news",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
                 data: {token: token, limit: 6}
@@ -617,10 +604,9 @@ module.factory('musicService', function($http, $q){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/top",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/top",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                 },
                 dataType:"json",
                 data: {token: token, limit: limit}
@@ -657,10 +643,9 @@ module.factory('musicService', function($http, $q){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/favorite/change",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/favorite/change",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                 },
                 dataType:"json",
                 data: {token: token, id: musicId}
@@ -697,10 +682,9 @@ module.factory('musicService', function($http, $q){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/recent",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/recent",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
                 data: {token: token}
@@ -735,10 +719,9 @@ module.factory('musicService', function($http, $q){
             
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/mine",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/mine",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
                 data: {token: token}
@@ -775,10 +758,9 @@ module.factory('musicService', function($http, $q){
 
              var request = $http({
                 method: "post",
-                url: "http://app.multisongs.audio/MultiSongs/api/music/details",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/details",
                 headers: {
-                   "Accept": "application/json;charset=utf-8",
-                   "Accept-Charset":"charset=utf-8"
+                   "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
                 data: {token: token, id : musicId}

@@ -8,7 +8,7 @@
 
     }
 
-    ms-wishlist .item-thumbnail-left, playbacks .item-thumbnail-left .item-content {
+    ms-wishlist .item-thumbnail-left, ms-wishlist .item-thumbnail-left .item-content {
         padding-left: 85px;
         min-height: 88px;
         height:88px;
@@ -29,7 +29,7 @@
     
 </style>
 
-<ion-view>
+<ion-view view-title="Sua Lista de Desejos">
     
     <ion-nav-title>
       {{myWishlistBarTitle}}
@@ -39,58 +39,58 @@
         
         <ms-wishlist>
         
-        <div>
+            <div>
 
-        <div class="no-padding">
-            <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;background-color:#333333;">
-                MÚSICAS INDICADAS PARA VOCÊ
-            </p>
-        </div>
+            <div class="no-padding">
+                <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;background-color:#333333;">
+                    MÚSICAS INDICADAS PARA VOCÊ
+                </p>
+            </div>
 
-        <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false">
+            <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false">
 
-            <ion-slide>
+                <ion-slide>
 
-                    <!--<div ng-repeat="music in topMusics">-->
+                        <!--<div ng-repeat="music in topMusics">-->
 
-                        <div class="item item-thumbnail-left item-complex item-icon-right item-borderless no-padding">
-                          <a class="item-content">
-                            <img src="img/ivete.jpg" style="width:65px;height:65px;">
-                            <h2 class="ms-font-white" style="line-height:20px;">Vou te pegar</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;color:#ffffff">Ivete Sangalo</p>
-                            <p class="ms-font-white" style="padding:0px;margin-top:4px;line-height:20px;font-size:12px;color:#ffffff">Axe</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-                          </a>
-                        </div>
-
-
-            </ion-slide>
-
-            <ion-slide>
-
-                    <!--<div ng-repeat="music in topMusics">-->
-                    
-                        <div class="item item-thumbnail-left item-complex item-icon-right item-borderless">
-                          <a class="item-content">
-                            <img src="img/ivete.jpg" style="width:65px;height:65px;">
-                            <h2 class="ms-font-white" style="line-height:20px;">Vou te pegar</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;color:#ffffff">Ivete Sangalo</p>
-                            <p class="ms-font-white" style="padding:0px;margin-top:4px;line-height:20px;font-size:12px;color:#ffffff">Axe</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-                          </a>
-                        </div>
+                            <div class="item item-thumbnail-left item-complex item-icon-right item-borderless no-padding">
+                              <a class="item-content">
+                                <img src="img/ivete.jpg" style="width:65px;height:65px;">
+                                <h2 class="ms-font-white" style="line-height:20px;">Vou te pegar</h2>
+                                <p style="padding:0px;margin:0px;line-height:20px;color:#ffffff">Ivete Sangalo</p>
+                                <p class="ms-font-white" style="padding:0px;margin-top:4px;line-height:20px;font-size:12px;color:#ffffff">Axe</p>
+                                <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                              </a>
+                            </div>
 
 
-            </ion-slide>
+                </ion-slide>
 
-        </ion-slide-box>
-        
-        </div>
+                <ion-slide>
 
-        <div class="row" style="margin:0px;border:0px;padding:0px;">
+                        <!--<div ng-repeat="music in topMusics">-->
+                        
+                            <div class="item item-thumbnail-left item-complex item-icon-right item-borderless">
+                              <a class="item-content">
+                                <img src="img/ivete.jpg" style="width:65px;height:65px;">
+                                <h2 class="ms-font-white" style="line-height:20px;">Vou te pegar</h2>
+                                <p style="padding:0px;margin:0px;line-height:20px;color:#ffffff">Ivete Sangalo</p>
+                                <p class="ms-font-white" style="padding:0px;margin-top:4px;line-height:20px;font-size:12px;color:#ffffff">Axe</p>
+                                <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                              </a>
+                            </div>
+
+
+                </ion-slide>
+
+            </ion-slide-box>
             
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+            </div>
+
+            <div class="row" style="margin:0px;border:0px;padding:0px;">
                 
+                <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                    
                     <ion-list>
             
                         <div class="item item-divider">
@@ -100,9 +100,9 @@
                         </div>
 
                         
-                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in wishList" href="#/setlistDetail/{{setList.id}}">
+                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in wishList" href="#/tracks/{{music.musicId}}">
                             
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
                             
                             <h2 style="line-height:20px;">{{music.musicName}}</h2>
                             
@@ -122,33 +122,12 @@
                         </ion-item>
                         
                     </ion-list>
-                    
-                    
-                    
-                    <!--
-                    
-                    
-<playbacks>
-                    <div ng-repeat="music in wishList">
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right">
-                          <a class="item-content">
-                            <img ng-src="http://app.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px">
-                            <h2 style="line-height:20px;">{{music.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
-                            <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-                          </a>
-                        </div>
-
-                    </div>
-</playbacks>
--->
+                        
                 </div>
 
             </div>
 
-            </ms-wishlist>
+        </ms-wishlist>
             
     </ion-content>
     
