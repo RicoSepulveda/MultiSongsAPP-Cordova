@@ -1,4 +1,4 @@
-module.factory('msPlayer', function($interval, $q, musicService, setlistService){
+module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicService, setlistService){
 
 	var buffers = [];
 	var promisses = [];
@@ -32,6 +32,8 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 	var _fftSize = 256;
 
 	var _token;
+
+	var _fileSystem;
 
 	var setCurrentMusic = function($q, $scope, token, musicId){
 
@@ -395,9 +397,56 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
     };
 */
-    var loadFile = function (url, callback){
+
+    var loadFile = function ($scope, track, url, callback){
 
         var getSound = new XMLHttpRequest();
+        var finalURL;
+
+        getSound.open("GET", _fileSystem + track.id + ".part", true);
+
+        getSound.responseType = "arraybuffer";
+
+        $scope.debugTxt2 = "Carregando " + _fileSystem + track.id + ".part";
+
+        getSound.onload = function() {
+
+        	currentMusicDetails.wasDownloaded = true;
+
+	        $scope.debugTxt2 = "Carregou do arquivo...";
+
+        	decodeAudioData(getSound.response, callback);
+
+        };
+
+        getSound.onerror = function(){
+
+        		currentMusicDetails.wasDownloaded = false;
+
+	        	$scope.debugTxt2 = "Nao carregou do arquivo";
+
+	        	getSound = new XMLHttpRequest();
+
+		        getSound.open("GET", url, true);
+
+		        getSound.responseType = "arraybuffer";
+
+		        getSound.onload = function() {
+			        $scope.debugTxt2 = "Carregou da net...";
+		        	decodeAudioData(getSound.response, callback);
+		        };
+
+		        getSound.send();
+
+        }
+
+        getSound.send();
+
+
+    }
+
+    var decodeAudioData = function(data, callback){
+
         var playSound = context.createBufferSource();
         var gainNode = context.createGain();
         var panNode = context.createStereoPanner();
@@ -405,43 +454,33 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
         var result = {};
 
-        getSound.open("GET", url, true);
+        context.decodeAudioData(data, function(buffer){
 
-        getSound.responseType = "arraybuffer";
+            playSound.buffer = buffer;
 
-        getSound.onload = function() {
-        	
-            context.decodeAudioData(getSound.response, function(buffer){
+            playSound.connect(panNode);
+            panNode.connect(gainNode);
+            gainNode.connect(analyserNode);
+            analyserNode.connect(panNodeMaster);
 
-                playSound.buffer = buffer;
+            analyserNode.fftSize = _fftSize;
+            analyserNode.minDecibels = _minDecibels;
+			analyserNode.maxDecibels = _maxDecibels;
 
-                playSound.connect(panNode);
-                panNode.connect(gainNode);
-                gainNode.connect(analyserNode);
-                analyserNode.connect(panNodeMaster);
+            result.source = playSound;
+            result.panNode = panNode;
+            result.gainNode = gainNode;
+            result.analyserNode = analyserNode;
 
-	            analyserNode.fftSize = _fftSize;
-	            analyserNode.minDecibels = _minDecibels;
-				analyserNode.maxDecibels = _maxDecibels;
+            result.lastDecibels = 128;
 
-                result.source = playSound;
-                result.panNode = panNode;
-                result.gainNode = gainNode;
-                result.analyserNode = analyserNode;
+            result.buffer = buffer;
 
-                result.lastDecibels = 128;
+            if (callback){
+            	callback(result);
+			}
 
-                result.buffer = buffer;
-
-                if (callback){
-                	callback(result);
-				}
-
-            });
-
-        };
-
-        getSound.send();
+        });
 
     }
 
@@ -459,7 +498,7 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
         track.isLoaded = false;
 
-        loadFile(url, function(result){
+        loadFile($scope, track, url, function(result){
 
 			track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
 			track.isLoaded = true;
@@ -524,7 +563,9 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 			
 		},
 
-		loadMusic: function($scope, $q, musicDetails, token){
+		loadMusic: function(fileSystem, $scope, $q, musicDetails, token){
+
+			_fileSystem = fileSystem;
 
 			$scope.setlistMusics = null;
 
@@ -810,6 +851,73 @@ module.factory('msPlayer', function($interval, $q, musicService, setlistService)
 
 			});
 
+		},
+
+		download: function($scope){
+
+			var fileTransfer = new FileTransfer();
+
+			var uri;
+
+			$scope.debugTxt2 = "Funcionou!!";
+
+			buffers.forEach(function (entry){
+
+				uri = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + true;
+
+				fileTransfer.download(
+				    uri,
+				    _fileSystem + entry.track.id + ".part",
+				    function(response) {
+				        $scope.debugTxt2 = "download complete: " + response.toURL();
+				    },
+				    function(error) {
+				    	$scope.debugTxt2 = "upload error code" + error.code;
+				    },
+				    false,
+				    {
+				        headers: {
+				            "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+				        }
+				    }
+				);
+
+			});
+/*
+			var path;
+			var url;
+			var targetPath;
+
+	        var downloadFile = new XMLHttpRequest();
+
+			buffers.forEach(function (entry){
+				
+				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + true;
+				
+	            var request = $http({
+	                method: "get",
+	                url: url
+	            });
+
+
+	            request.success(
+	                function( response ) {
+						$cordovaFile.writeFile(_fileSystem, entry.track.id + ".part", response, true).then(function(result) {
+							$scope.debugTxt2 = "sucesso";
+						}, function(err) {
+							$scope.debugTxt2 = err;
+						});
+	                }
+	            );
+
+	            request.error(
+	                function( response , textStatus, errorThrown) { 
+	                    $scope.debugTxt2 = response + " - " + errorThrown + " - " + textStatus; 
+	                }
+	            );
+
+		    });
+*/
 		},
 
 		changePosition: function($scope){

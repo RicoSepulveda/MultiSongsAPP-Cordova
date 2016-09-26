@@ -383,6 +383,7 @@ module.controller('TrackController', function($scope,
                                               msPlayer) {
 
     var intervalToMusicPosition;
+    var fileSystem;
 
     $scope.changeSolo = function(track){
 
@@ -395,6 +396,37 @@ module.controller('TrackController', function($scope,
         }
 
     };
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+        
+        fileSystem = cordova.file.dataDirectory;
+
+        msPlayer.new($scope);
+
+        var promises = [];
+        
+        //$ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
+        
+        promises.push(musicService.getMusicDetails($scope, auth.token, $stateParams.musicId));
+        
+        $q.all(promises).then(
+            function(response) { 
+                //$scope.debugTxt2 = "response: " + response;
+                msPlayer.loadMusic(fileSystem, $scope, $q, response[0], auth.token);
+            },
+            function() { 
+                $scope.debugTxt = 'Failed'; 
+            }
+        ).finally(function() {
+        });
+
+    }
+
+    $scope.download = function(){
+        msPlayer.download($scope, fileSystem);
+    }
 
     $scope.changeEnabled = function(track){
 
@@ -472,30 +504,8 @@ module.controller('TrackController', function($scope,
         //$ionicNavBarDelegate.showBar(false);
 
         $ionicNavBarDelegate.showBar(false);
-
-        msPlayer.new($scope);
-
-        var promises = [];
-        
         $scope.token = auth.token;
-
         $scope.isPlaying = false;
-        
-        //$ionicNavBarDelegate.setTitle(msSessionConfig.mySongsBarTitle);
-        
-        promises.push(musicService.getMusicDetails($scope, auth.token, $stateParams.musicId));
-        
-        $q.all(promises).then(
-            function(response) { 
-                //$scope.debugTxt2 = "response: " + response;
-                msPlayer.loadMusic($scope, $q, response[0], auth.token);
-            },
-            function() { 
-                $scope.debugTxt = 'Failed'; 
-            }
-        ).finally(function() {
-        });
-        
         
     });
 

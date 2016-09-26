@@ -1,4 +1,4 @@
-var module = angular.module('ionicApp', ['ionic']);
+var module = angular.module('ionicApp', ['ionic', 'ngCordova']);
 
 
 module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {

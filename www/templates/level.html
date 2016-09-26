@@ -158,10 +158,10 @@
 		<div class="row">
             <div class="row" style="padding-top:0px;padding-bottom:0px;text-align:center;">
                 <div class="col" ng-if="musicDetails.status != 1">
-                	<button class="button small-button-buy" ng-if="musicDetails.price > 0" ng-click="go('/searchByType/1/')">
+                	<button class="button small-button-buy" ng-if="musicDetails.price > 0 && !musicDetails.wasDownloaded" ng-click="go('/searchByType/1/')">
                     	Compre Agora R$ {{musicDetails.price}}
                     </button>
-                	<button class="button small-button-buy" ng-if="musicDetails.price == 0" ng-click="go('/searchByType/1/')">
+                	<button class="button small-button-buy" ng-if="musicDetails.price == 0 && !musicDetails.wasDownloaded" ng-click="download()">
                     	Download Gratuito
                     </button>
                     {{debugTxt2}}
