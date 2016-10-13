@@ -1,0 +1,72 @@
+<style>
+
+	ms-featured .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
+	    padding-left: 85px;
+	    min-height: 88px;
+	    height:88px;
+	}
+
+</style>
+
+<ion-view>
+    
+    <ion-nav-title>
+      {{myWishlistBarTitle}}
+    </ion-nav-title>
+
+    <ion-content class="has-header">
+        
+        <ms-featured>
+        
+            <div style="background-color:#000000;">
+
+                <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
+                <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
+                <div style="padding-left:10px">
+                    <p class="ms-font-big ms-font-white" style="margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.firstRow}}</p>
+                    <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.secondRow}}</p>
+                    <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 5px;padding-top:5px;margin-bottom: 0px;padding-bottom:5px;">{{featuredSong.thirdRow}}</p>
+                </div>
+
+            </div>
+
+        <div class="row" style="margin:0px;border:0px;padding:0px;">
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                
+                <ion-list>
+
+
+                    <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in featuredSong.musics" href="#/tracks/{{music.musicId}}">
+
+                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
+
+                        <h2 style="line-height:20px;">{{music.musicName}}</h2>
+
+                        <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
+                        <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
+
+                        <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
+                            Favoritos
+                        </ion-option-button>
+
+<!-- @TODO - Precisa adicionar esse botao posteriormente-->
+<!--
+                        <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
+                            {{music.price != "0" ? "Comprar" + music.price : "Baixar"}}
+                        </ion-option-button>
+-->
+                        <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+
+                    </ion-item>
+
+                </ion-list>
+
+            </div>
+
+        </div>
+
+        </ms-featured>
+
+    </ion-content>
+
+</ion-view>

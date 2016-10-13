@@ -1,4 +1,4 @@
-module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicService, setlistService){
+module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordovaFile, $http, musicService, setlistService){
 
 	var buffers = [];
 	var promisses = [];
@@ -11,6 +11,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 	var analyserNodeBufferLength;
 
 	var currentMusicDetails;
+	var _currentStatus;
 
 	var IS_STOPED_STATUS = 0;
 	var IS_LOADING_STATUS = 1;
@@ -27,8 +28,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 	var secondsUntilNow;
 
 	var _lastMainDecibels = 128;
-	var _minDecibels = -90;
-	var _maxDecibels = -10;
+	var _minDecibels = -100;
+	var _maxDecibels = 0;
 	var _fftSize = 256;
 
 	var _token;
@@ -64,13 +65,58 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 	};
 
+/*
+	var downloadFile = function(scope){
+
+			var url;
+			var targetPath;
+	        var getSound = new XMLHttpRequest();
+			
+			buffers.forEach(function (entry){
+
+				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
+				targetPath = entry.track.id + ".part";
+
+		        getSound.open("GET", url, true);
+
+	    	    getSound.responseType = "arraybuffer";
+
+	        	getSound.onload = function() {
+
+			        context.decodeAudioData(getSound.response, function(buffer){
+
+		        		alert("Decodificado");
+
+			            $cordovaFile.writeFile(_fileSystem, targetPath, buffer, true)
+		                .then(function(success){
+			        		alert("Gravou");
+		                }, function(error){
+			        		alert("Deu erro ao gravar");
+		                });
+
+	            	});
+
+	        		//var oMyBlob = new Blob(getSound.response, {type : 'audio/mpeg3'})
+
+	        	};
+
+       	        getSound.onerror = function(){
+					alert("Erro no download");
+       	        };
+
+       	        getSound.send();
+
+       	        scope.debugTxt2 = "depois do send...";
 
 
-	var intervalFunction = function($scope){
+            });
 
-		secondsUntilNow++;
 
-		$scope.timer.value = (parseFloat($scope.timer.value) + 100 / currentMusicDetails.totalTimeInSeconds);
+
+	}
+*/
+
+	var calculateTimeAsString = function(scope){
 
 		var minutes = Math.floor((secondsUntilNow) / 60);
 		var seconds = secondsUntilNow - minutes * 60;
@@ -81,6 +127,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 		currentMusicDetails.currentTimeAsString = minutes + ":" + seconds;
 
+	};
+
+	var intervalFunction = function($scope){
+
+		secondsUntilNow++;
+
+		$scope.timer.value = (parseFloat($scope.timer.value) + 100 / currentMusicDetails.totalTimeInSeconds);
+
+		calculateTimeAsString($scope);
+
 		if (parseFloat($scope.timer.value) >= 100){
 
 			if ($scope.setlistMusics === null){
@@ -90,7 +146,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 			} else {
 
 				if (getIndexInPlaylist($scope) < $scope.setlistMusics.length - 1){
-					$scope.debugTxt = "Carregando proxima...";
 					setCurrentMusic($q, $scope, _token, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicId);
 				} else {
 					onEnded($scope);
@@ -136,6 +191,10 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 			ledIdx = 13;
 		}
 
+		if (ledIdx < 0){
+			ledIdx = 0;
+		}
+
 		$scope.leds.left = "img/level-led-" + ledIdx + ".png";
 		$scope.leds.right = "img/level-led-" + ledIdx + ".png";
 
@@ -147,6 +206,10 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 			if (ledIdx > 13){
 				ledIdx = 13;
+			}
+
+			if (ledIdx < 0){
+				ledIdx = 0;
 			}
 
 			entry.track.leds.left = "img/level-led-" + ledIdx + ".png";
@@ -189,6 +252,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 		var nextMusicIndex;
 
 		$scope.msPlayer.status = IS_STOPED_STATUS; 
+		_currentStatus = IS_STOPED_STATUS;
 		$scope.timer.value = 0; 
 
 		$interval.cancel(intervalToMusicPosition);
@@ -270,9 +334,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 	var loadTracks = function($scope, $q, musicDetails, token){
 
+			if (_currentStatus == IS_SUSPENDED_STATUS){
+				context.resume();
+			}
+
 			if (buffers.length > 0){
 
-				if ($scope.msPlayer && $scope.msPlayer.status == IS_PLAYING_STATUS){
+				if (_currentStatus == IS_PLAYING_STATUS){
 
 					buffers.forEach(function (entry){
 
@@ -336,14 +404,17 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 	            function(response) { 
 
 	                buffers = response;
+	                //$scope.debugTxt2 = "Terminou de decodificar...";
 
 	                $scope.msPlayer.status = IS_STOPED_STATUS;
+	                _currentStatus = IS_STOPED_STATUS;
 
 	            },
 
 	            function() { 
 	                $scope.debugTxt = 'Failed'; 
 	                $scope.msPlayer.status = IS_UNAVAILABLE_STATUS;
+	                _currentStatus = IS_UNAVAILABLE_STATUS;
 	            }
 
 	        ).finally(function() {
@@ -407,23 +478,22 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
         getSound.responseType = "arraybuffer";
 
-        $scope.debugTxt2 = "Carregando " + _fileSystem + track.id + ".part";
+        //$scope.debugTxt2 = "Carregando " + _fileSystem + track.id + ".part";
 
         getSound.onload = function() {
 
-        	currentMusicDetails.wasDownloaded = true;
+        	//currentMusicDetails.wasDownloaded = true;
 
-	        $scope.debugTxt2 = "Carregou do arquivo...";
-
-        	decodeAudioData(getSound.response, callback);
+	        //$scope.debugTxt2 = "Carregou do arquivo...";
+        	decodeAudioData(getSound.response, callback, true);
 
         };
 
         getSound.onerror = function(){
 
-        		currentMusicDetails.wasDownloaded = false;
+        		//currentMusicDetails.wasDownloaded = false;
 
-	        	$scope.debugTxt2 = "Nao carregou do arquivo";
+	        	//$scope.debugTxt2 = "Nao carregou do arquivo";
 
 	        	getSound = new XMLHttpRequest();
 
@@ -432,8 +502,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 		        getSound.responseType = "arraybuffer";
 
 		        getSound.onload = function() {
-			        $scope.debugTxt2 = "Carregou da net...";
-		        	decodeAudioData(getSound.response, callback);
+			        //$scope.debugTxt2 = "Carregou da net...";
+
+		        	decodeAudioData(getSound.response, callback, false);
 		        };
 
 		        getSound.send();
@@ -445,7 +516,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
     }
 
-    var decodeAudioData = function(data, callback){
+    var createNodes = function(data, callback){
 
         var playSound = context.createBufferSource();
         var gainNode = context.createGain();
@@ -454,35 +525,52 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
         var result = {};
 
-        context.decodeAudioData(data, function(buffer){
+        playSound.buffer = data;
 
-            playSound.buffer = buffer;
+        playSound.connect(panNode);
+        panNode.connect(gainNode);
+        gainNode.connect(analyserNode);
+        analyserNode.connect(panNodeMaster);
 
-            playSound.connect(panNode);
-            panNode.connect(gainNode);
-            gainNode.connect(analyserNode);
-            analyserNode.connect(panNodeMaster);
+        analyserNode.fftSize = _fftSize;
+        analyserNode.minDecibels = _minDecibels;
+		analyserNode.maxDecibels = _maxDecibels;
 
-            analyserNode.fftSize = _fftSize;
-            analyserNode.minDecibels = _minDecibels;
-			analyserNode.maxDecibels = _maxDecibels;
+        result.source = playSound;
+        result.panNode = panNode;
+        result.gainNode = gainNode;
+        result.analyserNode = analyserNode;
 
-            result.source = playSound;
-            result.panNode = panNode;
-            result.gainNode = gainNode;
-            result.analyserNode = analyserNode;
+        result.lastDecibels = 128;
 
-            result.lastDecibels = 128;
+        result.buffer = data;
 
-            result.buffer = buffer;
+        if (callback){
+        	callback(result);
+		}
 
-            if (callback){
-            	callback(result);
-			}
+	};
 
+
+    var decodeAudioData = function(data, callback, isDecoded){
+/*
+    	if (!isDecoded){
+
+	        context.decodeAudioData(data, function(buffer){
+	        	createNodes(buffer, callback);
+	        });
+
+    	}else{
+        	createNodes(data, callback);
+    	}
+*/
+
+		context.decodeAudioData(data, function(buffer){
+        	createNodes(buffer, callback);
         });
 
     }
+
 
 	var loadMP3 = function($scope, $q, track, token, isDemo){
 
@@ -518,9 +606,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 	return {
 
-		loadSetlist: function($scope, $q, token, setlistId){
+		loadSetlist: function(fileSystem, $scope, $q, token, setlistId){
 
 			var promisses;
+
+			_fileSystem = fileSystem;
 
 			_token = token;
 
@@ -566,6 +656,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 		loadMusic: function(fileSystem, $scope, $q, musicDetails, token){
 
 			_fileSystem = fileSystem;
+
+			musicDetails.progress = 0;
 
 			$scope.setlistMusics = null;
 
@@ -630,6 +722,34 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 		changeMasterPan: function($scope){
 
 			panNodeMaster.pan.value = $scope.msPlayer.masterPan;
+
+			$scope.msPlayer.showMessage = true;
+
+			if (panNodeMaster.pan.value > 0 && panNodeMaster.pan.value < 1){
+				$scope.msPlayer.message = parseInt(panNodeMaster.pan.value * 100) + "%R";
+			}
+
+			if (panNodeMaster.pan.value == 0){
+				$scope.msPlayer.message = "LR";
+			}
+
+			if (panNodeMaster.pan.value < 0 && panNodeMaster.pan.value > -1){
+				$scope.msPlayer.message = parseInt(-1 * panNodeMaster.pan.value * 100) + "%L";
+			}
+
+			if (panNodeMaster.pan.value == -1){
+				$scope.msPlayer.message = "LFT";
+			}
+
+			if (panNodeMaster.pan.value == 1){
+				$scope.msPlayer.message = "RGT";
+			}
+
+			if (intervalToRemoveMasterMessage){
+				$interval.cancel(intervalToRemoveMasterMessage);
+			}
+
+			intervalToRemoveMasterMessage = $interval(function(){$scope.msPlayer.showMessage = false;}, 2000, 1);
 
 		},
 
@@ -775,18 +895,19 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 		play: function($scope){
 
-			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
+			if (_currentStatus == IS_SUSPENDED_STATUS){
 				context.resume();
 			}
 
 			$scope.msPlayer.status = IS_PLAYING_STATUS;
+			_currentStatus = IS_PLAYING_STATUS;
 
 	       	buffers.forEach(function (entry){
 				entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
 			});
 
-			intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
-			intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+			intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, currentMusicDetails.totalTimeInSeconds + 1);
+			intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, currentMusicDetails.totalTimeInSeconds * 1000 / 50);
 
 			//intervalToClick = $interval(playClick, 500, 2000);
 
@@ -821,20 +942,23 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 		resume: function($scope){
 
-			if ($scope.msPlayer.status == IS_SUSPENDED_STATUS){
-				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
-				intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+			if (_currentStatus == IS_SUSPENDED_STATUS){
+				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, currentMusicDetails.totalTimeInSeconds + 1);
+				intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, currentMusicDetails.totalTimeInSeconds * 1000 / 50);
 				//intervalToClick = $interval(playClick, 500, 2000);
 				context.resume();
 			}
 
 			$scope.msPlayer.status = IS_PLAYING_STATUS;
+			_currentStatus = IS_PLAYING_STATUS;
 
 		},
 
 		suspend: function($scope){
 
 			$scope.msPlayer.status = IS_SUSPENDED_STATUS;
+			_currentStatus = IS_SUSPENDED_STATUS;
+
 			$interval.cancel(intervalToMusicPosition);
 			$interval.cancel(intervalToLeds);
 			//$interval.cancel(intervalToClick);
@@ -853,27 +977,95 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 
 		},
 
+/*
+		download: function($scope){
+
+			downloadFile($scope);
+
+        },
+*/
+		download: function($scope){
+
+			var url;
+			var targetPath;
+
+			//$scope.debugTxt2 = "preparando...";
+
+			currentMusicDetails.isDownloading = true;
+			currentMusicDetails.status = 1;
+
+			buffers.forEach(function (entry){
+
+				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
+				targetPath = _fileSystem + entry.track.id + ".part";
+
+				//$scope.debugTxt2 = "lendo arquivo...";
+
+				$cordovaFileTransfer.download(url, targetPath, {}, true).
+				then(function (result) {
+
+					entry.wasDownloaded = true;
+					entry.isDownloading = false;
+
+					currentMusicDetails.wasDownloaded = true;
+					currentMusicDetails.isDownloading = false;
+
+					buffers.forEach(function (entry2){
+						currentMusicDetails.isDownloading |= entry2.isDownloading;
+						currentMusicDetails.wasDownloaded &= entry2.wasDownloaded;
+					});	
+
+
+					//$scope.debugTxt2 = "finalmente!!";
+				}, function (error) {
+
+					entry.wasDownloaded = false;
+					entry.isDownloading = false;
+
+					currentMusicDetails.wasDownloaded = false;
+					currentMusicDetails.isDownloading = entry.isDownloading;
+
+					buffers.forEach(function (entry2){
+						currentMusicDetails.isDownloading |= entry2.isDownloading;
+					});	
+
+
+					//$scope.debugTxt2 = "foi mas deu erro...";
+				}, function (progress) {
+					entry.progress = parseInt((progress.loaded / progress.total) * 100);
+					
+					var pgrs = 0;
+
+					buffers.forEach(function (entry2){
+						pgrs += entry2.progress;
+					});	
+
+					currentMusicDetails.progress = pgrs;
+
+					//$scope.debugTxt2 = parseInt((progress.loaded / progress.total) * 100) + "%";
+					// PROGRESS HANDLING GOES HERE
+				});
+
+			});
+
+		},
+
+/*
 		download: function($scope){
 
 			var fileTransfer = new FileTransfer();
 
 			var uri;
 
-			$scope.debugTxt2 = "Funcionou!!";
-
 			buffers.forEach(function (entry){
 
-				uri = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + true;
+				uri = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
 
 				fileTransfer.download(
 				    uri,
 				    _fileSystem + entry.track.id + ".part",
-				    function(response) {
-				        $scope.debugTxt2 = "download complete: " + response.toURL();
-				    },
-				    function(error) {
-				    	$scope.debugTxt2 = "upload error code" + error.code;
-				    },
+				    downloadFinishedSuccess,
+				    downloadFinishedError,
 				    false,
 				    {
 				        headers: {
@@ -883,50 +1075,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 				);
 
 			});
-/*
-			var path;
-			var url;
-			var targetPath;
-
-	        var downloadFile = new XMLHttpRequest();
-
-			buffers.forEach(function (entry){
-				
-				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + true;
-				
-	            var request = $http({
-	                method: "get",
-	                url: url
-	            });
-
-
-	            request.success(
-	                function( response ) {
-						$cordovaFile.writeFile(_fileSystem, entry.track.id + ".part", response, true).then(function(result) {
-							$scope.debugTxt2 = "sucesso";
-						}, function(err) {
-							$scope.debugTxt2 = err;
-						});
-	                }
-	            );
-
-	            request.error(
-	                function( response , textStatus, errorThrown) { 
-	                    $scope.debugTxt2 = response + " - " + errorThrown + " - " + textStatus; 
-	                }
-	            );
-
-		    });
-*/
 		},
-
+*/
 		changePosition: function($scope){
 
             var previousStatus;
 
-            previousStatus = $scope.msPlayer.status;
+            previousStatus = _currentStatus;
 
             $scope.msPlayer.status = IS_CHANGING_POSITION_STATUS;
+            _currentStatus = IS_CHANGING_POSITION_STATUS;
 
             if (previousStatus == IS_PLAYING_STATUS || previousStatus == IS_SUSPENDED_STATUS){
 
@@ -944,8 +1102,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
             	$interval.cancel(intervalToLeds);
 				//$interval.cancel(intervalToClick);
 
-				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, 2000);
-            	intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, 2000);
+				intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, currentMusicDetails.totalTimeInSeconds + 1);
+            	intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, currentMusicDetails.totalTimeInSeconds * 1000 / 50);
 				//intervalToClick = $interval(playClick, 500, 2000);
 
             }
@@ -962,9 +1120,10 @@ module.factory('msPlayer', function($interval, $q, $cordovaFile, $http, musicSer
 				
 			};
 
-			intervalFunction($scope);
+			calculateTimeAsString($scope);
 
 			$scope.msPlayer.status = previousStatus;
+			_currentStatus = previousStatus;
 
 		}
 

@@ -92,6 +92,16 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
             }
         }
    })
+   .state('featuredSong', { 
+       cache: false,
+       url: '/featured/:id', 
+       views: {
+            "store-view": {
+                templateUrl: "pages/featured.html",
+                controller: "FeaturedSongController"
+            }
+        }
+   })
    .state('setlistDetail', { 
        cache: false,
        url: '/setlistDetail/:id', 
@@ -126,6 +136,7 @@ module.provider("auth", [function () {
     setType: function (value) {
       token = value;
     },
+
     $get: function () {
       return {
         token: token
@@ -165,6 +176,7 @@ module.provider("msSessionConfig", [function () {
   var newSongsButtom;
   var topSongsButtom;
   var topArtistsButtom;
+  var stylesButtom;
     
   var storeMenu;
   var wishlistMenu;
@@ -195,6 +207,9 @@ module.provider("msSessionConfig", [function () {
     setTopArtistsButtom: function (value) {
         topArtistsButtom = value;
     },
+    setStylesButtom: function (value) {
+        stylesButtom = value;
+    },
     setStoreMenu: function (value) {
         storeMenu = value;
     },
@@ -220,6 +235,7 @@ module.provider("msSessionConfig", [function () {
           newSongsButtom: newSongsButtom,
           topSongsButtom: topSongsButtom,
           topArtistsButtom: topArtistsButtom,
+          stylesButtom: stylesButtom,
           storeMenu: storeMenu,
           wishlistMenu: wishlistMenu,
           musicMenu: musicMenu,

@@ -67,7 +67,64 @@
         </ion-tabs>
 
 
+        <script id="templates/login.html" type="text/ng-template">
         
+            <ion-modal-view>
+                
+                <div class="modal">
+                
+                    <ion-content ng-controller="MainController">
+
+                        <div class="ms-login">
+
+                            <div class="ms-login-title"><p>You are not logged in!</p></div>
+                            <div class="ms-login-description" ng-class="descriptionClass">{{description}}</div>
+
+                            <div class="ms-login-label"><p>E-mail</p></div>
+                            <div class="ms-login-input"><input type="text" ng-model="loginData.key" ng-focus="cleanErrorMessage()"/></div>
+                            <div class="ms-login-label"><p>Password</p></div>
+                            <div class="ms-login-input"><input type="password" ng-model="loginData.password" ng-focus="cleanErrorMessage()"/></div>
+                            
+                            <div class="row" style="padding:0px;margin:0px;">
+                                <div class="col-50">
+                                    <div class="ms-login-small-button" ng-click="changeUser()"><p>Login</p></div>
+                                </div>
+                                <div class="col-50">
+                                    <div class="ms-login-forgot"><p>Forgot your password?</p></div>
+                                </div>
+                            </div>
+
+
+                            <div class="ms-login-second-title"><p>Or</p></div>
+<!-- /*
+                            <div class="ms-login-big-button">
+                                <img src="../img/google.png"/>
+                                <p>Login with Google</p>
+                            </div>
+                            <div class="ms-login-big-button" ng-click="facebookLogin();">
+                                <img src="../img/facebook.png"/>
+                                <p>Login with Facebook</p>
+                            </div>
+*/ -->
+                            <div class="ms-login-big-button"    >
+                                <img src="img/user.png"/>
+                                <p>Create an Account</p>
+                            </div>
+
+                            {{debugTxt}}
+
+
+                        </div>
+
+
+                    </ion-content>
+
+                </div>
+
+            </ion-modal-view>
+
+        </script>
+
 
     </body>
 </html>

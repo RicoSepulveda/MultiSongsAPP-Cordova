@@ -6,6 +6,12 @@
     height:80px;
 }
 
+.spinner svg {
+  width: 48px;
+  height: 48px;
+  color: #ffffff;
+}
+
 
 </style>
 
@@ -25,7 +31,7 @@
 
 							<img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicDetails.artistPhotoPath}}" style="width:58px;height:58px;">
 
-	                        <h2 style="line-height:18px;color:#FFFFFF;">{{musicDetails.musicName}}{{(musicDetails.key != null)?" - "+musicDetails.key:""}}</h2>
+	                        <h2 style="line-height:18px;color:#FFFFFF;">{{musicDetails.musicName}}{{(musicDetails.key != null && musicDetails.key != "")?" - "+musicDetails.key:""}}</h2>
 
 	                        <p style="padding:0px;margin:0px;line-height:18px;">{{musicDetails.artistName}} - {{musicDetails.style}}</p>
 							
@@ -35,8 +41,10 @@
 
 							<i ng-if="msPlayer.status == 2" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
 
+							<i class = "icon"><ion-spinner ng-if="msPlayer.status == 1" icon="ios"></ion-spinner></i>
+<!--
 							<i ng-if="msPlayer.status == 1" class = "icon ion-loading-d" style="color:#FFFFFF;font-size:48px;"></i>
-
+-->
 	                    </ion-item>
 
 					</ion-list>
@@ -87,6 +95,7 @@
 						<a ng-click="changeEnabled(track)">
 							<img ng-if="msPlayer.status != 1 && track.enabled == true" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentEnabledImagePath}}"/>
 							<img ng-if="track.enabled == false || (msPlayer.status == 1 && track.isLoaded == true)" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentDisabledImagePath}}"/>
+
 							<img ng-if="msPlayer.status == 1 && track.isLoaded == false" class="ms-level-instrument" src="img/loading.gif"/>
 						</a>
 						
@@ -153,19 +162,27 @@
 
 </div>
 
-<div class="col-60">
+<div class="col-60 ms-buy-button">
 
 		<div class="row">
             <div class="row" style="padding-top:0px;padding-bottom:0px;text-align:center;">
-                <div class="col" ng-if="musicDetails.status != 1">
-                	<button class="button small-button-buy" ng-if="musicDetails.price > 0 && !musicDetails.wasDownloaded" ng-click="go('/searchByType/1/')">
-                    	Compre Agora R$ {{musicDetails.price}}
+                <div class="col" ng-if="musicDetails.status != 1 && !musicDetails.isDownloading">
+                	<button class="button small-button-buy" ng-if="musicDetails.price > 0 && !musicDetails.wasDownloaded" ng-click="download()">
+                    	Compre por R$ {{musicDetails.price}}
                     </button>
                 	<button class="button small-button-buy" ng-if="musicDetails.price == 0 && !musicDetails.wasDownloaded" ng-click="download()">
                     	Download Gratuito
                     </button>
-                    {{debugTxt2}}
+                    <div ng-if="!musicDetails.wasDownloaded" >{{musicDetails.ccdescription}}</div>
                 </div>
+                <div class="col" ng-if="musicDetails.isDownloading">
+                	<progress id="progressbar" max="100" value="{{ musicDetails.progress }}"> </progress>
+                	<div>downloading...</div>
+            	</div>
+                <div class="col" ng-if="musicDetails.wasDownloaded">
+                	<div>Your playback was downloaded!</div>
+            	</div>
+                {{debugTxt2}}
             </div>
 
         </div>

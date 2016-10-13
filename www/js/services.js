@@ -35,7 +35,41 @@ module.factory('featuredMusicService', function($http, $q){
 
             return deferred.promise;
             
+        },
+
+        getFeaturedMusic: function($scope, token, id) { 
+              
+            var deferred = $q.defer();
+            
+            var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/featured/get",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token : token, id : id}
+            });
+
+
+            request.success(
+                function( response ) {
+                    deferred.resolve(response);
+                    
+
+                }
+            );
+
+            request.error(
+                    function( response ) { 
+                        deferred.reject(response);
+                    }
+            );
+
+            return deferred.promise;
+            
         } 
+
     }
       
      
@@ -84,7 +118,7 @@ module.factory('configService', function($http, $q){
      
  });
 
-module.factory('loginService', function($http){
+module.factory('loginService', function($http, $rootScope, $ionicModal, auth){
     
     return {
         
@@ -116,7 +150,35 @@ module.factory('loginService', function($http){
                 }
             );
 
-        } 
+        },
+
+        validateAuthorization: function(description, callback, args){
+
+            if (auth.type && auth.type != 1){
+
+                callback(args);
+
+            } else {
+
+                $rootScope.description = description;
+
+                $rootScope.originalDescription = $rootScope.description;
+                $rootScope.descriptionClass = "ms-font-light-gray";
+
+                $rootScope.callback = {func : callback, args : args};
+
+                $ionicModal.fromTemplateUrl('templates/login.html', {
+                    scope: $rootScope,
+                    animation: 'slide-in-up'
+                }).then(function(modal) {
+                    $rootScope.loginModal = modal;
+                    $rootScope.loginModal.show();
+                });
+
+            }
+
+        }
+
     }
      
 });
@@ -188,6 +250,46 @@ module.factory('searchService', function($http, $q){
                dataType:"json",
 
                 data: {token : token, limit : limit, keyword: keyword}
+            });
+            
+            request.success(
+
+                function( response ) {
+
+                    deferred.resolve(response);
+
+                }
+            );
+
+            request.error(
+
+                function( response ) { 
+
+                    deferred.reject(response);
+
+                    $scope.destaqueStr = response; 
+
+                }
+
+            );
+            
+            return deferred.promise;
+
+        },
+        
+        searchByType: function($scope, token, limit, keyword, type) { 
+            
+            var deferred = $q.defer();
+            
+            var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/search/by",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+
+                data: {token : token, limit : limit, keyword: keyword, searchType: type}
             });
             
             request.success(
@@ -544,6 +646,92 @@ module.factory('wishlistService', function($http, $q){
      
  });
 
+module.factory('styleService', function($http, $q){
+    
+    return {
+        
+        getStyles : function($scope, token) { 
+
+            var deferred = $q.defer();
+            
+             var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/style/list",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+                data: {token: token}
+            });
+
+
+            request.success(
+
+                function( response ) {
+
+                    var remainder;
+                    var counter;
+                    var cardIndex;
+                    var styleIndex;
+
+                    counter = 0;
+                    cardIndex = -1;
+                    styleIndex = -1;
+
+                    $scope.styleCards = [];
+
+                    $scope.styleCards[0] = [];                        
+
+                    response.estilos.forEach(function (entry){
+
+                        remainder = counter % 4;
+
+                        if (remainder == 0) {
+
+                            cardIndex++;
+                            styleIndex = 0;
+
+                            $scope.styleCards[cardIndex] = [];                        
+
+                        } else {
+                            styleIndex++;
+                        }
+
+                        $scope.styleCards[cardIndex][styleIndex] = entry;
+
+                        entry.margin = (styleIndex==0)?"padding-right:2px;":
+                                       (styleIndex==1 || styleIndex==2)?"padding-right:1px;padding-left:1px;":"padding-left:2px;";
+
+                        counter++;
+
+                    });
+
+                    //$scope.musicStyles = response.estilos;
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+  
+                    }
+
+            );
+            
+            return deferred.promise;
+
+        }
+
+    }
+
+});
+
+
 module.factory('musicService', function($http, $q){
     
     return {
@@ -752,6 +940,81 @@ module.factory('musicService', function($http, $q){
             return deferred.promise;
             
         },
+        getSugestions : function($scope, token) {
+            
+            var deferred = $q.defer();
+            
+             var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/suggestions",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+                data: {token: token}
+            });
+
+
+            request.success(
+
+                function( response ) {
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+                        $scope.destaqueStr = response; 
+
+                    }
+            );
+            
+            return deferred.promise;
+            
+        },
+        buy : function($scope, id, token) {
+            
+            var deferred = $q.defer();
+            
+             var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/music/buy",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+               data: {token: token, id: id}
+            });
+
+            request.success(
+
+                function( response ) {
+
+                    deferred.resolve(response);
+                    $scope.musics = response.musicas;
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+            );
+            
+            return deferred.promise;
+            
+        },
         getMusicDetails : function($scope, token, musicId) {
             
             var deferred = $q.defer();
@@ -772,7 +1035,6 @@ module.factory('musicService', function($http, $q){
                 function( response ) {
 
                     deferred.resolve(response);
-                    $scope.musicDetails = response;
 
                 }
  

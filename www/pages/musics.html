@@ -24,7 +24,7 @@
         <ms-musics>
         
             <div class="no-padding"  ng-if="recentlyAddedMusics">
-                <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;background-color:#333333;">
+                <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;padding-bottom:0px;background-color:#333333;">
                     ADICIONADAS RECENTEMENTE
                 </p>
             </div>
@@ -32,17 +32,15 @@
 
             <div class="row" style="background-color:#333333;color:#ffffff;" ng-if="recentlyAddedMusics">
 
-                <div ng-repeat="music in recentlyAddedMusics">
+                <div style="display:block;">
 
-                    <a href="#/tracks/{{music.musicId}}">
-
-                        <div class="col">
+                    <div class="col-33" ng-repeat="music in recentlyAddedMusics" style="float: left;">
+                        <a href="#/tracks/{{music.musicId}}">
                             <img class="full-image" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:100%;"/>
                             <p class="ms-font-medium ms-font-white" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                             <p class="ms-font-little ms-font-white" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
-                        </div>
-
-                    </a>
+                        </a>
+                    </div>
 
                 </div>
                 
