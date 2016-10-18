@@ -3,4 +3,37 @@
 
     <ion-content class="has-header">
 
-        <ms-setlist>
+        <ms-config>
+
+        	<div class="ms-config-container">
+
+		    	<div class="ms-config-logo"><img class="ms-config-logo-img" src="img/logo-gray.png"/></div>
+
+		    	<p class="ms-config-description">Multisongs é um aplicativo revolucionário que amplia os horizontes do músico e cria novas fontes de receita para estúdios de gravação.</p>
+
+	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="logout()">Logout</button></div>
+
+	        	<div ng-if="userType == 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="openLogin()">Login</button></div>
+
+	        	<p class="ms-config-social-title">SIGA-NOS NAS REDES SOCIAIS OU VISITE NOSSO SITE</p>
+
+	        	<div class="ms-config-icon-container">
+
+	        		<div class="icon ion-at ms-config-icon" ng-click="openPage('http://www.multisongs.audio')"></div>
+
+		        	<div class="icon ion-social-facebook ms-config-icon" ng-click="openPage('http://www.facebook.com/multisongs')"></div>
+
+		        	<div class="icon ion-social-googleplus ms-config-icon" ng-click="openPage('https://plus.google.com/u/1/101063306337071898323')"></div>
+
+	        	</div>
+
+	        	<p class="ms-config-social-disclaimer">Mantenha-se conectado conosco para receber novidades da MultiSongs. Estamos sempre amplicando nossa base de backing tracks!</p>
+
+		    </div>
+
+
+	    </ms-config>
+
+	</ion-content>
+
+</ion-view>

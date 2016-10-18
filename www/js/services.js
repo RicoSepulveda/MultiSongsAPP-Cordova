@@ -121,6 +121,39 @@ module.factory('configService', function($http, $q){
 module.factory('loginService', function($http, $rootScope, $ionicModal, auth){
     
     return {
+
+        createAccount: function(token, key, password, name, idiom, country, callbackFunction) { 
+            
+             var request = $http({
+                method: "post",
+                url: "http://www.multisongs.audio/MultiSongs/api/auth/create",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+               data: {token : token, key : key, password: password, name : name, idiom : idiom, country : country, type : 2}
+            });
+
+
+            request.success(
+                function( response ) {
+
+                    auth.token = response.token;
+                    auth.userType = response.userType;
+
+                    callbackFunction(response);
+
+                }
+            );
+
+            request.error(
+                function( response , textStatus, errorThrown) { 
+                    //$scope.debugTxt = response + " - " + errorThrown + " - " + textStatus; 
+                    callbackFunction(response);
+                }
+            );
+
+        },
         
         login: function($scope, key, password, callbackFunction) { 
             
@@ -1055,6 +1088,41 @@ module.factory('musicService', function($http, $q){
         }
 
         
+    }
+      
+     
+ });
+
+
+
+module.factory('countryService', function($http, $q){
+     
+    return {
+        
+        getCountries: function($scope) { 
+
+            
+            var request = $http({
+                method: "get",
+                url: "https://restcountries.eu/rest/v1/all",
+                dataType:"json"
+            });
+
+
+            request.success(
+                function( response ) {
+                    //$scope.teste = "Email enviado com sucesso.";
+                    $scope.countries = {availableCountries: response};
+                }
+            );
+
+            request.error(
+                    function( response ) { 
+
+                    }
+            );
+            
+        } 
     }
       
      

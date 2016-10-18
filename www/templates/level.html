@@ -2,8 +2,8 @@
 
 .ms-levels .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
     padding-left: 78px;
-    min-height: 80px;
-    height:80px;
+    min-height: 110px;
+    height:110px;
 }
 
 .spinner svg {
@@ -31,12 +31,35 @@
 
 							<img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicDetails.artistPhotoPath}}" style="width:58px;height:58px;">
 
-	                        <h2 style="line-height:18px;color:#FFFFFF;">{{musicDetails.musicName}}{{(musicDetails.key != null && musicDetails.key != "")?" - "+musicDetails.key:""}}</h2>
+	                        <h2 style="line-height:14px;color:#FFFFFF;">{{musicDetails.musicName}}{{(musicDetails.key != null && musicDetails.key != "")?" - "+musicDetails.key:""}}</h2>
 
-	                        <p style="padding:0px;margin:0px;line-height:18px;">{{musicDetails.artistName}} - {{musicDetails.style}}</p>
-							
+	                        <p style="padding:0px;margin:0px;line-height:15px;">{{musicDetails.artistName}} - {{musicDetails.style}}</p>
+
 							<div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input type="range" min=0 max=100 step=1 ng-model="timer.value" ng-change="changePosition()"/>&nbsp;&nbsp;{{musicDetails.currentTimeAsString}}</div>
 
+	                        <div>
+
+								<div class="file-info-buttons">
+									<div class="file-info-button">
+										<div class="file-info-button-title">Key</div>
+										<div class="file-info-button-value">{{musicDetails.key == null?"--":musicDetails.key}}</div>
+									</div>
+									<div class="file-info-button">
+										<div class="file-info-button-title">Bpm</div>
+										<div class="file-info-button-value">{{musicDetails.bpm == null?"--":musicDetails.bpm}}</div>
+									</div>
+									<div class="file-info-button">
+										<div class="file-info-button-title">Kbps</div>
+										<div class="file-info-button-value">{{musicDetails.bits == null?"--":musicDetails.bits}}</div>
+									</div>
+									<div class="file-info-button">
+										<div class="file-info-button-title">Khz</div>
+										<div class="file-info-button-value">{{musicDetails.khz == null?"--":musicDetails.khz}}</div>
+									</div>
+								</div>
+
+	                        </div>
+							
 							<i ng-if="msPlayer.status == 0 || msPlayer.status == 3" class = "icon ion-play" style="color:#FD6631;font-size:48px;" ng-click="play()"></i>
 
 							<i ng-if="msPlayer.status == 2" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
@@ -126,7 +149,7 @@
 
 					<img class="ms-level-leds-left" ng-src="{{leds.left}}"/>
 					<img class="ms-level-leds-right" ng-src="{{leds.right}}"/>
-					<img class="ms-level-instrument" src="img/instruments/drum.jpg"/>
+					<img class="ms-level-instrument" src="img/instruments/main.jpg"/>
 					<div class="ms-level-instrument-name">Master</div>
 
 				</div>
@@ -141,24 +164,6 @@
 
 <div class="col-40">
 
-	<div class="file-info-buttons">
-		<div class="file-info-button">
-			<div class="file-info-button-title">Key</div>
-			<div class="file-info-button-value">{{musicDetails.key == null?"--":musicDetails.key}}</div>
-		</div>
-		<div class="file-info-button">
-			<div class="file-info-button-title">Bpm</div>
-			<div class="file-info-button-value">{{musicDetails.bpm == null?"--":musicDetails.bpm}}</div>
-		</div>
-		<div class="file-info-button">
-			<div class="file-info-button-title">Kbps</div>
-			<div class="file-info-button-value">{{musicDetails.bits == null?"--":musicDetails.bits}}</div>
-		</div>
-		<div class="file-info-button">
-			<div class="file-info-button-title">Khz</div>
-			<div class="file-info-button-value">{{musicDetails.khz == null?"--":musicDetails.khz}}</div>
-		</div>
-	</div>
 
 </div>
 
@@ -173,14 +178,14 @@
                 	<button class="button small-button-buy" ng-if="musicDetails.price == 0 && !musicDetails.wasDownloaded" ng-click="download()">
                     	Download Gratuito
                     </button>
-                    <div ng-if="!musicDetails.wasDownloaded" >{{musicDetails.ccdescription}}</div>
+                    <div ng-if="!musicDetails.wasDownloaded" class="file-info-description" style="padding-top:5px;">{{musicDetails.ccdescription}}</div>
                 </div>
                 <div class="col" ng-if="musicDetails.isDownloading">
                 	<progress id="progressbar" max="100" value="{{ musicDetails.progress }}"> </progress>
-                	<div>downloading...</div>
+                	<div class="file-info-description" style="padding-top:5px;">downloading...</div>
             	</div>
-                <div class="col" ng-if="musicDetails.wasDownloaded">
-                	<div>Your playback was downloaded!</div>
+                <div class="col file-info-description" ng-if="musicDetails.wasDownloaded">
+                	<div>Download completo! <a href='#/musics' class="ms-font-multisongs">Disponível em Musicas.</a></div>
             	</div>
                 {{debugTxt2}}
             </div>

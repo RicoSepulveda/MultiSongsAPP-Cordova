@@ -36,7 +36,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 	var _fileSystem;
 
-	var setCurrentMusic = function($q, $scope, token, musicId){
+	var setCurrentMusic = function($q, $scope, token, musicId, autoPlay){
 
 		var promisses;
 
@@ -50,7 +50,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
             function(response) { 
 
-                loadTracks($scope, $q, response[0], token);
+   				$scope.musicDetails = response[0].bean;
+
+                loadTracks($scope, $q, response[0].bean, token, autoPlay);
 
             },
 
@@ -145,8 +147,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 			} else {
 
+				/*@TODO Fazer iniciar a proxima musica tocando se estiver em automatico */
+
 				if (getIndexInPlaylist($scope) < $scope.setlistMusics.length - 1){
-					setCurrentMusic($q, $scope, _token, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicId);
+					
+					onEnded($scope);
+					setCurrentMusic($q, $scope, _token, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicId, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].inicio == 0);
+
 				} else {
 					onEnded($scope);
 				}
@@ -156,6 +163,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 		}
 
 		$scope.msPlayer.timeToNext = currentMusicDetails.totalTimeInSeconds - secondsUntilNow;
+		$scope.msPlayer.nextMusic = $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicName;
 
 	};
 
@@ -332,7 +340,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 	};
 
-	var loadTracks = function($scope, $q, musicDetails, token){
+	var loadTracks = function($scope, $q, musicDetails, token, autoplay){
 
 			if (_currentStatus == IS_SUSPENDED_STATUS){
 				context.resume();
@@ -374,7 +382,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 			}
 
-			$scope.msPlayer = {status: IS_LOADING_STATUS, masterLevel: 0.8, masterPan: 0, timeToNext: -1, message: "", showMessage: false};
+			$scope.msPlayer = {status: IS_LOADING_STATUS, masterLevel: 0.8, masterPan: 0, timeToNext: -1, message: "", showMessage: false, nextMusic : ""};
 			$scope.timer = {value: 0};
 
 	        gainNodeMaster = context.createGain();
@@ -404,10 +412,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 	            function(response) { 
 
 	                buffers = response;
-	                //$scope.debugTxt2 = "Terminou de decodificar...";
 
 	                $scope.msPlayer.status = IS_STOPED_STATUS;
 	                _currentStatus = IS_STOPED_STATUS;
+
+	                if (autoplay){
+	                	play($scope);
+	                }
 
 	            },
 
@@ -569,7 +580,25 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
         	createNodes(buffer, callback);
         });
 
-    }
+    };
+
+    var play = function($scope){
+
+		if (_currentStatus == IS_SUSPENDED_STATUS){
+			context.resume();
+		}
+
+		$scope.msPlayer.status = IS_PLAYING_STATUS;
+		_currentStatus = IS_PLAYING_STATUS;
+
+       	buffers.forEach(function (entry){
+			entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
+		});
+
+		intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, currentMusicDetails.totalTimeInSeconds + 1);
+		intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, currentMusicDetails.totalTimeInSeconds * 1000 / 50);
+
+    };
 
 
 	var loadMP3 = function($scope, $q, track, token, isDemo){
@@ -628,7 +657,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 					$scope.setlistTime = response[0].totalTime;
 					$scope.setlistId = response[0].id;
 
-					setCurrentMusic($q, $scope, token, $scope.setlistMusics[0].musicId);
+					setCurrentMusic($q, $scope, token, $scope.setlistMusics[0].musicId, $scope.setlistMusics[0].inicio == 0);
 
 	            },
 
@@ -648,12 +677,14 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 		setCurrentMusic: function($q, $scope, token, musicId){
 
-			setCurrentMusic($q, $scope, token, musicId);
+			setCurrentMusic($q, $scope, token, musicId, false);
 
 			
 		},
 
 		loadMusic: function(fileSystem, $scope, $q, musicDetails, token){
+
+			$scope.musicDetails = musicDetails;
 
 			_fileSystem = fileSystem;
 
@@ -895,20 +926,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 		play: function($scope){
 
-			if (_currentStatus == IS_SUSPENDED_STATUS){
-				context.resume();
-			}
-
-			$scope.msPlayer.status = IS_PLAYING_STATUS;
-			_currentStatus = IS_PLAYING_STATUS;
-
-	       	buffers.forEach(function (entry){
-				entry.source.start(0, (currentMusicDetails.totalTimeInSeconds / 100) * $scope.timer.value);
-			});
-
-			intervalToMusicPosition = $interval(function(){intervalFunction($scope);}, 1000, currentMusicDetails.totalTimeInSeconds + 1);
-			intervalToLeds = $interval(function(){calculateLeds($scope);}, 50, currentMusicDetails.totalTimeInSeconds * 1000 / 50);
-
+			play($scope);
 			//intervalToClick = $interval(playClick, 500, 2000);
 
 		},

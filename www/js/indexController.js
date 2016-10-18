@@ -2,10 +2,12 @@
 module.controller('MainController', function($scope,
                                              $rootScope,
                                              $ionicModal,
+                                             $ionicPopup,
                                              $ionicNavBarDelegate,
                                              $location,
                                              auth,
-                                             loginService) {
+                                             loginService,
+                                             countryService) {
     
     $scope.openSearch = function ( path ) {
       $location.path('/search/');
@@ -21,11 +23,11 @@ module.controller('MainController', function($scope,
         var description;
 
         if (path == '/wishlist'){
-            description = "You have to be logged in to access your wishlist.";
+            description = "Você precisa estar logado para acessar sua lista de desejos.";
         } else if (path == '/setlist'){
-            description = "You have to be logged in to access your setlists.";
+            description = "Você precisa estar logado para acessar suas SetLists.";
         } else if (path == '/musics'){
-            description = "You have to be logged in to access your musics.";
+            description = "Você precisa estar logado para acessar suas musicas.";
         }
 
         if (path != '/wishlist' && path != '/setlist' && path != '/musics'){
@@ -34,41 +36,69 @@ module.controller('MainController', function($scope,
             loginService.validateAuthorization(description, function(path){$location.path(path)}, path);
         }
 
-/*
-        if (auth.type && auth.type != 1 || path == '/config' || path == '/'){
+    }
 
-            $location.path(path);
+    $scope.createAccount = function(){
 
-        } else {
+        loginService.createAccount(auth.token, $rootScope.createAccountData.key, $rootScope.createAccountData.password, $rootScope.createAccountData.name, $rootScope.createAccountData.idiom, $rootScope.createAccountData.country, function(response){
+            if (response.success == true){
+                
+                $rootScope.createAccountModal.hide(); 
 
-            $scope.path = path;
+                auth.token = response.token;
+                auth.type = response.userType;
+                
+                window.localStorage.setItem("key", $rootScope.createAccountData.key);
+                window.localStorage.setItem("password", $rootScope.createAccountData.password);
 
-            if (path == '/wishlist'){
-                $rootScope.description = "You have to be logged in to access your wishlist.";
-            } else if (path == '/setlist'){
-                $rootScope.description = "You have to be logged in to access your setlists.";
-            } else if (path == '/musics'){
-                $rootScope.description = "You have to be logged in to access your setlists.";
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Você está logado!',
+                    template: 'Bem vindo! Seu login foi realizado com sucesso. Agora você pode utilizar todas as funcionalidades do MultiSongs.'
+                });
+
+                alertPopup.then(function(res) {
+                    $location.path("/");
+                });
+
+            } else {
+
+                $rootScope.originalDescription = $rootScope.description;
+                $rootScope.description = response.message;
+
+                $rootScope.descriptionClass = "ms-font-multisongs";
+
             }
+        })
 
-            $rootScope.originalDescription = $rootScope.description;
-            $rootScope.descriptionClass = "ms-font-light-gray";
+    }
 
-            $rootScope.callback = {func : function(){$location.path();}, args : path};
+    $scope.openCreateAccountModal = function(){
 
-            $ionicModal.fromTemplateUrl('templates/login.html', {
-                scope: $rootScope,
-                animation: 'slide-in-up'
-            }).then(function(modal) {
-                $rootScope.loginModal = modal;
-                $rootScope.loginModal.show();
-            });
+        $rootScope.loginModal.hide();
 
-        }
-*/
+        $rootScope.description = "Preencha os campos abaixo para criar sua conta na MultiSongs.";
+        $rootScope.originalDescription = $rootScope.description;
+
+        $rootScope.createAccountData = {key : "", password : "", name : "", idiom : "", country : ""};
+
+        countryService.getCountries($rootScope);
+
+        $ionicModal.fromTemplateUrl('templates/createAccount.html', {
+            scope: $rootScope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $rootScope.createAccountModal = modal;
+            $rootScope.createAccountModal.show();
+        });
+
     }
 
     $scope.changeUser = function(){
+
+        // Fica indefinido quando usuario nao preenche os dados no form...
+        if (!$scope.loginData){
+            $scope.loginData = {key : "", password : ""};
+        }
 
         loginService.login($scope, 
                            $scope.loginData.key, 
@@ -85,17 +115,26 @@ module.controller('MainController', function($scope,
 
                 if (auth.type == 1){
                     $rootScope.originalDescription = $rootScope.description;
-                    $rootScope.description = "Fail: Invalid user and/or password. Please check it and try again.";
+                    $rootScope.description = "Erro: Usuário e/ou senha inválidos. Por favor, verifique e tente novamente.";
                     $rootScope.descriptionClass = "ms-font-multisongs";
                 } else {
-                    $rootScope.loginModal.hide();
+
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Você está logado!',
+                        template: 'Bem vindo! Seu login foi realizado com sucesso. Agora você pode utilizar todas as funcionalidades do MultiSongs.'
+                    });
+
+                    alertPopup.then(function(res) {
+                        $rootScope.loginModal.hide();
                     $rootScope.callback.func($rootScope.callback.args);
+                    });
+                    
                 }
 
             } else {
 
                 $rootScope.originalDescription = $rootScope.description;
-                $rootScope.description = "Fail: Invalid user and/or password. Please check it and try again.";
+                $rootScope.description = "Erro: Usuário e/ou senha inválidos. Por favor, verifique e tente novamente.";
                 $rootScope.descriptionClass = "ms-font-multisongs";
 
             }
@@ -110,6 +149,66 @@ module.controller('MainController', function($scope,
     
     
 });
+
+
+
+module.controller('ConfigController', function($scope,
+                                               $rootScope,
+                                               $ionicNavBarDelegate,
+                                               $location,
+                                               $ionicPopup,
+                                               $ionicModal,
+                                               auth,
+                                               msSessionConfig,
+                                               loginService) {
+
+    $scope.logout = function(){
+
+        var key = msSessionConfig.defaultUser;
+        var password = msSessionConfig.defaultPassword;
+
+        window.localStorage.setItem("key", key);
+        window.localStorage.setItem("password", password);
+
+
+        var alertPopup = $ionicPopup.alert({
+            title: 'Você está deslogado!',
+            template: 'Você agora está deslogado e terá acesso restrito às funcionalidades do Multisongs.'
+        });
+
+        alertPopup.then(function(res) {
+            $location.path("/"); 
+        });
+             
+    }
+
+    $scope.openLogin = function(){
+
+        $rootScope.description = "Por favor, informe seu e-mail e senha ou crie uma nova conta.";
+        $rootScope.originalDescription = $rootScope.description;
+
+        $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
+
+        $ionicModal.fromTemplateUrl('templates/login.html', {
+            scope: $rootScope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $rootScope.loginModal = modal;
+            $rootScope.loginModal.show();
+        });
+
+    }
+
+    $scope.openPage = function(url){
+        window.open(url, '_system');
+    }
+
+    $scope.$watch('$viewContentLoaded', function() {
+        $scope.userType = auth.type;
+    });        
+
+});
+
 
 module.controller('IndexController', function($scope, 
                                               $q,
@@ -154,7 +253,7 @@ module.controller('IndexController', function($scope,
 
     $scope.changeFavorite = function(music){
         
-        loginService.validateAuthorization("You have to be logged in to add a song to you favorite songs list", changeFavoriteIfLogged, music);
+        loginService.validateAuthorization("Você precisa estar logado para adicionar uma música à sua lista de desejos.", changeFavoriteIfLogged, music);
 
     };
 
@@ -264,10 +363,10 @@ module.controller('IndexController', function($scope,
 
     $scope.$watch("$viewContentLoaded", function() {
 
-        var key = 'rico.sepulveda@gmail.com';
-        var password = '567825';
+        var key = msSessionConfig.defaultUser;
+        var password = msSessionConfig.defaultPassword;
 
-        $scope.loginData = {email: "", password: ""};
+        $scope.loginData = {key: "", password: ""};
 
         $ionicModal.fromTemplateUrl('templates/level.html', {
             scope: $scope,
@@ -544,6 +643,8 @@ module.controller('TrackController', function($scope,
                                               $stateParams,
                                               $interval, 
                                               musicService,
+                                              $ionicPopup,
+                                              $ionicModal,
                                               auth,
                                               msSessionConfig,
                                               msPlayer) {
@@ -595,17 +696,53 @@ module.controller('TrackController', function($scope,
 
         var promises = [];
 
-        promises.push(musicService.buy($scope, $stateParams.musicId, auth.token));
+        if (auth.type == 1){
 
-        $q.all(promises).then(
-            function(response) { 
-                msPlayer.download($scope);
-            },
-            function() {
-                /* PRECISA TRATAR O ERRO NA COMPRA */
-            }
-        ).finally(function() {
-        });
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Login necessário',
+                template: 'Para realizar o download dessa música você precisa estar logado. Deseja fazer seu login agora?'
+            });
+
+            confirmPopup.then(function(res) {
+
+                if(res) {
+
+                    $rootScope.description = "Por favor, informe seu e-mail e senha ou crie uma nova conta.";
+                    $rootScope.originalDescription = $rootScope.description;
+
+                    $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
+
+                    $ionicModal.fromTemplateUrl('templates/login.html', {
+                        scope: $rootScope,
+                        animation: 'slide-in-up'
+                    }).then(function(modal) {
+                        $rootScope.loginModal = modal;
+                        $rootScope.loginModal.show();
+                    });
+
+                } else {
+
+                }
+
+            });
+
+        } else {
+
+            promises.push(musicService.buy($scope, $stateParams.musicId, auth.token));
+
+            $q.all(promises).then(
+                function(response) { 
+                    msPlayer.download($scope);
+                },
+                function() {
+                    /* PRECISA TRATAR O ERRO NA COMPRA */
+                }
+            ).finally(function() {
+            });
+
+        }
+
+
 
     }
 
@@ -780,7 +917,7 @@ module.controller('WishlistController', function($scope,
 
                 });
 
-                 $interval(function(){$ionicSlideBoxDelegate.update();}, 50);
+                 $interval(function(){$ionicSlideBoxDelegate.update();}, 50, 1);
 
                 
 
@@ -808,6 +945,7 @@ module.controller('SearchController', function($scope,
                                                $stateParams,
                                                $ionicNavBarDelegate,
                                                $location,
+                                               $interval,
                                                wishlistService,
                                                auth,
                                                searchService,
@@ -822,26 +960,34 @@ module.controller('SearchController', function($scope,
     };
     
     $scope.refreshData = function(){
+
+        if ($scope.refreshDataInterval  && $scope.refreshDataInterval != null){
+            $interval.cancel($scope.refreshDataInterval);
+        }
+
+        $scope.refreshDataInterval = $interval(function(){
+
+            var promises = [];
         
-        var promises = [];
-    
-        $scope.token = auth.token;
-        
-        promises.push(searchService.searchByKeyword($scope, auth.token, 10, $scope.search.keyword));
-        
-        $q.all(promises).then(
-            function(response) {
-                $scope.byNameResult = response[0].musicsByName;
-                $scope.byArtistResult = response[0].musicsByArtistName;
-                $scope.byStyleResult = response[0].musicsByStyleName;
-                $scope.byStudioResult = response[0].musicsByStudioName;
-                $scope.byAlbumResult = response[0].musicsByAlbumName;
-                
-            },
-            function() { 
-                $scope.test = 'Failed'; 
-            }
-        );
+            $scope.token = auth.token;
+            
+            promises.push(searchService.searchByKeyword($scope, auth.token, 10, $scope.search.keyword));
+            
+            $q.all(promises).then(
+                function(response) {
+                    $scope.byNameResult = response[0].musicsByName;
+                    $scope.byArtistResult = response[0].musicsByArtistName;
+                    $scope.byStyleResult = response[0].musicsByStyleName;
+                    $scope.byStudioResult = response[0].musicsByStudioName;
+                    $scope.byAlbumResult = response[0].musicsByAlbumName;
+                    //$scope.refreshDataInterval = null;
+                },
+                function() { 
+                    $scope.test = 'Failed'; 
+                }
+            );
+
+        }, 1000, 1);
 
     };
     
@@ -909,7 +1055,7 @@ module.controller('SearchByTypeController', function($scope,
             
         } else if ($stateParams.type == "4"){ // Top Artists
             //$scope.teste = "chamou....";
-            promises.push(searchService.searchByKeyword($scope, auth.token, 10, $stateParams.keyword));
+            promises.push(searchService.searchByType($scope, auth.token, 10, $stateParams.keyword, 1));
             
         } else if ($stateParams.type == "5"){ // Top Artists
             //$scope.teste = "chamou....";
@@ -922,9 +1068,7 @@ module.controller('SearchByTypeController', function($scope,
             function(response) {
                 if ($stateParams.type == "3"){
                     $scope.artists = response[0].artistas;
-                }else if ($stateParams.type == "4"){
-                    $scope.musics = response[0].musicas;
-                }else{
+                }else {
                     $scope.musics = response[0].musicas;
                 }
                 
@@ -991,6 +1135,8 @@ module.controller('SetlistPlayerController', function($scope,
     };
 
     $scope.loadMusic = function(musicId){
+
+        msPlayer.new($scope);
 
         msPlayer.setCurrentMusic($q, $scope, auth.token, musicId);
 

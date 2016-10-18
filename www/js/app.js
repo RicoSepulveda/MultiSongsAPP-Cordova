@@ -57,8 +57,8 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
        url: '/config', 
        views: {
             "config-view": {
-                templateUrl: "templates/level.html",
-                controller: "TrackController"
+                templateUrl: "pages/config.html",
+                controller: "ConfigController"
             }
         }
    })
@@ -183,6 +183,8 @@ module.provider("msSessionConfig", [function () {
   var musicMenu;
   var setlistMenu;
   var configMenu;
+  var defaultUser = 'rico.sepulveda@gmail.com';
+  var defaultPassword = '567825';
     
   return {
       
@@ -234,6 +236,8 @@ module.provider("msSessionConfig", [function () {
           mySetListsBarTitle: mySetListsBarTitle,
           newSongsButtom: newSongsButtom,
           topSongsButtom: topSongsButtom,
+          defaultUser : defaultUser,
+          defaultPassword : defaultPassword,
           topArtistsButtom: topArtistsButtom,
           stylesButtom: stylesButtom,
           storeMenu: storeMenu,

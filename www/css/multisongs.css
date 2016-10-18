@@ -209,11 +209,133 @@ a {
     font-size: 16px;
     color: #999999;
     width: 150px;
-    font-family: 
 }
 
 .ms-sugestion-artist {
     font-size:14px;
     color: #999999;
     width:300px;
+}
+
+.ms-config-logo{
+    position:relative;
+    width:100%;
+    padding-top:30px;
+    text-align: center;
+}
+
+.ms-config-logo-img{
+    width:50%;
+}
+.ms-config-description {
+    position:relative;
+    padding-top: 20px;
+    color:#999999;
+    width: 100%;
+    padding-left:10px;
+    padding-right:10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.ms-config-logout {
+    position:relative;
+    padding-top: 40px;
+    width: 100%;
+    text-align: center;
+}
+
+.ms-config-social-title{
+    position:relative;
+    padding-top: 40px;
+    width: 100%;
+    text-align: center;
+    color:#999999;
+    font-size: 10px;
+}
+
+.ms-config-social-disclaimer{
+    position:relative;
+    padding-top: 10px;
+    width: 100%;
+    text-align: center;
+    color:#999999;
+    font-size: 10px;
+    padding-left:20px;
+    padding-right:20px; 
+    line-height: 12px;
+}
+
+.ms-config-icon{
+    font-size: 40px;
+    color:#FD6631;
+    padding-right:15px;
+    padding-left:15px;
+
+}
+
+.ms-config-icon-container{
+    width: 100%;
+    text-align: center;
+}
+
+.ms-config-icon{
+    display: inline-block;  
+}
+
+.ms-config-container {
+    padding-left:40px;
+    padding-right:40px;
+}
+
+.ms-create {
+    position:absolute;
+    padding-left:40px;
+    padding-right:40px;
+    width:100%;
+}
+
+.ms-create-logo{
+    position:relative;
+    width:100%;
+    padding-top:20px;
+    text-align: center;
+}
+.ms-create-logo-img{
+    width:70%;
+}
+
+.ms-create-label {
+    position:relative;
+    width:100%;
+    color:#999999;
+    font-size: 16px;
+    padding-top:10px;
+}
+.ms-create-label p{
+    margin-bottom:0px !important;
+}
+
+.ms-create-input{
+    padding:0px;
+}
+
+.ms-create-input input {
+    border:1px !important;
+    border-color: #999999 !important;
+    border-style: solid !important;
+    width:100%;
+    border-radius: 5px;
+}
+
+.ms-create-description{
+    position:relative;
+    font-size: 16px;
+    width:100%;
+    text-align: center;
+    color:#999999;
+    padding-left:20px;
+    padding-right:20px;
+    padding-bottom: 20px;
+    padding-top:15px;
 }

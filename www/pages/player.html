@@ -50,7 +50,9 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
 
                     <i ng-if="msPlayer.status == 2" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
 
-                    <i ng-if="msPlayer.status == 1" class = "icon ion-loading-d" style="color:#FFFFFF;font-size:48px;"></i>
+                    <i class = "icon"><ion-spinner ng-if="msPlayer.status == 1" icon="ios"></ion-spinner></i>
+
+                    <!--<i ng-if="msPlayer.status == 1" class = "icon ion-loading-d" style="color:#FFFFFF;font-size:48px;"></i>-->
 
     			</div>
     			<div class="col-33" style="margin-top:0px;margin-bottom:0px;">
@@ -71,7 +73,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.currentTimeAsString}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">4:32</p>
+            			<p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.totalTime}}</p>
             		</div>
             	</div>
             	<div class="row">
@@ -87,7 +89,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             			<p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.artistName}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Procurando voce</p>
+            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{msPlayer.nextMusic}}</p>
             		</div>
             	</div>
                 
