@@ -183,9 +183,11 @@ module.provider("msSessionConfig", [function () {
   var musicMenu;
   var setlistMenu;
   var configMenu;
-  var defaultUser = 'rico.sepulveda@gmail.com';
-  var defaultPassword = '567825';
-    
+  var portugueseDefaultUser = 'portuguese@multisongs.audio';
+  var portugueseDefaultPassword = 'por@multi';
+  var englishDefaultUser = 'english@multisongs.audio';
+  var englishDefaultPassword = 'eng@multi';
+
   return {
       
     setStoreBarTitle: function (value) {
@@ -236,8 +238,10 @@ module.provider("msSessionConfig", [function () {
           mySetListsBarTitle: mySetListsBarTitle,
           newSongsButtom: newSongsButtom,
           topSongsButtom: topSongsButtom,
-          defaultUser : defaultUser,
-          defaultPassword : defaultPassword,
+          portugueseDefaultUser : portugueseDefaultUser,
+          portugueseDefaultPassword : portugueseDefaultPassword,
+          englishDefaultUser : englishDefaultUser,
+          englishDefaultPassword : englishDefaultPassword,
           topArtistsButtom: topArtistsButtom,
           stylesButtom: stylesButtom,
           storeMenu: storeMenu,

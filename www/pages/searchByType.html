@@ -17,7 +17,7 @@
 <ion-view view-title="Resultado de Busca">
     
     <ion-nav-title>
-      {{storeBarTitle}}
+      {{i18.store.barTitleLabel}}
     </ion-nav-title>
 
     <ion-content class="has-header">
@@ -32,7 +32,7 @@
                 
                             <div class="item item-divider">
                                 <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                    {{listTitle}}
+                                    {{i18.search.resultLabel}}
                                 </p>
                             </div>
                         
@@ -46,11 +46,11 @@
                                     <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
 
                                     <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
-                                        Favoritos
+                                        {{i18.general.wishlistButtonLabel}}
                                     </ion-option-button>
 
                                     <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
-                                        Comprar {{music.price}}
+                                        {{i18.general.buyLabel}} {{music.price}}
                                     </ion-option-button>
 
                                     <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>

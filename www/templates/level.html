@@ -116,8 +116,8 @@
 						<img class="ms-level-leds-right" ng-src="{{track.leds.right}}"/>
 
 						<a ng-click="changeEnabled(track)">
-							<img ng-if="msPlayer.status != 1 && track.enabled == true" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentEnabledImagePath}}"/>
-							<img ng-if="track.enabled == false || (msPlayer.status == 1 && track.isLoaded == true)" class="ms-level-instrument" ng-src="img/instruments/{{track.instrumentDisabledImagePath}}"/>
+							<img ng-if="msPlayer.status != 1 && track.enabled == true" class="ms-level-instrument" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{track.instrumentEnabledImagePath}}"/>
+							<img ng-if="track.enabled == false || (msPlayer.status == 1 && track.isLoaded == true)" class="ms-level-instrument" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{track.instrumentDisabledImagePath}}"/>
 
 							<img ng-if="msPlayer.status == 1 && track.isLoaded == false" class="ms-level-instrument" src="img/loading.gif"/>
 						</a>
@@ -173,19 +173,19 @@
             <div class="row" style="padding-top:0px;padding-bottom:0px;text-align:center;">
                 <div class="col" ng-if="musicDetails.status != 1 && !musicDetails.isDownloading">
                 	<button class="button small-button-buy" ng-if="musicDetails.price > 0 && !musicDetails.wasDownloaded" ng-click="download()">
-                    	Compre por R$ {{musicDetails.price}}
+                    	{{i18.player.buyLabel}} {{musicDetails.price}}
                     </button>
                 	<button class="button small-button-buy" ng-if="musicDetails.price == 0 && !musicDetails.wasDownloaded" ng-click="download()">
-                    	Download Gratuito
+                    	{{i18.player.freeDownloadLabel}}
                     </button>
                     <div ng-if="!musicDetails.wasDownloaded" class="file-info-description" style="padding-top:5px;">{{musicDetails.ccdescription}}</div>
                 </div>
                 <div class="col" ng-if="musicDetails.isDownloading">
                 	<progress id="progressbar" max="100" value="{{ musicDetails.progress }}"> </progress>
-                	<div class="file-info-description" style="padding-top:5px;">downloading...</div>
+                	<div class="file-info-description" style="padding-top:5px;">{{i18.player.downloadingLabel}}...</div>
             	</div>
                 <div class="col file-info-description" ng-if="musicDetails.wasDownloaded">
-                	<div>Download completo! <a href='#/musics' class="ms-font-multisongs">Disponível em Musicas.</a></div>
+                	<div>{{i18.player.downloadCompleteLabel}} <a href='#/musics' class="ms-font-multisongs">{{i18.player.availableLabel}}.</a></div>
             	</div>
                 {{debugTxt2}}
             </div>

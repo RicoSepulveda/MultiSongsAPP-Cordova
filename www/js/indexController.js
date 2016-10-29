@@ -7,7 +7,8 @@ module.controller('MainController', function($scope,
                                              $location,
                                              auth,
                                              loginService,
-                                             countryService) {
+                                             countryService,
+                                             msSessionConfig) {
     
     $scope.openSearch = function ( path ) {
       $location.path('/search/');
@@ -22,13 +23,7 @@ module.controller('MainController', function($scope,
 
         var description;
 
-        if (path == '/wishlist'){
-            description = "Você precisa estar logado para acessar sua lista de desejos.";
-        } else if (path == '/setlist'){
-            description = "Você precisa estar logado para acessar suas SetLists.";
-        } else if (path == '/musics'){
-            description = "Você precisa estar logado para acessar suas musicas.";
-        }
+        description = $rootScope.i18.general.bloquedResourceMessage; 
 
         if (path != '/wishlist' && path != '/setlist' && path != '/musics'){
             $location.path(path);
@@ -37,6 +32,34 @@ module.controller('MainController', function($scope,
         }
 
     }
+
+
+    $scope.chooseLanguage = function(lang){
+
+        var loginData;
+
+        if (lang == "port"){
+            window.localStorage.setItem("defaultKey", msSessionConfig.portugueseDefaultUser);
+            window.localStorage.setItem("defaultPassword", msSessionConfig.portugueseDefaultPassword);
+            loginData = {key : msSessionConfig.portugueseDefaultUser, password : msSessionConfig.portugueseDefaultPassword};
+        } else {
+            window.localStorage.setItem("defaultKey", msSessionConfig.englishDefaultUser);
+            window.localStorage.setItem("defaultPassword", msSessionConfig.englishDefaultPassword);
+            loginData = {key : msSessionConfig.englishDefaultUser, password : msSessionConfig.englishDefaultPassword};
+        }
+
+        window.localStorage.setItem("key", loginData.key);
+        window.localStorage.setItem("password", loginData.password);
+
+        $rootScope.languageModal.hide();
+
+        window.location.reload(true);
+/*
+        loginService.login($scope, $scope.loginData.key, $scope.loginData.password, function(response){
+            onLoad(response.token, response.userType);
+        });
+*/
+    }    
 
     $scope.createAccount = function(){
 
@@ -52,8 +75,8 @@ module.controller('MainController', function($scope,
                 window.localStorage.setItem("password", $rootScope.createAccountData.password);
 
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Você está logado!',
-                    template: 'Bem vindo! Seu login foi realizado com sucesso. Agora você pode utilizar todas as funcionalidades do MultiSongs.'
+                    title: $rootScope.i18.general.loggedInMessage,
+                    template: $rootScope.i18.general.loggedInDescriptionMessage
                 });
 
                 alertPopup.then(function(res) {
@@ -76,7 +99,7 @@ module.controller('MainController', function($scope,
 
         $rootScope.loginModal.hide();
 
-        $rootScope.description = "Preencha os campos abaixo para criar sua conta na MultiSongs.";
+        $rootScope.description = $rootScope.i18.general.createAccountDescriptionMessage;
         $rootScope.originalDescription = $rootScope.description;
 
         $rootScope.createAccountData = {key : "", password : "", name : "", idiom : "", country : ""};
@@ -106,6 +129,10 @@ module.controller('MainController', function($scope,
                            function(response){
 
             if (response.success == true){
+
+                $rootScope.buffer.config.valid = false; // Faz com que o config seja recarregado com o idioma do usuario logado.
+                $rootScope.buffer.sugestions.valid = false; // Faz com que o sugestions seja recarregado com o sugestoes do usuario logado.
+                $location.path("/");
                 
                 window.localStorage.setItem("key", $scope.loginData.key);
                 window.localStorage.setItem("password", $scope.loginData.password);
@@ -115,26 +142,25 @@ module.controller('MainController', function($scope,
 
                 if (auth.type == 1){
                     $rootScope.originalDescription = $rootScope.description;
-                    $rootScope.description = "Erro: Usuário e/ou senha inválidos. Por favor, verifique e tente novamente.";
+                    $rootScope.description = $rootScope.i18.general.loginErrorDescriptionMessage;
                     $rootScope.descriptionClass = "ms-font-multisongs";
                 } else {
 
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Você está logado!',
-                        template: 'Bem vindo! Seu login foi realizado com sucesso. Agora você pode utilizar todas as funcionalidades do MultiSongs.'
+                        title: $rootScope.i18.general.loggedInMessage,
+                        template: $rootScope.i18.general.loggedInDescriptionMessage
                     });
 
                     alertPopup.then(function(res) {
                         $rootScope.loginModal.hide();
-                    $rootScope.callback.func($rootScope.callback.args);
+                        $rootScope.callback.func($rootScope.callback.args);
                     });
                     
                 }
 
             } else {
-
                 $rootScope.originalDescription = $rootScope.description;
-                $rootScope.description = "Erro: Usuário e/ou senha inválidos. Por favor, verifique e tente novamente.";
+                $rootScope.description = $rootScope.i18.general.loginErrorDescriptionMessage;
                 $rootScope.descriptionClass = "ms-font-multisongs";
 
             }
@@ -163,20 +189,25 @@ module.controller('ConfigController', function($scope,
                                                loginService) {
 
     $scope.logout = function(){
-
+/*
         var key = msSessionConfig.defaultUser;
         var password = msSessionConfig.defaultPassword;
+*/
+
+        var key = window.localStorage.getItem("defaultKey");
+        var password = window.localStorage.getItem("defaultPassword");
 
         window.localStorage.setItem("key", key);
         window.localStorage.setItem("password", password);
 
-
         var alertPopup = $ionicPopup.alert({
-            title: 'Você está deslogado!',
-            template: 'Você agora está deslogado e terá acesso restrito às funcionalidades do Multisongs.'
+            title: $rootScope.i18.general.loggedOutMessage,
+            template: $rootScope.i18.general.loggedOutDescriptionMessage
         });
 
         alertPopup.then(function(res) {
+            $rootScope.buffer.config.valid = false; // Faz com que o config seja recarregado com o idioma do usuario logado.
+            $rootScope.buffer.sugestions.valid = false; // Faz com que o sugestions seja recarregado com o recomendacoes do usuario logado.
             $location.path("/"); 
         });
              
@@ -184,7 +215,7 @@ module.controller('ConfigController', function($scope,
 
     $scope.openLogin = function(){
 
-        $rootScope.description = "Por favor, informe seu e-mail e senha ou crie uma nova conta.";
+        $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
         $rootScope.originalDescription = $rootScope.description;
 
         $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
@@ -211,6 +242,7 @@ module.controller('ConfigController', function($scope,
 
 
 module.controller('IndexController', function($scope, 
+                                              $rootScope,
                                               $q,
                                               $ionicNavBarDelegate,
                                               $ionicListDelegate,
@@ -253,7 +285,7 @@ module.controller('IndexController', function($scope,
 
     $scope.changeFavorite = function(music){
         
-        loginService.validateAuthorization("Você precisa estar logado para adicionar uma música à sua lista de desejos.", changeFavoriteIfLogged, music);
+        loginService.validateAuthorization($rootScope.i18.general.bloquedResourceMessage, changeFavoriteIfLogged, music);
 
     };
 
@@ -266,17 +298,152 @@ module.controller('IndexController', function($scope,
 
         $scope.token = auth.token;
 
-        promises.push(configService.getConfig($scope, token, msSessionConfig));
-        promises.push(featuredMusicService.getFeaturedMusics($scope, token));
-        promises.push(musicService.getNewSongs($scope, token));
-        promises.push(musicService.getTopMusics($scope, token, 5));
-        promises.push(artistService.getTopArtists($scope, token, 5));
-        promises.push(styleService.getStyles($scope, token));
+        if (!$rootScope.buffer){
+            $rootScope.buffer = {styles : {valid : false}, sugestions : {valid : false}, topMusics : {valid : false}, newSongs : {valid : false}, config : {valid : false}, featuredMusicSet : [], featuredMusicSets : {valid : false}, topArtists : {valid : false}};
+        }
+
+        promises.push(configService.getConfig($rootScope, $scope, token, msSessionConfig));
+        promises.push(featuredMusicService.getFeaturedMusicSets($rootScope, $scope, token));
+        promises.push(musicService.getNewSongs($rootScope, $scope, token));
+        promises.push(musicService.getTopMusics($rootScope, $scope, token, 5));
+        promises.push(artistService.getTopArtists($rootScope, $scope, token, 5));
+        promises.push(styleService.getStyles($rootScope, $scope, token));
         //promises.push(wishlistService.getWishlists($scope, response.token));
         
         $q.all(promises).then(
 
             function(response) { 
+
+                var general = {
+
+                    notLoggedInMessage : response[0].generalBean.notLoggedInMessage,
+                    passwordLabel : response[0].generalBean.passwordLabel,
+                    forgotPasswordMessage : response[0].generalBean.forgotPasswordMessage,
+                    createAccountLabel : response[0].generalBean.createAccountLabel,
+                    nameLabel : response[0].generalBean.nameLabel,
+                    idiomLabel : response[0].generalBean.idiomLabel,
+                    countryLabel : response[0].generalBean.countryLabel, 
+                    createAccount : response[0].generalBean.createAccount,
+                    storeMenuTitleLabel : response[0].generalBean.storeMenuTitleLabel,
+                    wishlistMenuTitleLabel : response[0].generalBean.wishlistMenuTitleLabel,
+                    setlistMenuTitleLabel : response[0].generalBean.setlistMenuTitleLabel,
+                    musicMenuTitleLabel : response[0].generalBean.musicMenuTitleLabel,
+                    configMenuTitleLabel : response[0].generalBean.configMenuTitleLabel,
+                    emailLabel : response[0].generalBean.emailLabel,
+                    loginDescriptionMessage : response[0].generalBean.loginDescriptionMessage,
+                    bloquedResourceMessage : response[0].generalBean.bloquedResourceMessage,
+                    loggedInMessage : response[0].generalBean.loggedInMessage,
+                    createAccountDescriptionMessage : response[0].generalBean.createAccountDescriptionMessage,
+                    loginErrorDescriptionMessage : response[0].generalBean.loginErrorDescriptionMessage,
+                    loggedOutMessage : response[0].generalBean.loggedOutMessage,
+                    loggedOutDescriptionMessage : response[0].generalBean.loggedOutDescriptionMessage,
+                    loggedInDescriptionMessage : response[0].generalBean.loggedInDescriptionMessage,
+                    buyLabel : response[0].generalBean.buyLabel,
+                    removeLabel : response[0].generalBean.removeLabel,
+                    logoutLabel : response[0].generalBean.logoutLabel,
+                    loginLabel : response[0].generalBean.loginLabel,
+                    editLabel : response[0].generalBean.editLabel,
+                    removeLabel : response[0].generalBean.removeLabel,
+                    saveLabel : response[0].generalBean.saveLabel,
+                    wishlistButtonLabel : response[0].generalBean.wishlistButtonLabel
+
+
+                };
+
+                var store = {
+
+                    barTitleLabel : response[0].storeBean.barTitleLabel,
+                    newSongsLabel : response[0].storeBean.newSongsLabel,
+                    topSongsLabel : response[0].storeBean.topSongsLabel,
+                    stylesLabel : response[0].storeBean.stylesLabel,
+                    topArtistsLabel : response[0].storeBean.topArtistsLabel,
+                    newSongsButtonLabel : response[0].storeBean.newSongsButtonLabel,
+                    topSongsButtonLabel : response[0].storeBean.topSongsButtonLabel,
+                    topArtistsButtonLabel : response[0].storeBean.topArtistsButtonLabel
+
+                };
+
+                var wishlist = {
+                    suggestionsLabel : response[0].wishlistBean.suggestionsLabel,
+                    barTitleLabel : response[0].wishlistBean.barTitleLabel,
+                    playbacksLabel : response[0].wishlistBean.playbacksLabel,
+                    tutorialLabel : response[0].wishlistBean.tutorialLabel,
+                    tutorialDescriptionLabel : response[0].wishlistBean.tutorialDescriptionLabel
+                };
+
+                var setlist = {
+                    barTitleLabel : response[0].setlistBean.barTitleLabel,
+                    addLabel : response[0].setlistBean.addLabel,
+                    createLabel : response[0].setlistBean.createLabel,
+                    nameLabel : response[0].setlistBean.nameLabel,
+                    typeLabel : response[0].setlistBean.typeLabel,
+                    showLabel : response[0].setlistBean.showLabel,
+                    rehearsalLabel : response[0].setlistBean.rehearsalLabel,
+                    presentationLabel : response[0].setlistBean.presentationLabel,
+                    trainningLabel : response[0].setlistBean.trainningLabel,
+                    classLabel : response[0].setlistBean.classLabel,
+                    otherLabel : response[0].setlistBean.otherLabel,
+                    tutorialLabel :  response[0].setlistBean.tutorialLabel,
+                    tutorialDescriptionLabel : response[0].setlistBean.tutorialDescriptionLabel
+                };
+
+                var musics = {
+                    backingTracksLabel : response[0].musicsBean.backingTracksLabel,
+                    recentlyAddedLabel : response[0].musicsBean.recentlyAddedLabel,
+                    barTitleLabel : response[0].musicsBean.barTitleLabel,
+                    tutorialLabel : response[0].musicsBean.tutorialLabel,
+                    tutorialDescriptionLabel : response[0].musicsBean.tutorialDescriptionLabel
+                };
+
+                var search = {
+                    resultLabel : response[0].searchBean.resultLabel,
+                    playbacksLabel : response[0].searchBean.playbacksLabel,
+                    artistsLabel : response[0].searchBean.artistsLabel,
+                    stylesLabel : response[0].searchBean.stylesLabel,
+                    studiosLabel : response[0].searchBean.studiosLabel,
+                    albunsLabel : response[0].searchBean.albunsLabel
+                };
+
+                var player = {
+                    modeLabel : response[0].playerBean.modeLabel,
+                    setlistLabel : response[0].playerBean.setlistLabel,
+                    automaticLabel : response[0].playerBean.automaticLabel,
+                    manualLabel : response[0].playerBean.manualLabel,
+                    freeDownloadLabel : response[0].playerBean.freeDownloadLabel,
+                    downloadCompleteLabel : response[0].playerBean.downloadCompleteLabel,
+                    downloadingLabel : response[0].playerBean.downloadingLabel,
+                    availableLabel : response[0].playerBean.availableLabel
+                };
+
+                var config = {
+                    descriptionLabel : response[0].configBean.descriptionLabel,
+                    socialLabel : response[0].configBean.socialLabel,
+                    disclaimerLabel : response[0].configBean.disclaimerLabel,
+                    barTitleLabel : response[0].configBean.barTitleLabel
+                };
+
+                var setlistDetail = {
+                    barTitleLabel : response[0].setlistDetailBean.barTitleLabel,
+                    setlistMusicsLabel : response[0].setlistDetailBean.setlistMusicsLabel,
+                    tutorialLabel : response[0].setlistDetailBean.tutorialLabel,
+                    tutorialDescriptionLabel : response[0].setlistDetailBean.tutorialDescriptionLabel,
+                    automaticOptionLabel : response[0].setlistDetailBean.automaticOptionLabel,
+                    manualOptionLabel : response[0].setlistDetailBean.manualOptionLabel,
+                    addRemoveButtonLabel : response[0].setlistDetailBean.addRemoveButtonLabel,
+                    musicSelectionLabel : response[0].setlistDetailBean.musicSelectionLabel,
+                    totalTimeLabel : response[0].setlistDetailBean.totalTimeLabel
+                };
+
+
+                $rootScope.i18 = {general : general, 
+                                  store : store, 
+                                  wishlist : wishlist, 
+                                  musics : musics, 
+                                  search : search, 
+                                  setlist : setlist, 
+                                  player : player,
+                                  setlistDetail : setlistDetail,
+                                  config : config};
                 
                 msSessionConfig.storeBarTitle = response[0].storeBarTitle;
                 msSessionConfig.myWishlistBarTitle = response[0].myWishlistSongsBarTitle;
@@ -294,6 +461,7 @@ module.controller('IndexController', function($scope,
                 msSessionConfig.setlistMenu = response[0].setlistMenu;
                 msSessionConfig.configMenu = response[0].configMenu;
 
+/*
                 //$scope.storeBarTitle = msSessionConfig.storeBarTitle;
                 $scope.myWishlistBarTitle = msSessionConfig.myWishlistBarTitle;
                 $scope.mySongsBarTitle = msSessionConfig.mySongsBarTitle;
@@ -309,7 +477,7 @@ module.controller('IndexController', function($scope,
                 $scope.musicMenu = msSessionConfig.musicMenu;
                 $scope.setlistMenu = msSessionConfig.setlistMenu;
                 $scope.configMenu = msSessionConfig.configMenu;
-                
+*/
                 $scope.featuredSongs = response[1].featured;
                 
                 $scope.newSongsRow1 = response[2].musicas.slice(0,3);
@@ -328,7 +496,7 @@ module.controller('IndexController', function($scope,
                 $scope.topArtists = response[4].artistas;
                 
                 $ionicNavBarDelegate.showBar(true);
-                $ionicNavBarDelegate.title(msSessionConfig.storeBarTitle);
+                $ionicNavBarDelegate.title($rootScope.i18.store.barTitleLabel);
                 
                 $scope.wishlist = response[5];
 
@@ -362,9 +530,13 @@ module.controller('IndexController', function($scope,
     }
 
     $scope.$watch("$viewContentLoaded", function() {
-
+/*
         var key = msSessionConfig.defaultUser;
         var password = msSessionConfig.defaultPassword;
+*/
+
+        var key;
+        var password;
 
         $scope.loginData = {key: "", password: ""};
 
@@ -375,13 +547,26 @@ module.controller('IndexController', function($scope,
             $scope.modal = modal;
         });
 
-        if (window.localStorage.getItem("key")){
-            key = window.localStorage.getItem("key");
-            password = window.localStorage.getItem("password");
-        }
+        $ionicModal.fromTemplateUrl('templates/language.html', {
+            scope: $rootScope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
 
-        loginService.login($scope, key, password, function(response){
-            onLoad(response.token, response.userType);
+            $rootScope.languageModal = modal;
+
+            if (window.localStorage.getItem("key")){
+
+                key = window.localStorage.getItem("key");
+                password = window.localStorage.getItem("password");
+                
+                loginService.login($scope, key, password, function(response){
+                    onLoad(response.token, response.userType);
+                });
+
+            } else {
+                $rootScope.languageModal.show();
+            }
+
         });
 
     });
@@ -389,6 +574,7 @@ module.controller('IndexController', function($scope,
 });
 
 module.controller('FeaturedSongController', function($scope,
+                                                     $rootScope,
                                                      $stateParams,
                                                      $q,
                                                      auth,
@@ -400,7 +586,7 @@ module.controller('FeaturedSongController', function($scope,
 
         $scope.token = auth.token;
 
-        promises.push(featuredMusicService.getFeaturedMusic($scope, auth.token, $stateParams.id));
+        promises.push(featuredMusicService.getFeaturedMusicSet($rootScope, $scope, auth.token, $stateParams.id));
         
         $q.all(promises).then(
             function(response) { 
@@ -470,12 +656,22 @@ module.controller('SetlistController', function($scope,
         
         $q.all(promises).then(
             function(response) { 
-                $scope.modal.hide();
-                $location.path("/setlistDetail/" + response[0].id);
+
+                var alertPopup = $ionicPopup.alert({
+                    title: 'SetList criada',
+                    template: 'Sua SetList foi criada com sucesso. Agora você pode adicionar as músicas que você baixou à sua nova SetList.'
+                });
+
+                alertPopup.then(function(res) {
+                    $scope.modal.hide();
+                    $location.path("/setlistDetail/" + response[0].id);
+                });
+
             },
             function() { 
                 $scope.debugTxt = 'Failed'; 
             }
+
         ).finally(function() {
         });
         
@@ -540,6 +736,8 @@ module.controller('SetlistController', function($scope,
                 });
 
                 $scope.setlistGroups = setlistGroups;
+
+                $scope.setlistGroupsSize = response[0].setLists.length;
 
             },
             function(response) { 
@@ -707,7 +905,7 @@ module.controller('TrackController', function($scope,
 
                 if(res) {
 
-                    $rootScope.description = "Por favor, informe seu e-mail e senha ou crie uma nova conta.";
+                    $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
                     $rootScope.originalDescription = $rootScope.description;
 
                     $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
@@ -871,7 +1069,7 @@ module.controller('WishlistController', function($scope,
         $scope.token = auth.token;
 
         promises.push(wishlistService.getWishlists($scope, auth.token));
-        promises.push(musicService.getSugestions($scope, auth.token));
+        promises.push(musicService.getSugestions($rootScope, $scope, auth.token));
 
         //$ionicNavBarDelegate.setTitle(msSessionConfig.myWishlistBarTitle);
         

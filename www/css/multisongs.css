@@ -339,3 +339,50 @@ a {
     padding-bottom: 20px;
     padding-top:15px;
 }
+
+.ms-wishlist-alert {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top:40px;
+    padding-bottom: 30px;
+    color:#333333;
+    font-size: 16px;
+    width:100%;
+    text-align: center;
+}
+
+.ms-language-logo {
+    position: relative;
+    padding-top: 70px;
+    text-align: center;
+    width: 100%;
+}
+
+
+.ms-language-description{
+    text-align: center;
+    padding-top:80px;
+}
+
+.ms-language-description h3{
+    color:#999999;
+}
+
+.ms-language-description p{
+    color:#999999;
+    padding-top:0px;
+}
+
+.ms-language-flags {
+    padding-top:80px !important;
+    text-align: center;
+}
+
+.ms-language-flag-title{
+    text-align: center;
+    color:#999999;
+}
+
+.ms-language-flag-img{
+    width: 50%;
+}

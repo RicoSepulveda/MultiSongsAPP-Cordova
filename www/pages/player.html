@@ -42,7 +42,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
 
         	<div class="row" style="position:absolute;top:0px;left:0px;width:100%;height:120px;">
     			<div class="col-33" style="margin-top:10px;margin-bottom:0px;margin-left:10px;">
-    				<i class="icon ion-ios-unlocked-outline ms-font-white ms-font-little" style="vertical-align:top;">&nbsp;Modo ensaio</i>
+    				<i class="icon ion-ios-unlocked-outline ms-font-white ms-font-little" style="vertical-align:top;">&nbsp;{{i18.player.modeLabel}}</i>
     			</div>
     			<div class="col-33" style="margin-top:85px;margin-bottom:0px;text-align:center;">
 
@@ -81,7 +81,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             			<p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{musicDetails.musicName}}</p>
             		</div>
             		<div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">Prox. {{msPlayer.timeToNext}}s</p>
+            			<p ng-if="msPlayer.timeToNext > -1 && msPlayer.timeToNext <= 15" class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{i18.player.nextLabel}} {{msPlayer.timeToNext}}s</p>
             		</div>
             	</div>
             	<div class="row">
@@ -100,7 +100,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
 
     	        <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
                     <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                        MÚSICAS DESSE SETLIST
+                        {{i18.player.setlistLabel}}
                         <i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>
                     </p>
                 </div>
@@ -118,8 +118,8 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
                         <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
 
 	                    <i class="icon ms-font-multisongs" style="font-size:1.5em;z-index:-1;">
-							<div ng-if="music.inicio == 0" class="ms-font-little ms-font-light-gray">automático</div>
-							<div ng-if="music.inicio == 1" class="ms-font-little ms-font-light-gray">manual</div>
+							<div ng-if="music.inicio == 0" class="ms-font-little ms-font-light-gray">{{i18.player.automaticLabel}}</div>
+							<div ng-if="music.inicio == 1" class="ms-font-little ms-font-light-gray">{{i18.player.manualLabel}}</div>
 	                    </i>
 
 	                </ion-item>

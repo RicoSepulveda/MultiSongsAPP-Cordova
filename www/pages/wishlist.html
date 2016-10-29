@@ -13,7 +13,7 @@
 <ion-view>
     
     <ion-nav-title>
-      {{myWishlistBarTitle}}
+      {{i18.wishlist.barTitleLabel}}
     </ion-nav-title>
 
     <ion-content class="has-header">
@@ -26,12 +26,21 @@
                     
                     <ion-list>
             
-                        <div class="item item-divider">
+                        <div class="item item-divider" ng-if="wishList.length > 0">
                             <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                PLAYBACKS DESEJADAS
+                                {{i18.wishlist.playbacksLabel}}
                             </p>
                         </div>
 
+                        <div class="row" style="padding-top:20px;"  ng-if="wishList.length == 0">
+                            <div class="col-33">
+                                <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/wishlist-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                            </div>
+                            <div class="col=77">
+                                <p style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;">{{i18.wishlist.tutorialLabel}}</p>
+                                <p ng-bind-html="i18.wishlist.tutorialDescriptionLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:12px;color:#999999;font-weight: 350;"></p>
+                            </div>
+                        </div>
                         
                         <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in wishList" href="#/tracks/{{music.musicId}}">
                             
@@ -43,11 +52,11 @@
                             <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
 
                             <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
-                                Remover
+                                {{i18.general.removeLabel}}
                             </ion-option-button>
                             
                             <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
-                                Comprar {{music.price}}
+                                {{i18.general.buyLabel}} {{music.price}}
                             </ion-option-button>
                             
                             <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
@@ -62,9 +71,9 @@
 
             <ion-list>
 
-                <div class="item item-divider" style="background-color:#FFFFFF;border-style:none;">
+                <div class="item item-divider" style="background-color:#FFFFFF;border-style:none;" ng-if="wishList.length > 0">
                     <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal">
-                        PLAYBACKS SUGERIDAS
+                        {{i18.wishlist.suggestionsLabel}}
                     </p>
                 </div>
 

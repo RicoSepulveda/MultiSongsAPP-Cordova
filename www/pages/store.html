@@ -58,7 +58,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
         
         <div class="row">
             <div class="col" style="margin-top:0px;margin-bottom:0px;">
-                <p style="margin:0px;padding:0px;">LANÇAMENTOS</p>
+                <p style="margin:0px;padding:0px;">{{i18.store.newSongsLabel}}</p>
             </div>
         </div>
 
@@ -102,7 +102,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
             <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
                 <div class="col">
                  <button class="button small-button" ng-click="go('/searchByType/1/')">
-                      {{newSongsButtom}}
+                      {{i18.store.newSongsButtonLabel}}
                     </button>
                 </div>
                 
@@ -116,7 +116,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                     <div class="item item-divider">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            MÚSICAS MAIS BAIXADAS
+                            {{i18.store.topSongsLabel}}
                         </p>
                     </div>
 
@@ -131,7 +131,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
                         <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
 
                         <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
-                            Favoritos
+                            {{i18.general.wishlistButtonLabel}}
                         </ion-option-button>
 
 <!-- @TODO - Precisa adicionar esse botao posteriormente-->
@@ -153,7 +153,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
         <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
             <div class="col">
                 <button class="button small-button" ng-click="go('/searchByType/2/')">
-                  {{topSongsButtom}}
+                  {{i18.store.topSongsButtonLabel}}
                 </button>
             </div>
         </div>
@@ -162,7 +162,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
             <div class="item item-divider">
                 <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                    ESTILOS
+                    {{i18.store.stylesLabel}}
                 </p>
             </div>
             <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false">
@@ -207,7 +207,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                         <div class="item item-divider">
                             <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                ARTISTAS MAIS PROCURADOS
+                                {{i18.store.topArtistsLabel}}
                             </p>
                         </div>
 
@@ -230,7 +230,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
             <div class="row" style="padding-top:20px;text-align:center;">
                 <div class="col">
                     <button class="button small-button" ng-click="go('/searchByType/3/')">
-                      {{topArtistsButtom}}
+                      {{i18.store.topArtistsButtonLabel}}
                     </button>
                 </div>
             </div>

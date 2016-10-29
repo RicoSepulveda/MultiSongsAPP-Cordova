@@ -11,7 +11,7 @@
 <ion-view>
     
     <ion-nav-title>
-      {{myWishlistBarTitle}}
+      {{i18.store.barTitleLabel}}
     </ion-nav-title>
 
     <ion-content class="has-header">
@@ -46,7 +46,7 @@
                         <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
 
                         <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
-                            Favoritos
+                            {{i18.general.wishlistButtonLabel}}
                         </ion-option-button>
 
 <!-- @TODO - Precisa adicionar esse botao posteriormente-->

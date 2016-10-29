@@ -15,7 +15,7 @@
 <ion-view view-title="Resultado de Busca">
     
     <ion-nav-title>
-      {{storeBarTitle}}
+      {{i18.store.barTitleLabel}}
     </ion-nav-title>
 
     <ion-content>
@@ -35,7 +35,7 @@
 
                     <div class="item item-divider" style="background-color:#ffffff;">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            PLAYBACKS COM '{{search.keyword}}'
+                            {{i18.search.playbacksLabel}} '{{search.keyword}}'
                         </p>
                     </div>
 
@@ -67,7 +67,7 @@
 
                     <div class="item item-divider" style="background-color:#ffffff;">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            ARTISTAS COM '{{search.keyword}}'
+                            {{i18.search.artistsLabel}} '{{search.keyword}}'
                         </p>
                     </div>
 
@@ -99,7 +99,7 @@
 
                     <div class="item item-divider" style="background-color:#ffffff;">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            ESTILOS COM '{{search.keyword}}'
+                            {{i18.search.stylesLabel}} '{{search.keyword}}'
                         </p>
                     </div>
 
@@ -130,7 +130,7 @@
 
                     <div class="item item-divider" style="background-color:#ffffff;">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            PLAYBACKS DE ESTUDIOS COM '{{search.keyword}}'
+                            {{i18.search.studiosLabel}} '{{search.keyword}}'
                         </p>
                     </div>
 
@@ -152,8 +152,6 @@
             </div>
 
         </div>
-{{t.keyword}}
-        {{teste}}
         
         <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byAlbumResult.length > 0">
             
@@ -163,7 +161,7 @@
 
                     <div class="item item-divider" style="background-color:#ffffff;">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            ALBUNS COM '{{search.keyword}}'
+                            {{i18.search.albunsLabel}} '{{search.keyword}}'
                         </p>
                     </div>
 
