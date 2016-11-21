@@ -6,6 +6,11 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
     height:88px;
 }
 
+artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
+    padding-left: 55px;
+    min-height: 58px;
+    height:58px;
+}
 
 </style>
 
@@ -33,13 +38,17 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
 
                 <div style="background-color:#000000;">
 
-                    <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
-                    <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
-                    <div style="padding-left:10px">
-                        <p class="ms-font-big ms-font-white" style="margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.firstRow}}</p>
-                        <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.secondRow}}</p>
-                        <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 5px;padding-top:5px;margin-bottom: 0px;padding-bottom:5px;">{{featuredSong.thirdRow}}</p>
-                    </div>
+                    <a href="#/featured/{{featuredSong.id}}">
+
+                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
+                        <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
+                        <div style="padding-left:10px">
+                            <p class="ms-font-big ms-font-white" style="margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.firstRow}}</p>
+                            <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.secondRow}}</p>
+                            <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 5px;padding-top:5px;margin-bottom: 0px;padding-bottom:5px;">{{featuredSong.thirdRow}}</p>
+                        </div>
+
+                    </a>
 
                 </div>
 
@@ -49,7 +58,7 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
         
         <div class="row">
             <div class="col" style="margin-top:0px;margin-bottom:0px;">
-                <p style="margin:0px;padding:0px;">LANÇAMENTOS</p>
+                <p style="margin:0px;padding:0px;">{{i18.store.newSongsLabel}}</p>
             </div>
         </div>
 
@@ -93,7 +102,7 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
             <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
                 <div class="col">
                  <button class="button small-button" ng-click="go('/searchByType/1/')">
-                      {{newSongsButtom}}
+                      {{i18.store.newSongsButtonLabel}}
                     </button>
                 </div>
                 
@@ -107,7 +116,7 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
 
                     <div class="item item-divider">
                         <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            MÚSICAS MAIS BAIXADAS
+                            {{i18.store.topSongsLabel}}
                         </p>
                     </div>
 
@@ -122,13 +131,15 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
                         <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{music.style}}</p>
 
                         <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
-                            Favoritos
+                            {{i18.general.wishlistButtonLabel}}
                         </ion-option-button>
 
+<!-- @TODO - Precisa adicionar esse botao posteriormente-->
+<!--
                         <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
-                            Comprar {{music.price}}
+                            {{music.price != "0" ? "Comprar" + music.price : "Baixar"}}
                         </ion-option-button>
-
+-->
                         <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
 
                     </ion-item>
@@ -142,53 +153,117 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
         <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
             <div class="col">
                 <button class="button small-button" ng-click="go('/searchByType/2/')">
-                  {{topSongsButtom}}
+                  {{i18.store.topSongsButtonLabel}}
                 </button>
             </div>
         </div>
 
-        <div class="row" style="margin:0px;border:0px;padding:0px;">
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                
-                
-                <ion-list>
+        <ion-list ng-if='styleCards'>
 
-                    <div class="item item-divider">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            ARTISTAS MAIS PROCURADOS
-                        </p>
+            <div class="item item-divider">
+                <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                    {{i18.store.stylesLabel}}
+                </p>
+            </div>
+            <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false">
+
+                <ion-slide ng-repeat="styleCard in styleCards">
+
+                    <div class="row">
+                        <div class="col-25" ng-repeat="musicStyle in styleCard" style="{{musicStyle.margin}}border:0px;margin:0px">
+                            <a href="#/searchByType/5/{{musicStyle.name}}">
+                                <img class="full-image" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicStyle.image}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+                                <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{musicStyle.name}}</p>
+                            </a>
+                        </div>
                     </div>
 
-                    <ion-item class="item-thumbnail-left item-icon-right" ng-repeat="artist in topArtists" href="#/searchByType/4/{{artist.artistName}}">
+                </ion-slide>
 
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{artist.artistPhotoPath}}" style="width:65px;height:65px;">
+            </ion-slide-box>
 
-                        <h2 style="line-height:20px;">{{artist.artistName}}</h2>
-
-                        <p style="padding:0px;margin:0px;line-height:20px;">{{artist.style}}</p>
-                        <p style="padding:0px;margin-top:4px;line-height:20px;color:#999999;font-size:12px;">{{artist.style}}</p>
-
-                        <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-
-                    </ion-item>
-                    
-                </ion-list>
+        </ion-list>
+        <div class="row" style="padding-top:10px;text-align:center;">
+            <div class="col">
             </div>
-
         </div>
-    <!--button-energized -->
-        <div class="row" style="padding-top:20px;text-align:center;">
+<!--
+
+        <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
             <div class="col">
                 <button class="button small-button" ng-click="go('/searchByType/3/')">
-                  {{topArtistsButtom}}
+                  {{stylesButtom}}
                 </button>
             </div>
         </div>
+-->
+        <artists>
         
-        
-                {{debugTxt}}
+            <div class="row" style="margin:0px;border:0px;padding:0px;">
+                <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                    
+                    
+                    <ion-list>
 
-        
+                        <div class="item item-divider">
+                            <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                                {{i18.store.topArtistsLabel}}
+                            </p>
+                        </div>
+
+                        <ion-item class="item-thumbnail-left item-icon-right" ng-repeat="artist in topArtists" href="#/searchByType/4/{{artist.artistName}}">
+
+                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{artist.artistPhotoPath}}" style="width:35px;height:35px;">
+
+                            <h2 style="line-height:20px;">{{artist.artistName}}</h2>
+
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{artist.style}}</p>
+
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+
+                        </ion-item>
+                        
+                    </ion-list>
+                </div>
+
+            </div>
+            <div class="row" style="padding-top:20px;text-align:center;">
+                <div class="col">
+                    <button class="button small-button" ng-click="go('/searchByType/3/')">
+                      {{i18.store.topArtistsButtonLabel}}
+                    </button>
+                </div>
+            </div>
+            <!--button-energized -->
+            {{debugTxt}}
+<!--
+    <audio id="teste1" controls crossOrigin="anonymous">  
+      <source  src="http://172.21.0.170:8180/MultiSongs/api/download/music/15538755291479481489757-51691165/342/false" type="audio/mp3">
+        </source>
+    </audio>
+
+    <audio id="teste2" controls crossOrigin="anonymous">  
+      <source  src="http://172.21.0.170:8180/MultiSongs/api/download/music/15538755291479481489757-51691165/343/false" type="audio/mp3">
+        </source>
+    </audio>
+
+    <audio id="teste3" controls crossOrigin="anonymous">  
+      <source  src="http://172.21.0.170:8180/MultiSongs/api/download/music/15538755291479481489757-51691165/344/false" type="audio/mp3">
+        </source>
+    </audio>
+
+    <audio id="teste4" controls crossOrigin="anonymous">  
+      <source  src="http://172.21.0.170:8180/MultiSongs/api/download/music/15538755291479481489757-51691165/346/false" type="audio/mp3">
+        </source>
+    </audio>
+
+    <audio id="teste5" controls crossOrigin="anonymous">  
+      <source  src="http://172.21.0.170:8180/MultiSongs/api/download/music/15538755291479481489757-51691165/347/false" type="audio/mp3">
+        </source>
+    </audio>
+-->
+        </artists>
+<!--
         <a href="#">
             <div class="row" style="margin:0px;border:0px;padding-top:20px;padding-left:0px;padding-right:0px;padding-bottom:0px;">
                 <div class="col" style="margin:0px;border:0px;padding:0px;">
@@ -196,6 +271,7 @@ ms-home .item-thumbnail-left, ms-home .item-thumbnail-left .item-content{
                 </div>
             </div>
         </a>
+-->
        <br/>
        <br/>
         

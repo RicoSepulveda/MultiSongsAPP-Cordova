@@ -36,6 +36,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 	var _fileSystem;
 
+	var _lastPositionCopied;
+
 	var setCurrentMusic = function($q, $scope, token, musicId, autoPlay){
 
 		var promisses;
@@ -67,56 +69,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 	};
 
-/*
-	var downloadFile = function(scope){
-
-			var url;
-			var targetPath;
-	        var getSound = new XMLHttpRequest();
-			
-			buffers.forEach(function (entry){
-
-				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
-				targetPath = entry.track.id + ".part";
-
-		        getSound.open("GET", url, true);
-
-	    	    getSound.responseType = "arraybuffer";
-
-	        	getSound.onload = function() {
-
-			        context.decodeAudioData(getSound.response, function(buffer){
-
-		        		alert("Decodificado");
-
-			            $cordovaFile.writeFile(_fileSystem, targetPath, buffer, true)
-		                .then(function(success){
-			        		alert("Gravou");
-		                }, function(error){
-			        		alert("Deu erro ao gravar");
-		                });
-
-	            	});
-
-	        		//var oMyBlob = new Blob(getSound.response, {type : 'audio/mpeg3'})
-
-	        	};
-
-       	        getSound.onerror = function(){
-					alert("Erro no download");
-       	        };
-
-       	        getSound.send();
-
-       	        scope.debugTxt2 = "depois do send...";
-
-
-            });
-
-
-
-	}
-*/
 
 	var calculateTimeAsString = function(scope){
 
@@ -147,12 +99,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 
 			} else {
 
-				/*@TODO Fazer iniciar a proxima musica tocando se estiver em automatico */
-
 				if (getIndexInPlaylist($scope) < $scope.setlistMusics.length - 1){
 					
 					onEnded($scope);
 					setCurrentMusic($q, $scope, _token, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicId, $scope.setlistMusics[getIndexInPlaylist($scope) + 1].inicio == 0);
+					
+					$scope.msPlayer.nextMusic = $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicName;
+
 
 				} else {
 					onEnded($scope);
@@ -163,7 +116,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 		}
 
 		$scope.msPlayer.timeToNext = currentMusicDetails.totalTimeInSeconds - secondsUntilNow;
-		$scope.msPlayer.nextMusic = $scope.setlistMusics[getIndexInPlaylist($scope) + 1].musicName;
+		
 
 	};
 
@@ -433,154 +386,369 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 	        });
 
 		};
-/*
-	var playClick = function(){
-
-        var oldBuffer = _click.source.buffer;
-        var playSound = context.createBufferSource();
-
-        playSound.buffer = oldBuffer;
-
-        _click.source = playSound;
-
-        playSound.connect(_click.panNode);
-
-		try{
-			_click.source.stop(0);
-		}catch(err){
-
-		}
-
-		console.log("click...");
-
-		_click.source.start(0);
-
-	}
-
-	var createClickNode = function(){
-
-		var url;
-		
-        var result = {};
-
-        url = "../audio/click.mp3";
-
-        loadFile(url, function(result){
-
-        	_click = result;
-
-			_click.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
-			_click.isLoaded = true;
-
-            _click.gainNode.gain.value = 1;
-            _click.panNode.pan.value = 0;
-
-        });
-
-    };
-*/
 
     var loadFile = function ($scope, track, url, callback){
 
         var getSound = new XMLHttpRequest();
         var finalURL;
 
-        getSound.open("GET", _fileSystem + track.id + ".part", true);
+        if (_fileSystem != null){
 
-        getSound.responseType = "arraybuffer";
+	        getSound.open("GET", _fileSystem + track.id + ".part", true);
 
-        //$scope.debugTxt2 = "Carregando " + _fileSystem + track.id + ".part";
+	        getSound.responseType = "arraybuffer";	
 
-        getSound.onload = function() {
+	        getSound.onload = function() {
 
-        	//currentMusicDetails.wasDownloaded = true;
+				console.log("Carregou arquivo do disco. Vai decodificar.");
 
-	        //$scope.debugTxt2 = "Carregou do arquivo...";
-        	decodeAudioData(getSound.response, callback, true);
+	        	decodeAudioData(track, getSound.response, callback, true);
 
-        };
+	        };
 
-        getSound.onerror = function(){
+	        getSound.onerror = function(){
 
-        		//currentMusicDetails.wasDownloaded = false;
+		        	getSound = new XMLHttpRequest();
 
-	        	//$scope.debugTxt2 = "Nao carregou do arquivo";
+					console.log("Nao foi possivel carregar arquivo do local Storage. Chamando " + url);
 
-	        	getSound = new XMLHttpRequest();
+			        getSound.responseType = "arraybuffer";
 
-		        getSound.open("GET", url, true);
+			        getSound.open("GET", url, true);
 
-		        getSound.responseType = "arraybuffer";
+			        getSound.onload = function() {
 
-		        getSound.onload = function() {
-			        //$scope.debugTxt2 = "Carregou da net...";
+						console.log("Arquivo carregado da URL com sucesso.");
+			        	decodeAudioData(track, getSound.response, callback, false);
 
-		        	decodeAudioData(getSound.response, callback, false);
-		        };
+			        };
 
-		        getSound.send();
+			        getSound.send();
 
-        }
+	        }
 
-        getSound.send();
+	        getSound.send();
+
+        } else {
+
+        	getSound = new XMLHttpRequest();
+
+			console.log("LocalStorage == null. Chamando " + url);
+
+	        getSound.responseType = "arraybuffer";
+
+
+	        getSound.open("GET", url, true);
+
+	        getSound.onload = function() {
+
+				console.log("Arquivo carregado da URL com sucesso.");
+	        	decodeAudioData(track, getSound.response, callback, false);
+	        };
+
+	        getSound.send();
+
+		}
+
 
 
     }
 
-    var createNodes = function(data, callback){
+var bfr;
+
+    var createNodes = function(track, data, index, callback){
 
         var playSound = context.createBufferSource();
         var gainNode = context.createGain();
         var panNode = context.createStereoPanner();
         var analyserNode = context.createAnalyser();
 
-        var result = {};
+        var result;
 
-        playSound.buffer = data;
+        if (!track.result){
 
-        playSound.connect(panNode);
-        panNode.connect(gainNode);
-        gainNode.connect(analyserNode);
-        analyserNode.connect(panNodeMaster);
+			result = {source : {}, gainNode : {}, panNode : {}, bufferSource : [], panNode : [], gainNode : [], analyserNode : [], lastDecibels : 0, buffer : [], track : {}};
 
-        analyserNode.fftSize = _fftSize;
-        analyserNode.minDecibels = _minDecibels;
-		analyserNode.maxDecibels = _maxDecibels;
+			bfr = context.createBuffer(2, Math.floor((144 * 320000 / 44100) * 10000), context.sampleRate);
 
-        result.source = playSound;
-        result.panNode = panNode;
-        result.gainNode = gainNode;
-        result.analyserNode = analyserNode;
+	        //playSound.buffer = bfr;
 
+	        playSound.connect(panNode);
+	        panNode.connect(gainNode);
+	        gainNode.connect(analyserNode);
+	        analyserNode.connect(panNodeMaster);
+
+	        analyserNode.fftSize = _fftSize;
+	        analyserNode.minDecibels = _minDecibels;
+			analyserNode.maxDecibels = _maxDecibels;
+
+        }else{
+        	result = track.result;
+        }
+
+
+	    result.source = {start : function(startingPoint, finalPoint){
+			result.bufferSource[0].start(startingPoint, finalPoint);
+	    }, stop : function(moment){
+	    	result.bufferSource[0].stop(moment);
+	    }};
+
+        result.bufferSource[index] = playSound;
+        result.panNode[index] = panNode;
+        result.gainNode[index] = gainNode;
+        result.analyserNode[index] = analyserNode;
+
+		var startPosition;
+
+        if (index == 0){
+			_lastPositionCopied = 0;
+        }
+
+		startPosition = _lastPositionCopied;
+
+		if (startPosition < 0){
+			startPosition = 0;
+		}
+
+		var leftArray = new Float32Array;
+		var rightArray = new Float32Array;
+/*
+		data.copyFromChannel(leftArray,0,0);
+		data.copyFromChannel(rightArray,1,0);
+*/
+/*
+		leftArray = data.getChannelData(0);
+		rightArray = data.getChannelData(1);
+*/	
+
+//result.bufferSource[0].buffer.getChannelData(0).set(data.getChannelData(0), startPosition);
+//result.bufferSource[0].buffer.getChannelData(1).set(data.getChannelData(1), startPosition);
+
+        //result.bufferSource[0].buffer.copyToChannel(data.getChannelData(0), 0, startPosition);
+        //result.bufferSource[0].buffer.copyToChannel(data.getChannelData(1), 1, startPosition);
+
+        bfr.copyToChannel(data.getChannelData(0), 0, 0);
+        bfr.copyToChannel(data.getChannelData(1), 1, 0);
+
+		_lastPositionCopied = _lastPositionCopied + data.length;
+
+console.log("index: " + index + "startPosition: " + startPosition + "; lastPosition: " + _lastPositionCopied);
         result.lastDecibels = 128;
 
-        result.buffer = data;
+        result.buffer[index] = data;
 
-        if (callback){
-        	callback(result);
-		}
+        result.track = track;
+
+        track.result = result;
+
+if (index == 100){
+	console.log("configurou buffer...");
+result.bufferSource[0].buffer = bfr;
+}
+
+        // Se nao for o primeiro node, conecta o node anterior ao ultimo adicionado para que o ultimo adicionado inicie a tocar quando o anterior terminar
+        if (index > 0){
+/*
+	        result.bufferSource[index-1].onended = function(){
+	       // 	result.bufferSource[index].start(0);
+	        }
+*/
+        }
+
+        // Se for o primeiro node, ja libera player para tocar
+        if (index == 0){
+
+        	console.log("processou o primeiro node");
+
+			track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
+			track.isLoaded = true;
+
+			result.gainNode = gainNode;
+			result.panNode = panNode;
+			result.analyserNode = analyserNode;
+
+	        result.gainNode.gain.value = track.level;
+	        result.panNode.pan.value = track.pan;
+
+	        if (callback){
+	        	callback(result, index);
+			}
+
+        }
 
 	};
 
 
-    var decodeAudioData = function(data, callback, isDecoded){
+    var decodeAudioData = function(track, data, callback, isDecoded){
+
+    	var bitrate = currentMusicDetails.bits * 1000;
+    	var sampleRate = 44100;
+    	var framesPerSecond = 1000 / 26;
+    	var packageTime = 2; // Tamanho do pacote em segundos
+    	var tempBuffers = [];
+    	var delta;
+    	var idx;
+    	var frameSize;
+    	var header;
+    	var blockRead;
+
+    	var sync;
+    	var id;
+    	var layer;
+    	var protBit;
+    	var bitrate;
+    	var frequency;
+    	var paddingBit;
+    	var blockInitialPosition;
+
+		blockInitialPosition = 0;
+    	blockRead = 0;
+    	delta = 0;
+    	idx = 0;
+
+    	startingPoint = 0;
+
+    	var dataView = new DataView(data);
+    	var newDataView;
+
+		header = dataView.getUint32(0).toString(2);
+
+		while (delta < data.byteLength){
+
+			startingPoint = delta;
+
+			header = dataView.getUint32(startingPoint).toString(2);
+
+			sync = header.substring(0, 12);
+			id = header.substring(12, 13);
+			layer = header.substring(13, 15);
+			protBit = header.substring(15, 16);
+			bitrate = header.substring(16, 20);
+			frequency = header.substring(20, 22);
+			paddingBit = header.substring(22, 23);
+
+			frameSize = Math.floor(144 * 320000 / 44100) + parseInt(paddingBit);
+
+			finalPoint = startingPoint + frameSize;
+
+			if (finalPoint > data.byteLength){
+				finalPoint = data.byteLength;
+			}
 /*
-    	if (!isDecoded){
-
-	        context.decodeAudioData(data, function(buffer){
-	        	createNodes(buffer, callback);
-	        });
-
-    	}else{
-        	createNodes(data, callback);
-    	}
+			console.log("sync: " + sync);
+			console.log("id: " + id);
+			console.log("layer: " + layer);
+			console.log("prot. bit: " + protBit);
+			console.log("bit rate: " + bitrate);
+			console.log("frequency: " + frequency);
+			console.log("paddingBit: " + paddingBit);
+			console.log("frameSize: " + frameSize);
+			console.log("init: " + startingPoint);
+			console.log("end: " + finalPoint)
 */
+//			newDataView = new DataView(data.slice(startingPoint, finalPoint));
 
-		context.decodeAudioData(data, function(buffer){
-        	createNodes(buffer, callback);
-        });
+//			console.log("startingPoint: " + startingPoint + "; finalPoint: " + finalPoint + "; size: " + frameSize + "; sync: " + newDataView.getUint16(0).toString(16));
+
+
+if (blockRead == 50){
+	tempBuffers.push(data.slice(blockInitialPosition, finalPoint));
+	console.log("blockInitialPosition: " + blockInitialPosition + "; finalPoint: " + finalPoint);
+	blockRead = 0;
+	blockInitialPosition = finalPoint;
+}
+
+blockRead++;
+
+/*
+
+			if (idx > 0 && idx % 10 == 0 || finalPoint == data.byteLength){
+				console.log("init: " + nextFirstPosition + "; end: " + finalPoint);
+				tempBuffers.push(data.slice(nextFirstPosition, finalPoint + 1));
+
+				if (nextFirstPosition == 0){
+					playSound.buffer = context.createBuffer(2, 1000000, context.sampleRate);
+				}
+
+				context.decodeAudioData(data.slice(nextFirstPosition, finalPoint), function(buffer){
+
+					playSound.buffer.getChannelData(0).set(buffer.getChannelData(0), buffer.length);
+					playSound.buffer.getChannelData(1).set(buffer.getChannelData(1), buffer.length);
+
+				});
+
+				nextFirstPosition = finalPoint + 1;
+
+			}
+*/
+//			tempBuffers.push(data.slice(startingPoint, finalPoint + 1000));
+
+			delta = finalPoint;
+
+			idx++;
+
+
+		}
+console.log("QTDE => " + idx);
+
+		recursiveAudioDecoder(track, tempBuffers, 0, callback, data);
 
     };
+
+    var recursiveAudioDecoder = function(track, tempBuffers, index, callback, data){
+
+
+    	var sync;
+    	var id;
+    	var layer;
+    	var protBit;
+    	var bitrate;
+    	var frequency;
+    	var paddingBit;
+    	var dataView = new DataView(tempBuffers[index]);
+
+//    	x = data.slice(0, 1044 * 2);
+
+    	var header;
+
+			header = dataView.getUint32(0).toString(2);
+
+			sync = header.substring(0, 12);
+			id = header.substring(12, 13);
+			layer = header.substring(13, 15);
+			protBit = header.substring(15, 16);
+			bitrate = header.substring(16, 20);
+			frequency = header.substring(20, 22);
+			paddingBit = header.substring(22, 23);
+
+			console.log("sync: " + sync);
+			console.log("id: " + id);
+			console.log("layer: " + layer);
+			console.log("prot. bit: " + protBit);
+			console.log("bit rate: " + bitrate);
+			console.log("frequency: " + frequency);
+			console.log("paddingBit: " + paddingBit);
+			console.log("tempBuffers[].length: " + tempBuffers[index].byteLength);
+			console.log("tempBuffers[LAST]: " + dataView.getUint16(1042).toString(16));
+/*
+			if (tempBuffers.length > index){
+				recursiveAudioDecoder(track, tempBuffers, ++index, callback);
+			}
+*/
+
+		context.decodeAudioData(tempBuffers[index], function(buffer){
+
+			console.log("Terminou mais um: " + index);
+
+			createNodes(track, buffer, index, callback);
+
+			if (++index < tempBuffers.length){
+				recursiveAudioDecoder(track, tempBuffers, index, callback);
+			}
+
+        });
+
+    }
 
     var play = function($scope){
 
@@ -608,22 +776,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 		
         var result = {};
 
-        url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + track.id + "/" + isDemo;
+        var ms_hostname = window.localStorage.getItem("environment");
+isDemo = false;
+        url = ms_hostname + "/MultiSongs/api/download/music/" + token + "/" + track.id + "/" + isDemo;
 
         track.instrumentDisabledImagePath = track.instrumentImagePath + "-disabled.jpg";
         track.instrumentEnabledImagePath = track.instrumentImagePath + ".jpg";
 
         track.isLoaded = false;
 
-        loadFile($scope, track, url, function(result){
-
-			track.leds = {left: "img/level-led-0.png", right: "img/level-led-0.png"};
-			track.isLoaded = true;
-
-            result.track = track;
-
-            result.gainNode.gain.value = track.level;
-            result.panNode.pan.value = track.pan;
+        loadFile($scope, track, url, function(result, index){
 
             deferred.resolve(result);
 
@@ -683,6 +845,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 		},
 
 		loadMusic: function(fileSystem, $scope, $q, musicDetails, token){
+
+			console.log("Loading music." + musicDetails);
 
 			$scope.musicDetails = musicDetails;
 
@@ -1012,9 +1176,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $cordov
 			currentMusicDetails.isDownloading = true;
 			currentMusicDetails.status = 1;
 
+			var ms_hostname = window.localStorage.getItem("environment");
+
 			buffers.forEach(function (entry){
 
-				url = "http://www.multisongs.audio/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
+				url = ms_hostname + "/MultiSongs/api/download/music/" + token + "/" + entry.track.id + "/" + false;
 				targetPath = _fileSystem + entry.track.id + ".part";
 
 				//$scope.debugTxt2 = "lendo arquivo...";

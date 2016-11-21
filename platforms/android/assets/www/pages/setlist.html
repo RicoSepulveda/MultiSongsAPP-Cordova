@@ -31,7 +31,7 @@
 <ion-view view-title="Suas Setlists">
 
     <ion-nav-title>
-      {{mySetlistsTitle}}
+      {{i18.setlist.barTitleLabel}}
     </ion-nav-title>
     
     <ion-content class="has-header">
@@ -44,52 +44,48 @@
                 
                 <div class="list" >
 
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            SHOWS
-                        </p>
-                    </div>
-                    
-                    {{debugTxt}}
-                    
-                    <ion-list>
-                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="setList in setLists" href="#/setlistDetail/{{setList.id}}">
-                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;"> 
-                            <h2 style="line-height:20px;">{{setList.title}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
-                            <ion-option-button ng-click="openModal(setList)">
-                                Editar
-                            </ion-option-button>
-                            <ion-option-button class="button-assertive" ng-click="showConfirm({{setList.id}})">
-                                Remover
-                            </ion-option-button>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-                        </ion-item>
-                    </ion-list>
-                    
-<!--
-                    <div ng-repeat="setList in setLists">
-                        
-                        <div class="item item-thumbnail-left item-complex item-icon-right">
-                            
-                          <a class="item-content" href="#/setlistDetail/{{setList.id}}">
-                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{setList.title}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
-                              
-                            </a>
-
-                            
+                        <div class="row" style="padding-top:20px;padding-bottom:20px;"  ng-if="setlistGroupsSize == 0">
+                            <div class="col-33">
+                                <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/setlist-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                            </div>
+                            <div class="col=77">
+                                <p ng-bind-html="i18.setlist.tutorialLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;"></p>
+                                <p ng-bind-html="i18.setlist.tutorialDescriptionLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:12px;color:#999999;font-weight: 350;"></p>
+                            </div>
                         </div>
 
+                    <div ng-repeat="(group, setLists) in setlistGroups">
+
+                        <div class="item item-divider" style="background-color:#ffffff;">
+                            <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                                {{group}}
+                            </p>
+                        </div>
+                        
+                        {{debugTxt}}
+                        
+                        <ion-list>
+                            <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="setList in setLists" href="#/setlistDetail/{{setList.id}}">
+                                <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;"> 
+                                <h2 style="line-height:20px;">{{setList.title}}</h2>
+                                <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
+                                <ion-option-button ng-click="openModal(setList)">
+                                    {{i18.general.editLabel}}
+                                </ion-option-button>
+                                <ion-option-button class="button-assertive" ng-click="showConfirm({{setList.id}})">
+                                    {{i18.general.removeLabel}}
+                                </ion-option-button>
+                                <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                            </ion-item>
+                        </ion-list>
+                    
                     </div>
--->
+
                     <div class="item item-thumbnail-left item-complex item-icon-right">
                       <a class="item-content" ng-click="openModal(null)">
                         <img src="./img/ios7-plus-outline.png" style="width:45px;height:45px"/>
 
-                        <h2 class="ms-font-multisongs" style="line-height:34px;">Adicionar Setlist</h2>
+                        <h2 class="ms-font-multisongs" style="line-height:34px;padding-top:12px;">{{i18.setlist.createLabel}}</h2>
 
                       </a>
                     </div>
@@ -122,25 +118,25 @@
 
                                 <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
                                     <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                        CRIAR NOVA SETLIST
+                                        {{i18.setlist.createLabel}}
                                     </p><a></a>
                                     <i class="icon ion-ios-close-outline ms-font-multisongs" style="font-size:2em;" ng-click="closeModal()"></i>
                                 </div>
 
                               <label class="item item-input item-stacked-label">
-                                <span class="input-label">Nome da Setlist</span>
+                                <span class="input-label">{{i18.setlist.nameLabel}}</span>
                                 <input type="text" placeholder="Setlist" ng-model="setlist.name">
                               </label>
                               
                                 <label class="item item-input item-stacked-label">
-                                <span class="input-label">Tipo de Setlist</span>
+                                <span class="input-label">{{i18.setlist.typeLabel}}</span>
                                     <select ng-model="setlist.type">
-                                        <option value="SHOWS_SETLIST_GROUP">Show</option>
-                                        <option value="REHEARSALS_SETLIST_GROUP">Ensaio</option>
-                                        <option value="PRESENTATIONS_SETLIST_GROUP">Apresentação</option>
-                                        <option value="TRAINING_SETLIST_GROUP">Treino</option>
-                                        <option value="CLASSES_SETLIST_GROUP">Aula</option>
-                                        <option value="OTHERS_SETLIST_GROUP">Outro</option>
+                                        <option value="SHOWS_SETLIST_GROUP">{{i18.setlist.showLabel}}</option>
+                                        <option value="REHEARSALS_SETLIST_GROUP">{{i18.setlist.rehearsalLabel}}</option>
+                                        <option value="PRESENTATIONS_SETLIST_GROUP">{{i18.setlist.presentationLabel}}</option>
+                                        <option value="TRAINING_SETLIST_GROUP">{{i18.setlist.trainningLabel}}</option>
+                                        <option value="CLASSES_SETLIST_GROUP">{{i18.setlist.classLabel}}</option>
+                                        <option value="OTHERS_SETLIST_GROUP">{{i18.setlist.otherLabel}}</option>
                                     </select>
                               </label>
                                 
@@ -148,7 +144,7 @@
                             <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
                                 <div class="col">
                                     <button class="button small-button" ng-click="persistSetlist()">
-                                      Salvar
+                                      {{i18.general.saveLabel}}
                                     </button>
                                 </div>
                             </div>

@@ -16,40 +16,45 @@
 <ion-view>
     
     <ion-nav-title>
-      {{mySongsBarTitle}}
+      {{i18.musics.barTitleLabel}}
     </ion-nav-title>
 
     <ion-content class="has-header">
         
         <ms-musics>
         
-            <div class="no-padding"  ng-if="recentlyAddedMusics">
-                <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;background-color:#333333;">
-                    ADICIONADAS RECENTEMENTE
+            <div class="no-padding" ng-if="musics.length > 0">
+                <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;padding-bottom:0px;background-color:#333333;">
+                    {{i18.musics.recentlyAddedLabel}}
                 </p>
             </div>
             
 
-            <div class="row" style="background-color:#333333;color:#ffffff;" ng-if="recentlyAddedMusics">
+            <div class="row" style="background-color:#333333;color:#ffffff;" ng-if="musics.length > 0">
 
-                <div ng-repeat="music in recentlyAddedMusics">
+                <div style="display:block;">
 
-                    <a href="#/tracks/{{music.musicId}}">
-
-                        <div class="col">
+                    <div class="col-33" ng-repeat="music in recentlyAddedMusics" style="float: left;">
+                        <a href="#/tracks/{{music.musicId}}">
                             <img class="full-image" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:100%;"/>
                             <p class="ms-font-medium ms-font-white" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                             <p class="ms-font-little ms-font-white" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
-                        </div>
-
-                    </a>
+                        </a>
+                    </div>
 
                 </div>
                 
             </div>
-            
-            {{teste}}
-            
+
+            <div class="row" style="padding-top:20px;padding-bottom:20px;"  ng-if="musics.length == 0">
+                <div class="col-33">
+                    <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/download-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                </div>
+                <div class="col=77">
+                    <p style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;">{{i18.musics.tutorialLabel}}</p>
+                    <p ng-bind-html="i18.musics.tutorialDescriptionLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:12px;color:#999999;font-weight: 350;"></p>
+                </div>
+            </div>
             
             <div class="row" style="margin:0px;border:0px;padding:0px;">
                 
@@ -57,9 +62,9 @@
                     
                     <div class="list" >
 
-                        <div class="item item-divider" style="background-color:#ffffff;">
+                        <div class="item item-divider" style="background-color:#ffffff;" ng-if="musics.length > 0">
                             <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                PLAYBACKS
+                                {{i18.musics.backingTracksLabel}}
                             </p>
                         </div>
 

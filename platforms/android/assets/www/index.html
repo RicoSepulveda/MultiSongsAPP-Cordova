@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
-        <title>Ionic-AngularJS-Cordova</title>
+        <title>Playbacks MultiSongs</title>
         
         <script src="cordova.js"></script>
 
@@ -19,12 +19,39 @@
         <script src="lib/ionicframework/js/ionic.bundle.js"></script>
 
         <script src="js/app.js"></script>
-        <script src="js/services.js"></script>
-        <script src="js/indexController.js"></script>
-        <script src="js/player.js"></script>
+
+        <script src="js/service/artist-service.js"></script>
+        <script src="js/service/config-service.js"></script>
+        <script src="js/service/country-service.js"></script>
+        <script src="js/service/feature-music-service.js"></script>
+        <script src="js/service/login-service.js"></script>
+        <script src="js/service/music-service.js"></script>
+        <script src="js/service/search-service.js"></script>
+        <script src="js/service/setlist-service.js"></script>
+        <script src="js/service/style-service.js"></script>
+        <script src="js/service/wishlist-service.js"></script>
+
+        <script src="js/controller/main-controller.js"></script>
+        <script src="js/controller/config-controller.js"></script>
+        <script src="js/controller/featured-songs-controller.js"></script>
+        <script src="js/controller/index-controller.js"></script>
+        <script src="js/controller/my-musics-controller.js"></script>
+        <script src="js/controller/search-by-type-controller.js"></script>
+        <script src="js/controller/search-controller.js"></script>
+        <script src="js/controller/setlist-controller.js"></script>
+        <script src="js/controller/setlist-detail-controller.js"></script>
+        <script src="js/controller/setlist-player-controller.js"></script>
+        <script src="js/controller/track-controller.js"></script>
+        <script src="js/controller/wishlist-controller.js"></script>
+
+        <script src="lib/howler/howler.min.js"></script>        
+
+        <script src="js/timer-based-player.js"></script>
+        <script src="js/html5-player.js"></script>
+        <script src="js/new-player.js"></script>
         
-        <script src="js/FileTransfer.js"></script>
         <script src="js/ng-cordova.min.js"></script>
+        <script src="js/FileTransfer.js"></script>
 
     </head>
     
@@ -44,30 +71,180 @@
         
         <ion-tabs class="tabs-icon-top tabs-positive">
 
-            <ion-tab title="Loja" icon="ion-ios-cart" ng-click="go('/')">
+            <ion-tab title="{{i18.general.storeMenuTitleLabel}}" icon="ion-ios-cart" ng-click="go('/')">
                 <ion-nav-view name='store-view'></ion-nav-view>
             </ion-tab>
 
-            <ion-tab title="Favoritos" icon="ion-star" ng-click="go('/wishlist')">
-                <ion-nav-view name='favorite-view'></ion-nav-view>
-            </ion-tab>
-
-            <ion-tab title="Setlist" icon="ion-ios-list" ng-click="go('/setlist')">
-                <ion-nav-view name='setlists-view'></ion-nav-view>
-            </ion-tab>
-
-            <ion-tab title="Músicas" icon="ion-ios-musical-notes" ng-click="go('/musics')">
+            <ion-tab title="{{i18.general.musicMenuTitleLabel}}" icon="ion-ios-musical-notes" ng-click="go('/musics')">
                 <ion-nav-view name='musics-view'></ion-nav-view>
             </ion-tab>
 
-            <ion-tab title="Config." icon="ion-gear-a" ng-click="go('/config')">
+            <ion-tab title="{{i18.general.setlistMenuTitleLabel}}" icon="ion-ios-list" ng-click="go('/setlist')">
+                <ion-nav-view name='setlists-view'></ion-nav-view>
+            </ion-tab>
+
+            <ion-tab title="{{i18.general.wishlistMenuTitleLabel}}" icon="ion-star" ng-click="go('/wishlist')">
+                <ion-nav-view name='favorite-view'></ion-nav-view>
+            </ion-tab>
+
+            <ion-tab title="{{i18.general.configMenuTitleLabel}}" icon="ion-gear-a" ng-click="go('/config')">
                 <ion-nav-view name='config-view'></ion-nav-view>
             </ion-tab>
 
         </ion-tabs>
 
 
+        <script id="templates/login.html" type="text/ng-template">
         
+            <ion-modal-view>
+                
+                <div class="modal">
+                
+                    <ion-content ng-controller="MainController">
+
+                        <div class="ms-login">
+
+                            <div class="ms-login-title"><p>{{i18.general.notLoggedInMessage}}</p></div>
+                            <div class="ms-login-description" ng-class="descriptionClass">{{description}}</div>
+
+                            <div class="ms-login-label"><p>{{i18.general.emailLabel}}</p></div>
+                            <div class="ms-login-input"><input type="text" ng-model="loginData.key" ng-focus="cleanErrorMessage()"/></div>
+                            <div class="ms-login-label"><p>{{i18.general.passwordLabel}}</p></div>
+                            <div class="ms-login-input"><input type="password" ng-model="loginData.password" ng-focus="cleanErrorMessage()"/></div>
+                            
+                            <div class="row" style="padding:0px;margin:0px;">
+                                <div class="col-50">
+                                    <div class="ms-login-small-button" ng-click="changeUser()"><p>Login</p></div>
+                                </div>
+                                <!--
+                                <div class="col-50">
+                                    <div class="ms-login-forgot"><p>{{i18.general.forgotPasswordMessage}}</p></div>
+                                </div>
+                                -->
+                            </div>
+
+
+                            <div class="ms-login-second-title"><p>Ou</p></div>
+<!-- /*
+                            <div class="ms-login-big-button">
+                                <img src="../img/google.png"/>
+                                <p>Login with Google</p>
+                            </div>
+                            <div class="ms-login-big-button" ng-click="facebookLogin();">
+                                <img src="../img/facebook.png"/>
+                                <p>Login with Facebook</p>
+                            </div>
+*/ -->
+                            <div class="ms-login-big-button" ng-click="openCreateAccountModal()">
+                                <img src="img/user.png"/>
+                                <p>{{i18.general.createAccountLabel}}</p>
+                            </div>
+
+                            {{debugTxt}}
+
+
+                        </div>
+
+
+                    </ion-content>
+
+                </div>
+
+            </ion-modal-view>
+
+        </script>
+
+        <script id="templates/createAccount.html" type="text/ng-template">
+        
+            <ion-modal-view>
+                
+                <div class="modal">
+                
+                    <ion-content ng-controller="MainController">
+
+                        <div class="ms-create">
+
+                            <div class="ms-create-logo"><img class="ms-config-logo-img" src="img/logo-gray.png"/></div>
+                            <div class="ms-create-description" ng-class="descriptionClass">{{description}}</div>
+
+                            <div class="ms-create-label"><p>{{i18.general.emailLabel}}</p></div>
+                            <div class="ms-create-input"><input type="text" ng-model="createAccountData.key" ng-focus="cleanErrorMessage()"/></div>
+
+                            <div class="ms-create-label"><p>{{i18.general.passwordLabel}}</p></div>
+                            <div class="ms-create-input"><input type="text" ng-model="createAccountData.password" ng-focus="cleanErrorMessage()"/></div>                            
+                            <div class="ms-create-label"><p>{{i18.general.nameLabel}}</p></div>
+                            <div class="ms-create-input"><input type="text" ng-model="createAccountData.name" ng-focus="cleanErrorMessage()"/></div>
+                            
+                            <div class="ms-create-label"><p>{{i18.general.idiomLabel}}</p></div>
+
+                            <div class="ms-create-input">
+                                <select class="form-control" ng-model="createAccountData.idiom">
+                                    <option value="en-us">English</option>
+                                    <option value="pt-br">Português</option>
+                                </select>
+                            </div>
+
+                            <div class="ms-create-label"><p>{{i18.general.countryLabel}}</p></div>
+
+                            <div class="ms-create-input">
+                                <select class="form-control" ng-model="createAccountData.country">
+                                    <option ng-repeat="country in countries.availableCountries" value="{{country.name}}">{{country.name}}</option>
+                                </select>
+                            </div>
+
+                            <div class="ms-login-small-button" ng-click="createAccount()"><p>{{i18.general.createAccountLabel}}</p></div>
+
+                        </div>
+
+
+                    </ion-content>
+
+                </div>
+
+            </ion-modal-view>
+
+        </script>
+
+        <script id="templates/language.html" type="text/ng-template">
+        
+            <ion-modal-view>
+                
+                <div class="modal">
+                
+                    <ion-content ng-controller="MainController">
+
+                        <div class="ms-language">
+
+                            <div class="ms-language-logo"><img class="ms-language-logo-img" src="img/logo-gray.png"/></div>
+                            <div class="ms-language-description"><h3>Hey! Welcome to MultiSongs.</h3><p> Please choose your prefered language below.</div>
+
+                            <div class="row ms-language-flags">
+                                <div class="col">
+                                    <img class="ms-language-flag-img" src="img/brazil-flag.jpg" ng-click="chooseLanguage('port')"/>
+                                </div>
+                                <div class="col">
+                                    <img class="ms-language-flag-img" src="img/usa-flag.jpg" ng-click="chooseLanguage('eng')"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col ms-language-flag-title">
+                                    <p>Português</p>
+                                </div>
+                                <div class="col ms-language-flag-title">
+                                    <p>English</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </ion-content>
+
+                </div>
+
+            </ion-modal-view>
+
+        </script>
+
 
     </body>
 </html>

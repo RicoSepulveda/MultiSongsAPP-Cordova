@@ -107,8 +107,11 @@ ms-setlist .item-right-edit {
     
 </style>
 
-<ion-view view-title="Detalhe da Setlist">
+<ion-view>
 
+    <ion-nav-title>
+      {{i18.setlistDetail.barTitleLabel}}
+    </ion-nav-title>
 
     <ion-content>
 
@@ -123,8 +126,8 @@ ms-setlist .item-right-edit {
                     <div class="col">
                         <div style="padding-right:0px">
                             <p class="ms-font-extra-big ms-font-white" style="margin-bottom: 0px;padding-bottom:15px;padding-top:0px;text-align:right;">{{setlistName}}</p>
-                            <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistMusics.length}} Músicas com 2 canais de saída</p>
-                            <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistTime}}s de música no total</p>
+                            <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistMusics.length}} Backing Track(s)</p>
+                            <p class="ms-font-medium ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;text-align:right;">{{setlistTime}}s {{i18.setlistDetail.totalTimeLabel}}</p>
                         </div>
                     </div>
                 </div>
@@ -137,12 +140,22 @@ ms-setlist .item-right-edit {
 
                     <div class="list">
 
-                        <div class="item item-divider item-icon-right" style="background-color:#ffffff;">
+                        <div class="item item-divider item-icon-right" style="background-color:#ffffff;" ng-if="setlistMusics.length > 0">
                             <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                MÚSICAS DESSE SETLIST
+                                {{i18.setlistDetail.setlistMusicsLabel}}
                                 <i class="icon ion-navicon ms-font-multisongs" style="font-size:2em;" ng-click="alterChangePositionStatus()"></i>
                                 <!--<i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>-->
                             </p>
+                        </div>
+
+                        <div class="row" style="padding-top:20px;padding-bottom:20px;"  ng-if="setlistMusics.length == 0">
+                            <div class="col-33">
+                                <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/setlist-music-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                            </div>
+                            <div class="col=77">
+                                <p style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;">{{i18.setlistDetail.tutorialDescriptionLabel}}</p>
+                                <p ng-bind-html="i18.setlist.tutorialLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:12px;color:#999999;font-weight: 350;"></p>
+                            </div>
                         </div>
 
                         <playbacks>
@@ -171,8 +184,8 @@ ms-setlist .item-right-edit {
                                         <div class="item-note">
 
                                             <select ng-model="music.inicio" ng-change="changeMode(music)">
-                                                <option value="0" ng-selected="music.inicio == 0">automático</option>
-                                                <option value="1" ng-selected="music.inicio == 1">manual</option>
+                                                <option value="0" ng-selected="music.inicio == 0">{{i18.setlistDetail.automaticOptionLabel}}</option>
+                                                <option value="1" ng-selected="music.inicio == 1">{{i18.setlistDetail.manualOptionLabel}}</option>
                                             </select>
 
                                         </div>
@@ -185,8 +198,7 @@ ms-setlist .item-right-edit {
                             <div class="item item-thumbnail-left item-complex item-icon-right">
                               <a class="item-content" ng-click="modal.show()">
                                 <img src="./img/ios7-plus-outline.png" style="width:45px;height:45px;"/>
-
-                                <h2 class="ms-font-multisongs" style="line-height:34px;">Adicionar/Remover músicas</h2>
+                                <h2 class="ms-font-multisongs" style="line-height:34px;padding-top:12px;">{{i18.setlistDetail.addRemoveButtonLabel}}</h2>
 
                               </a>
                             </div>
@@ -211,6 +223,7 @@ ms-setlist .item-right-edit {
             
                 <ion-content>
 
+
                 <ms-setlist-selection>
 
                     <div class="row" style="margin:0px;border:0px;padding:0px;">
@@ -221,7 +234,7 @@ ms-setlist .item-right-edit {
 
                                 <div class="item item-divider" style="background-color:#ffffff;">
                                     <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                        SELECIONE AS MÚSICAS DA SETLIST
+                                        {{i18.setlistDetail.musicSelectionLabel}}
                                     </p>
                                 </div>
 
@@ -239,7 +252,7 @@ ms-setlist .item-right-edit {
                             <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
                                 <div class="col">
                                     <button class="button small-button" ng-click="changeSetList()">
-                                      Salvar alterações na Setlist
+                                      {{i18.general.saveLabel}}
                                     </button>
                                 </div>
                             </div>

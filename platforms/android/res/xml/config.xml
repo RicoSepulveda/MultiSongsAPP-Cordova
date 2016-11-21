@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.hellocordova" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="audio.multisongs" version="0.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
@@ -13,14 +13,29 @@
     <feature name="FileTransfer">
         <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
     </feature>
+    <feature name="MultiSongsPlugin">
+        <param name="android-package" value="audio.multisongs.plugin.MultiSongsPlugin" />
+    </feature>
     <allow-intent href="market:*" />
+    <splash density="land-ldpi" src="resources\android\splash\drawable-land-ldpi-screen.png" />
+    <splash density="land-mdpi" src="resources\android\splash\drawable-land-mdpi-screen.png" />
+    <splash density="land-hdpi" src="resources\android\splash\drawable-land-hdpi-screen.png" />
+    <splash density="land-xhdpi" src="resources\android\splash\drawable-land-xhdpi-screen.png" />
+    <splash density="land-xxhdpi" src="resources\android\splash\drawable-land-xxhdpi-screen.png" />
+    <splash density="land-xxxhdpi" src="resources\android\splash\drawable-land-xxxhdpi-screen.png" />
+    <splash density="port-ldpi" src="resources\android\splash\drawable-port-ldpi-screen.png" />
+    <splash density="port-mdpi" src="resources\android\splash\drawable-port-mdpi-screen.png" />
+    <splash density="port-hdpi" src="resources\android\splash\drawable-port-hdpi-screen.png" />
+    <splash density="port-xhdpi" src="resources\android\splash\drawable-port-xhdpi-screen.png" />
+    <splash density="port-xxhdpi" src="resources\android\splash\drawable-port-xxhdpi-screen.png" />
+    <splash density="port-xxxhdpi" src="resources\android\splash\drawable-port-xxxhdpi-screen.png" />
     <name>MultiSongs</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
-    </description>
-    <author email="contato@multisongs.audio" href="http://app.multisongs.audio">
+        Improve your shows with incredible arrangements.
+  </description>
+    <author email="contact@multisongs.audio" href="http://www.multisongs.audio">
         MultiSongs Team
-    </author>
+  </author>
     <icon src="res/logo.png" />
     <content src="index.html" />
     <access origin="*" />
@@ -30,4 +45,11 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <preference name="ShowSplashScreen" value="true" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="30000" />
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    <preference name="FadeSplashScreen" value="false" />
+    <preference name="orientation" value="portrait" />
 </widget>

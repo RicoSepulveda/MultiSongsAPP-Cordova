@@ -31,7 +31,7 @@
 }
 
 .ms-font-multisongs {
-    color:#FD6631;
+    color:#FD6631 !important;
 }
 
 .no-padding {
@@ -60,6 +60,7 @@
     background-color: #FD6631 !important;
     line-height: 5px !important;
     min-height: 32px !important;
+    font-size:14px !important;
 }
 
 .small-button-buy.active, .small-button-buy.activated{
@@ -68,13 +69,325 @@
     background-color: #FFFFFF !important;
     line-height: 5px !important;
     min-height: 32px !important;
+    font-size:14px !important;
 }
 
 .tabs-positive > .tabs{
     background-color: #FD6631 !important;
 }
 
+.item h2 {
+    line-height: 22px !important;
+}
 
 a {
     text-decoration: none;
+}
+
+.ms-login-title {
+    position:relative;
+    font-size: 24px;
+    width:100%;
+    top:10px;
+    text-align: center;
+    color:#999999;
+    padding: 20px;
+}
+
+.ms-login-description{
+    position:relative;
+    font-size: 16px;
+    width:100%;
+    text-align: center;
+    color:#999999;
+    padding-left:40px;
+    padding-right:40px;
+    padding-bottom: 0px;
+}
+
+.ms-login {
+    position:absolute;
+    padding-left:40px;
+    padding-right:40px;
+    width:100%;
+}
+
+.ms-login-big-button{
+    position:relative;
+    width:100%;
+    height: 40px;
+    background-color: #FD6631;
+    color: #ffffff;
+    margin-top:10px;
+    border-radius: 5px;
+}
+
+.ms-login-big-button p {
+    padding-left:65px;
+    font-size: 20px;
+    padding-top:8px;
+    display:block;
+}
+
+.ms-login-big-button img {
+    margin-left:15px;
+    width: 28px;
+    padding-top:6px;
+    float: left;
+}
+
+.ms-login-second-title {
+    position:relative;
+    width:100%;
+    text-align: center;
+    color:#999999;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    font-size: 24px;
+}
+
+.ms-login-label {
+    position:relative;
+    width:100%;
+    color:#999999;
+    font-size: 16px;
+    padding-top:28px;
+}
+.ms-login-label p{
+    margin-bottom:0px !important;
+}
+
+.ms-login-input{
+    padding:0px;
+}
+
+.ms-login-input input {
+    border:1px !important;
+    border-color: #999999 !important;
+    border-style: solid !important;
+    width:100%;
+    border-radius: 5px;
+}
+
+.ms-login-forgot{
+    text-align:center;
+    padding-top:42px;
+    color:#FD6631;
+}
+
+.ms-login-small-button {
+    position:relative;
+    margin-top: 40px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border-color: #FD6631;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+}
+
+.ms-login-small-button p {
+    padding-top: 8px;
+    color: #FD6631;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+.ms-sugestion {
+    min-height: 80px;
+    height: 80px;
+    background-color: #333333;
+    display:block;
+    width: 100%;
+}
+
+.ms-sugestion img {
+    position: relative;
+    float: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    width: 80px;
+}
+
+.ms-sugestion-music-name {
+    font-size: 16px;
+    color: #999999;
+    width: 150px;
+}
+
+.ms-sugestion-artist {
+    font-size:14px;
+    color: #999999;
+    width:300px;
+}
+
+.ms-config-logo{
+    position:relative;
+    width:100%;
+    padding-top:30px;
+    text-align: center;
+}
+
+.ms-config-logo-img{
+    width:50%;
+}
+.ms-config-description {
+    position:relative;
+    padding-top: 20px;
+    color:#999999;
+    width: 100%;
+    padding-left:10px;
+    padding-right:10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.ms-config-logout {
+    position:relative;
+    padding-top: 40px;
+    width: 100%;
+    text-align: center;
+}
+
+.ms-config-social-title{
+    position:relative;
+    padding-top: 40px;
+    width: 100%;
+    text-align: center;
+    color:#999999;
+    font-size: 10px;
+}
+
+.ms-config-social-disclaimer{
+    position:relative;
+    padding-top: 10px;
+    width: 100%;
+    text-align: center;
+    color:#999999;
+    font-size: 10px;
+    padding-left:20px;
+    padding-right:20px; 
+    line-height: 12px;
+}
+
+.ms-config-icon{
+    font-size: 40px;
+    color:#FD6631;
+    padding-right:15px;
+    padding-left:15px;
+
+}
+
+.ms-config-icon-container{
+    width: 100%;
+    text-align: center;
+}
+
+.ms-config-icon{
+    display: inline-block;  
+}
+
+.ms-config-container {
+    padding-left:40px;
+    padding-right:40px;
+}
+
+.ms-create {
+    position:absolute;
+    padding-left:40px;
+    padding-right:40px;
+    width:100%;
+}
+
+.ms-create-logo{
+    position:relative;
+    width:100%;
+    padding-top:20px;
+    text-align: center;
+}
+.ms-create-logo-img{
+    width:70%;
+}
+
+.ms-create-label {
+    position:relative;
+    width:100%;
+    color:#999999;
+    font-size: 16px;
+    padding-top:10px;
+}
+.ms-create-label p{
+    margin-bottom:0px !important;
+}
+
+.ms-create-input{
+    padding:0px;
+}
+
+.ms-create-input input {
+    border:1px !important;
+    border-color: #999999 !important;
+    border-style: solid !important;
+    width:100%;
+    border-radius: 5px;
+}
+
+.ms-create-description{
+    position:relative;
+    font-size: 16px;
+    width:100%;
+    text-align: center;
+    color:#999999;
+    padding-left:20px;
+    padding-right:20px;
+    padding-bottom: 20px;
+    padding-top:15px;
+}
+
+.ms-wishlist-alert {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top:40px;
+    padding-bottom: 30px;
+    color:#333333;
+    font-size: 16px;
+    width:100%;
+    text-align: center;
+}
+
+.ms-language-logo {
+    position: relative;
+    padding-top: 70px;
+    text-align: center;
+    width: 100%;
+}
+
+
+.ms-language-description{
+    text-align: center;
+    padding-top:80px;
+}
+
+.ms-language-description h3{
+    color:#999999;
+}
+
+.ms-language-description p{
+    color:#999999;
+    padding-top:0px;
+}
+
+.ms-language-flags {
+    padding-top:80px !important;
+    text-align: center;
+}
+
+.ms-language-flag-title{
+    text-align: center;
+    color:#999999;
+}
+
+.ms-language-flag-img{
+    width: 50%;
 }
