@@ -322,24 +322,92 @@ module.controller('IndexController', function($scope,
                 loginService.login($scope, key, password, function(response){
                     var songs = [];
                     //songs[0]={uri : "http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav",
-                    songs[0] = {uri : "http://172.21.0.170:8180/MultiSongs/api/download/music/wav/" + response.token + "/346",
-                              id : 1,
+                    songs[1] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/342",
+                              id : 342,
+                              isMute : false,
+                              isSolo : false,
+                              level : 1,
+                              pan : 0};
+                    songs[2] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/343",
+                              id : 343,
+                              isMute : false,
+                              isSolo : false,
+                              level : 1,
+                              pan : 0};
+                              /*
+                    songs[3] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/344",
+                              id : 0,
                               isMutted : false,
                               isSolo : false,
-                              khz : 44100,
+                              khz : 48000,
                               encoding : 2};
+                              */
+                    songs[0] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/344",
+                              id : 344,
+                              isMute : false,
+                              isSolo : false,
+                              level : 1,
+                              pan : 0};
 
-                    cordova.exec(function(message){
-                        console.log("SUCESSO: " + message);
-                        cordova.exec(function(message){
-                            console.log("SUCESSO: " + message)
-                        }, function(erro){console.log(erro)}, "MultiSongsPlugin", "play", []);
-                        
-                    }, function(erro){console.log(erro)}, "MultiSongsPlugin", "load", songs);
+                    songs[3] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/346",
+                              id : 346,
+                              isMute : false,
+                              isSolo : false,
+                              level : 1,
+                              pan : 0};
+
+                    songs[4] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/347",
+                              id : 347,
+                              isMute : false,
+                              isSolo : false,
+                              level : 1,
+                              pan : 0};
+
+                    var conf = [];
+
+                    conf[0] = {demoMode : false, khz : 44100, encode : 16, channels : 2};
+
+                    console.log("Vai chamar o plugin...");
+
+
+                    cordova.exec(
+                        function(message){
+                            console.log(message);
+                            cordova.exec(
+                                function(message){
+                                    console.log(message);
+                                    cordova.exec(
+                                        function(message){
+                                            console.log(message)
+                                        }, 
+                                        function(erro){
+                                            console.log("ERRO ao chamar play!" + erro)
+                                        }, 
+                                        "MultiSongsPlugin", 
+                                        "play", 
+                                        []
+                                    );
+                                }
+                                , 
+                                function(erro){
+                                    console.log("ERRO ao chamar load!" + erro);
+                                }, 
+                                "MultiSongsPlugin", 
+                                "load", 
+                                songs
+                            );
+                        }, 
+                        function(erro){
+                            console.log("ERRO ao chamar config!" + erro)
+                        }, 
+                        "MultiSongsPlugin", 
+                        "config", 
+                        conf
+                    );
 
                     $interval(function(){
-                        cordova.exec(function(message){console.log("SUCESSO: " + message)}, function(erro){console.log(erro)}, "MultiSongsPlugin", "log", songs);
-                    },2000,10);
+                        cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", songs);
+                    },2000);
 
                     onLoad(response.token, response.userType);
 

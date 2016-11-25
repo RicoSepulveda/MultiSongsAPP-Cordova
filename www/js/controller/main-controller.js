@@ -172,8 +172,8 @@ module.controller('MainController', function($scope,
 
     $scope.$watch('$viewContentLoaded', function() {
 
-        window.localStorage.setItem("environment_dev", "http://172.21.0.170:8180");
-        //window.localStorage.setItem("environment_dev", "http://192.168.0.12:8180");
+        //window.localStorage.setItem("environment_dev", "http://172.21.0.170:8180");
+        window.localStorage.setItem("environment_dev", "http://192.168.0.12:8180");
         window.localStorage.setItem("environment_prod", "http://www.multisongs.audio");
 
         window.localStorage.setItem("environment", window.localStorage.getItem("environment_dev"));
