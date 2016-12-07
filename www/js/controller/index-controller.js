@@ -9,12 +9,10 @@ module.controller('IndexController', function($scope,
                                               featuredMusicService, 
                                               musicService, 
                                               artistService, 
-                                              timerBasedPlayer,
                                               loginService,
                                               configService,
                                               styleService,
                                               auth,
-                                              html5Player,
                                               msSessionConfig) {
 
     //$ionicNavBarDelegate.showBar(true);
@@ -320,6 +318,7 @@ module.controller('IndexController', function($scope,
                 password = window.localStorage.getItem("password");
                 
                 loginService.login($scope, key, password, function(response){
+                    /*
                     var songs = [];
                     //songs[0]={uri : "http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav",
                     songs[1] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/342",
@@ -334,14 +333,6 @@ module.controller('IndexController', function($scope,
                               isSolo : false,
                               level : 1,
                               pan : 0};
-                              /*
-                    songs[3] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/344",
-                              id : 0,
-                              isMutted : false,
-                              isSolo : false,
-                              khz : 48000,
-                              encoding : 2};
-                              */
                     songs[0] = {uri : "http://192.168.0.12:8180/MultiSongs/api/download/music/wav/" + response.token + "/344",
                               id : 344,
                               isMute : false,
@@ -408,6 +399,11 @@ module.controller('IndexController', function($scope,
                     $interval(function(){
                         cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", songs);
                     },2000);
+
+*/
+                    $interval(function(){
+                        cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
+                    },100);
 
                     onLoad(response.token, response.userType);
 

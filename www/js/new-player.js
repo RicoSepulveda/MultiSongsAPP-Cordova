@@ -1,4 +1,4 @@
-module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicService, setlistService, auth){
+module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicService, setlistService, auth, msCordovaPluginPlayer){
 
 	var jaCarregou = false;
 
@@ -24,6 +24,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 	var INTERVAL_MENSSAGE = 2000;
 	var INTERVAL_CHECK_GENERAL_STATUS = 500;
+
+	var INTERVAL_LED_CALCULATION_IN_MILLIS = 100;
 
 	var log = function(level, message, caller, args){
 
@@ -111,7 +113,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 			player.calculateLedsInterval = $interval(function(){
 				calculateLeds();
-			}, 5);
+			}, INTERVAL_LED_CALCULATION_IN_MILLIS);
 
 			player.playerSlideInterval = $interval(function(){
 				player.currentTime++;
@@ -147,13 +149,25 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 	var checkStatusSound = function(){
 
-		if (!player.sound.playing()){
+
+		msCordovaPluginPlayer.playing(
+			function(response){
+				if(response.status != 1){ // NOT PLAYING
+					handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
+				}
+			}, function(error){
+				// @TODO TRATAR QUANDO NAO EH POSSIVEL CAPTURAR O STATUS DO PLAYER. POR ENQUANTO ESTA PARANDO
+				handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
+			}
+		);
+/*
+		if (!msCordovaPluginPlayer.playing()){
 			handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
 		}
-
+*/
 		if (player.currentMusic.calculatedTotalTime - player.currentTime == 2 && player.currentMusic.status != 1){
 			player.currentMusic.tracks.forEach(function (entry){
-				player.sound.fade(entry.level * player.masterLevel * 0.3, 0, 2000, entry.soundId);
+				msCordovaPluginPlayer.fade(entry.level * player.masterLevel, 0, 2000, entry.id);
 			});
 		}
 
@@ -288,16 +302,78 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 	};
 
+	var loadCurrentMusicTracks = function(){
+
+		var urls = [];
+        var fileUris = [];
+        var ms_hostname;
+        var uri;
+        var failToLoadFromLocal;
+
+        ms_hostname = window.localStorage.getItem("environment");
+
+        failToLoadFromLocal = false;
+
+        // Prepara URLs de leitura das tracks
+		player.currentMusic.tracks.forEach(function (entry){
+
+			if (player.fileSystem != null){
+	            uri = {uri : player.fileSystem + entry.id + ".atom" ,
+                       id : entry.id,
+                       isMute : false,
+                       isSolo : false,
+                       level : 1,
+                       pan : 0};
+
+				fileUris.push(uri);
+
+			}else{
+				failToLoadFromLocal = true;
+			}
+
+            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id , //+ "/" + (player.currentMusic.status != 1),
+                   id : entry.id,
+                   isMute : false,
+                   isSolo : false,
+                   level : 1,
+                   pan : 0};
+
+			urls.push(uri);
+
+		});
+
+		msCordovaPluginPlayer.createPlugin((player.currentMusic.status != 1), 44100, 16, 2, fileUris, player.fileSystem, 
+			function(message){
+				console.log("CARREGOU DO ARQUIVO");
+	        	handleEvent({type : EVENT_TARCKS_LOADED, caller : 'loadCurrentMusicTracks', success : true, obj : null});
+			},
+			function(err){
+				console.log("Nao carergou do arquivo. Vai tentar da URL");
+				msCordovaPluginPlayer.createPlugin((player.currentMusic.status != 1), 44100, 16, 2, urls, player.fileSystem, 
+					function(message){
+console.log("Carregou das URLs");
+						player.log(LOG_LEVEL_DEBUG_DETAILS, "Songs downloaded", "play");
+			        	handleEvent({type : EVENT_TARCKS_LOADED, caller : 'loadCurrentMusicTracks', success : true, obj : null});
+					},
+					function(err){
+console.log("ERROR! " + err);
+					}
+				);
+			}
+		);
+
+	};
+
 	/**
 	* Carrega as trilhas da musica corrente
 	*/
+	/*
 	var loadCurrentMusicTracks = function(){
 
 		var songs = [];
         var fileUris = [];
         var ms_hostname;
         var url;
-        var soundId;
         var failToLoadFromLocal;
 
         ms_hostname = window.localStorage.getItem("environment");
@@ -313,15 +389,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 				failToLoadFromLocal = true;
 			}
 
-	        url = ms_hostname + "/MultiSongs/api/download/music/" + auth.token + "/" + entry.id + "/" + false;
-//	        url = ms_hostname + "/MultiSongs/api/download/music/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.status != 1);
+	        url = ms_hostname + "/MultiSongs/api/download/music/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.status != 1);
 			songs.push(url);
 
 		});
 
 		// Tenta carregar do filesystem local, caso exista filesystem
+		
 		if (player.fileSystem != null){
 			player.log(LOG_LEVEL_DEBUG_DETAILS, "Vai tentar carregar as musicas so filesystem local. Uris: " + fileUris, "play");
+			
 			player.sound = new Howl({
 				src: fileUris,
 				format : ['ogg'],
@@ -339,6 +416,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 				}
 
 			});
+			
 		}
 
 		player.log(LOG_LEVEL_DEBUG_DETAILS, "state: " + player.sound.state(), "");
@@ -360,10 +438,27 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 		}, INTERVAL_CHECK_GENERAL_STATUS);
 
 	};
+	*/
 
+	var calculateLedscounter = 0;
 
 	var calculateLeds = function(){
 
+
+		msCordovaPluginPlayer.getDecibels(calculateLedscounter * INTERVAL_LED_CALCULATION_IN_MILLIS, 
+			function(result){
+				console.log(result);
+			}, 
+			function(error){
+
+			}
+		);
+
+		calculateLedscounter++;
+
+	};
+
+/*
 		var ledIdx;
 
 		player.lastMainDecibels = getDecibels(player.analyserNodeMaster, player.lastMainDecibels);
@@ -435,10 +530,14 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 		return lastDecibels;
 
 	};
-
+*/
 	var _play = function(){
 
 		var analyser;
+
+		msCordovaPluginPlayer.play();
+
+		/*
 
 			player.analyserNodeMaster = Howler.ctx.createAnalyser();
 
@@ -459,14 +558,14 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 			});
 
-			//player.analyserNodeMaster.connect(player.analyserNodeMaster);
-
 			player.analyserNodeMaster.connect(Howler.ctx.destination);
+*/
+
 
 			if (player.currentMusic.status != 1){
 
 				player.currentMusic.tracks.forEach(function (entry){
-					player.sound.fade(0, entry.level * player.masterLevel * 0.3, 2000, entry.soundId);
+					msCordovaPluginPlayer.fade(0, entry.level * player.masterLevel, 2000, entry.id);
 				});
 
 			}
@@ -577,9 +676,12 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		},
 
+		/**
+		* Muda o nivel de um determinado canal
+		*/
 		changeLevel: function($scope, track){
 
-			player.sound.volume(track.level * player.masterLevel * 0.3, track.soundId);
+			msCordovaPluginPlayer.volume(track.level * player.masterLevel, track.id);
 
 			track.message = parseInt(track.level * 100) + "%";
 			track.showMessage = true;
@@ -592,10 +694,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		},
 
+		/**
+		* Muda o nível do canal master
+		*/
 		changeMasterLevel: function($scope){
 
 			player.currentMusic.tracks.forEach(function (entry){
-				player.sound.volume(entry.level * player.masterLevel * 0.3, entry.soundId);
+				msCordovaPluginPlayer.volume(entry.level * player.masterLevel, entry.id);
 			});
 
 			player.message = parseInt(player.masterLevel * 100) + "%";
@@ -610,9 +715,12 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		},
 
+		/**
+		* Muda o pan do canal master
+		*/
 		changeMasterPan: function($scope){
 
-			player.sound.stereo(parseFloat(player.masterPan));
+			msCordovaPluginPlayer.stereo(parseFloat(player.masterPan));
 			player.message = Math.abs(parseInt(player.masterPan * 100)) + ((player.masterPan > 0)?"R":"L");
 			player.showMessage = true;
 
@@ -624,9 +732,12 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		},
 
+		/**
+		* Muda o pan de um determinado canal
+		*/
 		changePan: function($scope, track){
 
-			player.sound.stereo(parseFloat(track.pan), track.soundId);
+			msCordovaPluginPlayer.stereo(parseFloat(track.pan), track.id);
 			track.message = Math.abs(parseInt(track.pan * 100)) + ((track.pan > 0)?"R":"L");
 			track.showMessage = true;
 
@@ -638,17 +749,30 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		},
 
+		/**
+		* Desativa o solo de uma determinada trilha
+		*/
 		unactivateSolo: function($scope, track){
 
+			msCordovaPluginPlayer.unsolo(track.id);
+
 		},
 
+		/**
+		* Ativa o solo de uma determinada trilha
+		*/
 		activateSolo: function($scope, track){
 
+			msCordovaPluginPlayer.solo(track.id);
+
 		},
 
+		/**
+		* Ativa o mute de uma determinada trilha
+		*/
 		mute: function($scope, track){
 
-			player.sound.mute(true, track.soundId);
+			msCordovaPluginPlayer.mute(true, track.id);
 
 			track.enabled = false;
 
@@ -661,13 +785,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
 
-			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track mutted: " + track.soundId, "mute");
+			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track mutted: " + track.id, "mute");
 
 		},
 
+		/**
+		* Desativa o mute de um determinado canal
+		*/
 		unMute: function($scope, track){
 
-			player.sound.mute(false, track.soundId);
+			msCordovaPluginPlayer.mute(false, track.id);
 
 			track.enabled = true;
 
@@ -680,10 +807,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
 
-			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track unmutted: " + track.soundId, "unMute");
+			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track unmutted: " + track.id, "unMute");
 
 		},
 
+		/**
+		* Inicia a musica
+		*/
 		play: function(){
 
 			_play();
@@ -696,15 +826,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		stop: function(){
 
-			player.sound.unload();
+			msCordovaPluginPlayer.unload();
 
 		},
 
 		unloadSetlist : function(){
 
-			if (player.sound != null){
-				player.sound.unload();
-			}
+			msCordovaPluginPlayer.unload();
 
 
 			player.setlist = {musics : null, 
@@ -717,11 +845,15 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		resume: function(){
 
-			player.sound.play();
+			msCordovaPluginPlayer.play();
+
+			/*
 
 			player.currentMusic.tracks.forEach(function (entry){
-				player.sound.seek(parseInt(player.currentTime), entry.soundId);
+				msCordovaPluginPlayer.seek(parseInt(player.currentTime), entry.id);
 			});
+
+			*/
 
 			calculateTimeAsString();
 
@@ -731,7 +863,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		suspend: function($scope){
 
-			player.sound.pause();
+			msCordovaPluginPlayer.pause();
 
 			handleEvent({type : EVENT_SUSPENDING, caller : 'suspend', success : true});
 
@@ -784,13 +916,15 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		changePosition: function($scope){
 
-
-			player.currentMusic.tracks.forEach(function (entry){
-				player.sound.seek(parseInt(player.currentTime), entry.soundId);
-				player.sound.volume(entry.level * player.masterLevel * 0.3, entry.soundId);
+			msCordovaPluginPlayer.seek(parseInt(player.currentTime), function(obj){
+				console.log(obj);
+        		if (player.currentTime != obj.position){
+        			player.currentTime = obj.position;
+        			calculateTimeAsString();
+        		}
 			});
 
-			calculateTimeAsString();
+			
 
 		}
 

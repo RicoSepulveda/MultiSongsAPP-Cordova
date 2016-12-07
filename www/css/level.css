@@ -6,7 +6,7 @@
 }
 
 .ms-levels-right {
-	width: 80px;
+	width:  80px;
 	float:right;
 }
 
@@ -421,4 +421,20 @@
 
 .ms-buy-button {
   margin-top:0px;
+}
+
+.ms-levels-left{
+  overflow:hidden;
+  width: 73%;
+  float:left;
+}
+
+.ms-levels-content{
+  width:480px;
+}
+
+.ms-levels-right .ms-level {
+
+  float: right;
+
 }

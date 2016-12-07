@@ -152,9 +152,33 @@ module.controller('TrackController', function($scope,
         $scope.modal.hide();
     };
 
+    var calculateLeftLevelsSize = function(){
+
+        var width = screen.height;
+        var height = screen.width;
+        var screenRatio;
+        var realWidth;
+        var realHeight;
+
+        if(width>height){
+            realWidth = width;
+            realHeight = height;
+            screenRatio = (height/width);
+        } else {
+            realWidth = height;
+            realHeight = width;
+            screenRatio = (width/height);
+        }
+
+         document.getElementById('msLevelsLeft').setAttribute("style","width:" + (realWidth - 80) + "px");
+
+    }
+
     $scope.$watch('$viewContentLoaded', function() {
 
         //$ionicNavBarDelegate.showBar(false);
+
+        calculateLeftLevelsSize();
 
         $scope.msPlayer = msPlayer;
 
