@@ -1,6 +1,6 @@
 module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicService, setlistService, auth, msCordovaPluginPlayer){
 
-	var jaCarregou = false;
+	var calculateLedscounter = 0;
 
 	var ANALIZER_NODE_BUFFER_SIZE = 1000;
 
@@ -21,6 +21,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 	var LOG_LEVEL_DEBUG = 3;
 	var LOG_LEVEL_INFO = 2;
 	var LOG_LEVEL_ERROR = 1;
+
+	var PLAYER_TYPE_MULTITRACK = 1;
+	var PLAYER_TYPE_SINGLETRACK = 2;
 
 	var INTERVAL_MENSSAGE = 2000;
 	var INTERVAL_CHECK_GENERAL_STATUS = 500;
@@ -56,6 +59,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 				  isAnApp : false,
 				  masterPan : 0,
 				  masterLevel : 0.8,
+				  type : 0,
 				  currentTimeAsString : '',
 				  message : '',
 				  showMessage : false,
@@ -217,33 +221,33 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 	*/
 	var getSetlistDetail = function(setlistId, callback){
 
-			var promisses;
+		var promisses;
 
-			promisses = [];
+		promisses = [];
 
-			promisses.push(setlistService.getSetlistDetail(auth.token, setlistId));
+		promisses.push(setlistService.getSetlistDetail(auth.token, setlistId));
 
-			$q.all(promisses).then(
+		$q.all(promisses).then(
 
-	            function(response) { 
+            function(response) { 
 
-	            	player.log(LOG_LEVEL_DEBUG, "Setlist successfully read.", "getSetlistDetail", response[0]);
+            	player.log(LOG_LEVEL_DEBUG, "Setlist successfully read.", "getSetlistDetail", response[0]);
 
-	            	callback(response[0]);
+            	callback(response[0]);
 
-	            },
+            },
 
-	            function(response) { 
+            function(response) { 
 
-	            	player.log(LOG_LEVEL_ERROR, "ERROR WHILE LOADING SETLIST." , "getSetlistDetail", response[0]);
+            	player.log(LOG_LEVEL_ERROR, "ERROR WHILE LOADING SETLIST." , "getSetlistDetail", response[0]);
 
-	            	callback(response[0]);
+            	callback(response[0]);
 
-	            }
+            }
 
-	        ).finally(function() {
+        ).finally(function() {
 
-	        });
+        });
 
 
 
@@ -302,36 +306,31 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 	};
 
+	/**
+	* Carrega as trilhas da musica corrente
+	*/
 	var loadCurrentMusicTracks = function(){
 
 		var urls = [];
         var fileUris = [];
         var ms_hostname;
         var uri;
-        var failToLoadFromLocal;
 
         ms_hostname = window.localStorage.getItem("environment");
 
-        failToLoadFromLocal = false;
+        uri = {uri : player.fileSystem + player.currentMusic.id + ".song" ,
+               id : player.currentMusic.id,
+               isMute : false,
+               isSolo : false,
+               level : 1,
+               pan : 0};
+
+		fileUris.push(uri);
 
         // Prepara URLs de leitura das tracks
 		player.currentMusic.tracks.forEach(function (entry){
 
-			if (player.fileSystem != null){
-	            uri = {uri : player.fileSystem + entry.id + ".atom" ,
-                       id : entry.id,
-                       isMute : false,
-                       isSolo : false,
-                       level : 1,
-                       pan : 0};
-
-				fileUris.push(uri);
-
-			}else{
-				failToLoadFromLocal = true;
-			}
-
-            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id , //+ "/" + (player.currentMusic.status != 1),
+            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id + "/false", // + (player.currentMusic.status != 1),
                    id : entry.id,
                    isMute : false,
                    isSolo : false,
@@ -344,19 +343,16 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, musicSe
 
 		msCordovaPluginPlayer.createPlugin((player.currentMusic.status != 1), 44100, 16, 2, fileUris, player.fileSystem, 
 			function(message){
-				console.log("CARREGOU DO ARQUIVO");
 	        	handleEvent({type : EVENT_TARCKS_LOADED, caller : 'loadCurrentMusicTracks', success : true, obj : null});
 			},
 			function(err){
-				console.log("Nao carergou do arquivo. Vai tentar da URL");
 				msCordovaPluginPlayer.createPlugin((player.currentMusic.status != 1), 44100, 16, 2, urls, player.fileSystem, 
 					function(message){
-console.log("Carregou das URLs");
 						player.log(LOG_LEVEL_DEBUG_DETAILS, "Songs downloaded", "play");
 			        	handleEvent({type : EVENT_TARCKS_LOADED, caller : 'loadCurrentMusicTracks', success : true, obj : null});
 					},
 					function(err){
-console.log("ERROR! " + err);
+
 					}
 				);
 			}
@@ -364,9 +360,6 @@ console.log("ERROR! " + err);
 
 	};
 
-	/**
-	* Carrega as trilhas da musica corrente
-	*/
 	/*
 	var loadCurrentMusicTracks = function(){
 
@@ -440,14 +433,35 @@ console.log("ERROR! " + err);
 	};
 	*/
 
-	var calculateLedscounter = 0;
-
 	var calculateLeds = function(){
+
+
+		var ledIdx;
+		var idx = 0;
 
 
 		msCordovaPluginPlayer.getDecibels(calculateLedscounter * INTERVAL_LED_CALCULATION_IN_MILLIS, 
 			function(result){
-				console.log(result);
+
+				player.currentMusic.tracks.forEach(function (entry){
+
+					var ledIdx = Math.floor(result[idx].value * 13);
+
+					if (ledIdx > 13){
+						ledIdx = 13;
+					}
+
+					if (ledIdx < 0){
+						ledIdx = 0;
+					}
+
+					entry.leds.left = "img/level-led-" + ledIdx + ".png";
+					entry.leds.right = "img/level-led-" + ledIdx + ".png";
+
+					idx++;
+
+				});
+
 			}, 
 			function(error){
 
@@ -604,6 +618,8 @@ console.log("ERROR! " + err);
 		*/
 		loadSetlist: function(setlistId){
 
+			player.type = PLAYER_TYPE_SINGLETRACK;
+
       		handleEvent({type : EVENT_START_DOWNLOADING_TRACKS, caller : 'loadSetlist', success : true, obj : setlistId});
 
 			getSetlistDetail(setlistId, function(response){
@@ -651,6 +667,8 @@ console.log("ERROR! " + err);
 		* Carrega uma unica musica para o player
 		*/
 		loadMusic: function(musicId){
+
+			player.type = PLAYER_TYPE_MULTITRACK;
 
       		handleEvent({type : EVENT_START_DOWNLOADING_TRACKS, caller : 'loadMusic', success : true, obj : musicId});
 
@@ -872,6 +890,47 @@ console.log("ERROR! " + err);
 
 		download: function(){
 
+			var ms_hostname = window.localStorage.getItem("environment");
+			var intervalToCheckDownload;
+
+			player.currentMusic.status = 1;
+
+			player.downloadProgress = 1;
+
+			msCordovaPluginPlayer.download(player.currentMusic.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/" + auth.token + "/" + player.currentMusic.musicId, 
+				function(message){
+					console.log(message)
+				}, 
+				function(error){
+					console.log(error);
+					$interval.cancel(intervalToCheckDownload);
+					player.currentMusic.status = 0;
+				}
+			);
+
+			intervalToCheckDownload = $interval(
+				function(){
+					msCordovaPluginPlayer.checkDownloadPercentage(
+						function(message){
+							if (message.percentage == 1){
+								$interval.cancel(intervalToCheckDownload);
+								player.currentMusicWasSuccessfullyDownloaded = true;
+								player.downloadProgress = 0;
+							}else{
+								player.downloadProgress = message.percentage * 100
+							}
+						}, function(error){
+							console.log("ERROR WHILE DOWNLOADING SONG");
+							console.log(error);
+							$interval.cancel(intervalToCheckDownload);
+							player.currentMusicWasSuccessfullyDownloaded = false;
+							player.downloadProgress = 0;
+						}
+					);
+				}, 
+			500);
+
+/*
 			var url;
 			var targetPath;
 
@@ -911,7 +970,7 @@ console.log("ERROR! " + err);
 				});
 
 			});
-
+*/
 		},
 
 		changePosition: function($scope){
@@ -920,8 +979,13 @@ console.log("ERROR! " + err);
 				console.log(obj);
         		if (player.currentTime != obj.position){
         			player.currentTime = obj.position;
-        			calculateTimeAsString();
+					calculateLedscounter = obj.position * 10;
+        		}else{
+        			calculateLedscounter = player.currentTime * 10;
         		}
+
+      			calculateTimeAsString();
+
 			});
 
 			

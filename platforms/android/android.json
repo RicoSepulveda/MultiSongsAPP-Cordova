@@ -25,6 +25,10 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"InAppBillingV3\"><param name=\"android-package\" value=\"com.alexdisler.inapppurchases.InAppBillingV3\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"MultiSongsPlugin\"><param name=\"android-package\" value=\"audio.multisongs.plugin.MultiSongsPlugin\" /></feature>",
                             "count": 1
                         }
@@ -37,6 +41,12 @@
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 2
+                        }
+                    ],
+                    "/manifest": [
+                        {
+                            "xml": "<uses-permission android:name=\"com.android.vending.BILLING\" />",
+                            "count": 1
                         }
                     ]
                 }
@@ -55,6 +65,9 @@
         },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "cordova-plugin-inapppurchase": {
+            "PACKAGE_NAME": "audio.multisongs"
         },
         "audio.multisongs.plugin": {
             "PACKAGE_NAME": "audio.multisongs"
@@ -228,6 +241,13 @@
             ]
         },
         {
+            "file": "plugins/cordova-plugin-inapppurchase/www/index-android.js",
+            "id": "cordova-plugin-inapppurchase.InAppBillingV3",
+            "merges": [
+                "inAppPurchase"
+            ]
+        },
+        {
             "file": "plugins/audio.multisongs.plugin/www/MultiSongsPlugin.js",
             "id": "audio.multisongs.plugin.MultiSongsPlugin",
             "clobbers": [
@@ -240,6 +260,7 @@
         "cordova-plugin-compat": "1.0.0",
         "cordova-plugin-file": "4.3.0",
         "cordova-plugin-file-transfer": "1.6.0",
+        "cordova-plugin-inapppurchase": "1.0.0",
         "audio.multisongs.plugin": "0.0.1"
     }
 }

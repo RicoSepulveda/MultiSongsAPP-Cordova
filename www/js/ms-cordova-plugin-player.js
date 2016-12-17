@@ -17,16 +17,16 @@ module.factory('msCordovaPluginPlayer', function(){
 			        	function(message){
 			        		onSuccessCallback(message);
 			        	}, 
-			        	function(erro){
-			        		onErrorCallback(erro);
+			        	function(error){
+			        		onErrorCallback(error);
 			        	}, 
 			        	"MultiSongsPlugin", 
 			        	"load", 
 			        	uriObjects);
 
 	        	}, 
-	        	function(erro){
-	        		onErrorCallback(erro);
+	        	function(error){
+	        		onErrorCallback(error);
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"config", 
@@ -51,9 +51,9 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
-	        			onErrorCallback(erro);
+	        			onErrorCallback(error);
 	        		}
 	        	}, 
 	        	"MultiSongsPlugin", 
@@ -72,9 +72,9 @@ module.factory('msCordovaPluginPlayer', function(){
 				        		onSuccessCallback(message);
 			        		}
 			        	}, 
-			        	function(erro){
+			        	function(error){
 			        		if (onErrorCallback){
-			        			onErrorCallback(erro);
+			        			onErrorCallback(error);
 			        		}
 			        	}, 
 			        	"MultiSongsPlugin", 
@@ -91,7 +91,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
 	        			onErrorCallback(error);
 	        		}
@@ -110,7 +110,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
 	        			onErrorCallback(error);
 	        		}
@@ -129,7 +129,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
 	        			onErrorCallback(error);
 	        		}
@@ -148,7 +148,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
 	        			onErrorCallback(error);
 	        		}
@@ -171,7 +171,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		        		onSuccessCallback(message);
 	        		}
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        		if (onErrorCallback){
 	        			onErrorCallback(error);
 	        		}
@@ -199,11 +199,53 @@ module.factory('msCordovaPluginPlayer', function(){
 	        cordova.exec(
 	        	function(message){
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	command, 
 	        	[{id : trackId}]);
+
+		},
+
+		download : function(songId, uri, onSuccessCallback, onErrorCallback){
+
+			var uri;
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"download", 
+	        	[{id : songId, uri : uri}]);
+
+		},
+
+		checkDownloadPercentage : function(onSuccessCallback, onErrorCallback){
+
+			var uri;
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"percentage", 
+	        	[]);
 
 		},
 
@@ -221,8 +263,8 @@ module.factory('msCordovaPluginPlayer', function(){
 
 
 	        	}, 
-	        	function(erro){
-	        		console.log(erro);
+	        	function(error){
+	        		console.log(error);
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"seek", 
@@ -236,7 +278,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	function(message){
 	        		isPlaying = false;
 	        	}, 
-	        	function(erro){
+	        	function(error){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"pause", 

@@ -160,7 +160,7 @@ module.controller('TrackController', function($scope,
         var realWidth;
         var realHeight;
 
-        if(width>height){
+        if(width<height){
             realWidth = width;
             realHeight = height;
             screenRatio = (height/width);
@@ -169,6 +169,8 @@ module.controller('TrackController', function($scope,
             realHeight = width;
             screenRatio = (width/height);
         }
+
+        console.log("width:" + (realWidth - 80) + "px");
 
          document.getElementById('msLevelsLeft').setAttribute("style","width:" + (realWidth - 80) + "px");
 

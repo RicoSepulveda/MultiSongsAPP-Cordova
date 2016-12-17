@@ -40,7 +40,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                     <a href="#/featured/{{featuredSong.id}}">
 
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
                         <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
                         <div style="padding-left:10px">
                             <p class="ms-font-big ms-font-white" style="margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.firstRow}}</p>
@@ -69,7 +69,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
                 <a href="#/tracks/{{music.musicId}}">
 
                     <div class="col" style="{{music.margin}};border:0px;padding:0px;">
-                        <img class="full-image" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+                        <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                         <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                         <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
                     </div>
@@ -87,7 +87,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
                 <a href="#/tracks/{{music.musicId}}">
 
                     <div class="col" style="{{music.margin}};border:0px;padding:0px;">
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                         <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                         <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
                     </div>
@@ -123,7 +123,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                     <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in topMusics" href="#/tracks/{{music.musicId}}">
 
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 
                         <h2 style="line-height:20px;">{{music.musicName}}</h2>
 
@@ -172,7 +172,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
                     <div class="row">
                         <div class="col-25" ng-repeat="musicStyle in styleCard" style="{{musicStyle.margin}}border:0px;margin:0px">
                             <a href="#/searchByType/5/{{musicStyle.name}}">
-                                <img class="full-image" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{musicStyle.image}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+                                <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{musicStyle.image}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                                 <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{musicStyle.name}}</p>
                             </a>
                         </div>
@@ -213,7 +213,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                         <ion-item class="item-thumbnail-left item-icon-right" ng-repeat="artist in topArtists" href="#/searchByType/4/{{artist.artistName}}">
 
-                            <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{artist.artistPhotoPath}}" style="width:35px;height:35px;">
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{artist.artistPhotoPath}}" style="width:35px;height:35px;">
 
                             <h2 style="line-height:20px;">{{artist.artistName}}</h2>
 

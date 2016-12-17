@@ -424,12 +424,11 @@
 }
 
 .ms-levels-left{
-  overflow:hidden;
-  width: 73%;
   float:left;
 }
 
 .ms-levels-content{
+  overflow:auto;
   width:480px;
 }
 

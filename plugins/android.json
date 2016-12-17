@@ -15,6 +15,9 @@
         },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "cordova-plugin-inapppurchase": {
+            "PACKAGE_NAME": "audio.multisongs"
         }
     },
     "dependent_plugins": {
