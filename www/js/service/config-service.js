@@ -47,7 +47,50 @@ module.factory('configService', function($http, $interval, $q){
 
             return deferred.promise;
             
+        }, 
+
+
+        changeMusicConfig: function(token, idTrilha, level, pan, mute, solo) { 
+              
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+            
+            var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/config/change",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token : token, idTrilha : idTrilha, level : level, pan : pan, mute : mute, solo : solo}
+            });
+
+            request.success(
+                
+                function( response ) {
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+
+            );
+
+
+            return deferred.promise;
+            
         } 
+
     }
       
      

@@ -13,7 +13,7 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, auth){
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {token : token, key : key, password: password, name : name, idiom : idiom, country : country, type : 2}
+               data: {token : token, key : key, password: password, name : name, idiom : idiom, country : country, type : 2, locale : $rootScope.locale}
             });
 
 
@@ -43,12 +43,12 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, auth){
             
              var request = $http({
                 method: "post",
-                url: ms_hostname + "/MultiSongs/api/auth/login",
+                url: ms_hostname + "/MultiSongs/api/auth/login/v2",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {key : key, password: password}
+               data: {key : key, password: password, locale : $rootScope.locale}
             });
 
 

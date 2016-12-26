@@ -31,12 +31,22 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-inapppurchase": {
+    "cordova-plugin-globalization": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-inapppurchase"
+            "id": "cordova-plugin-globalization"
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cc.fovea.cordova.purchase": {
+        "source": {
+            "type": "registry",
+            "id": "cc.fovea.cordova.purchase"
+        },
+        "is_top_level": true,
+        "variables": {
+            "BILLING_KEY": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlu4021JWWKzhMyRtA795rawySipa8mL4buS4SyrBPGyzEz4HsfwROzkgj0z9SdT4WgtlBbGkkJqaQvPlkf92kvI+r7/qJgYC9uqAZUKL7YzAFEAl+9gRyiYFD52Emnf1z4uKpx8CyK2nqH910Qp10tRFAufjx+P36p/JJBWTtyKOn7yVdzmDeISFPqbLmoujvlRd4D+VKdVj1dH41a9Er7HCTO/ARqkffV2NbwBLJvN9Jusz0KaHfdCIxeUNxCKuQVGFak5Qk91ec8veDdn0J2mFNJxS8DINXUw+8LqfiFSfpUNzE4nQLI/BqiJabsEOzrbT7fWDAfpz6iZDDs4sKQIDAQAB"
+        }
     }
 }

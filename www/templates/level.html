@@ -29,7 +29,7 @@
 
 						<ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" style="background:#333333;">
 
-							<img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{msPlayer.getPlayer().currentMusic.artistPhotoPath}}" style="width:58px;height:58px;"><p ng-if="msPlayer.getPlayer().currentMusic.status != 1" style="position:absolute;top:75px;left:10px;width:60px;text-align:center;color:#FFFFFF;">Demo</p>
+							<img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{msPlayer.getPlayer().currentMusic.artistPhotoPath}}" style="width:58px;height:58px;"><p ng-if="msPlayer.getPlayer().currentMusic.status != 1" style="position:absolute;top:75px;left:10px;width:60px;text-align:center;color:#FFFFFF;">Demo</p>
 
 	                        <h2 style="line-height:20px;margin-bottom:0px;color:#FFFFFF;">{{msPlayer.getPlayer().currentMusic.musicName}}</h2>
 
@@ -118,8 +118,8 @@
 							<img class="ms-level-leds-right" ng-src="{{track.leds.right}}"/>
 
 							<a ng-click="changeEnabled(track)">
-								<img ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.enabled == true" class="ms-level-instrument" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{track.instrumentEnabledImagePath}}"/>
-								<img ng-if="track.enabled == false || (msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.isLoaded == true)" class="ms-level-instrument" ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{track.instrumentDisabledImagePath}}"/>
+								<img ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.enabled == true" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentEnabledImagePath}}"/>
+								<img ng-if="track.enabled == false || (msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.isLoaded == true)" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentDisabledImagePath}}"/>
 
 								<img ng-if="msPlayer.getPlayer().statusisPlayerInConsistentStatus && track.isLoaded == false" class="ms-level-instrument" src="img/loading.gif"/>
 							</a>
@@ -138,7 +138,7 @@
 
 				<div class="ms-level">
 						
-					<img class="ms-level-base" src="img/level.png"/>
+					<img class="ms-level-base" src="img/level-master.png"/>
 
 					<div class="ms-level-pan">
 							<input type="range" min=-1 max=1 step=0.1 ng-model="msPlayer.getPlayer().masterPan" ng-change="changeMasterPan()"/>
@@ -162,6 +162,7 @@
 
 
 		</div>
+
 </div>
 
 <div class="row">
@@ -175,25 +176,36 @@
 </div>
 
 <div class="col-50 ms-buy-button">
-		<div class="row">
-            <div class="row" style="padding-top:0px;padding-bottom:0px;text-align:center;">
-                <div class="col">
-                	<span ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && !msPlayer.getPlayer().status.isDownloading">
-	                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price > 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="download()">
-	                    	{{i18.player.buyLabel}} {{msPlayer.getPlayer().currentMusic.price}}
-	                    </button>
-	                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price == 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="download()">
-	                    	{{i18.player.freeDownloadLabel}}
-	                    </button>
-	                    <div ng-if="msPlayer.getPlayer().currentMusic.status != 1" class="file-info-description" style="padding-top:5px;">{{msPlayer.getPlayer().currentMusic.ccdescription}}</div>
-                    </span>
-	                <span ng-if="msPlayer.getPlayer().downloadProgress > 0">
-	                	<progress id="progressbar" max="100" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>
-	                	<div class="file-info-description" style="padding-top:5px;">{{i18.player.downloadingLabel}}...</div>
-	            	</span>
-	                <span class="file-info-description" ng-if="msPlayer.getPlayer().currentMusicWasSuccessfullyDownloaded">
-	                	<div>{{i18.player.downloadCompleteLabel}} <a href='#/musics' class="ms-font-multisongs">{{i18.player.availableLabel}}.</a></div>
-	            	</span>
+
+	<div class="row">
+
+        <div class="row" style="padding-top:0px;padding-bottom:0px;text-align:center;">
+
+            <div class="col">
+
+            	<span ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && !msPlayer.getPlayer().status.isDownloading">
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price > 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                    	{{i18.general.buyLabel}} {{store.price}}<!--{{msPlayer.getPlayer().currentMusic.price}}-->
+                    </button>
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price == 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                    	{{i18.player.freeDownloadLabel}}
+                    </button>
+
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().saveButtonEnabled == true && msPlayer.getPlayer().currentMusic.status == 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                    	{{i18.player.saveButtonLabel}}
+                    </button>
+
+
+                    <div ng-if="msPlayer.getPlayer().currentMusic.status != 1" class="file-info-description" style="padding-top:5px;">{{msPlayer.getPlayer().currentMusic.ccdescription}}</div>
+                </span>
+                <span ng-if="msPlayer.getPlayer().downloadProgress > 0">
+                	<progress id="progressbar" max="100" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>
+                	<div class="file-info-description" style="padding-top:0px;">{{i18.player.downloadingLabel}}...</div>
+            	</span>
+                <span class="file-info-description" ng-if="msPlayer.getPlayer().currentMusicWasSuccessfullyDownloaded">
+                	<div>{{i18.player.downloadCompleteLabel}} <a href='#/musics' class="ms-font-multisongs">{{i18.player.availableLabel}}.</a></div>
+            	</span>
+
             </div>
 
         </div>

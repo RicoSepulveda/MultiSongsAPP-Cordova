@@ -111,7 +111,7 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
 
                     <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-class="{'activeItem': active}" ng-repeat="music in msPlayer.getPlayer().setlist.musics" ng-click="loadMusic(music.musicId)">
 
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;"/>
 
                         <h2 style="line-height:20px;">{{music.musicName}}</h2>
 

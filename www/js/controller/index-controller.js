@@ -6,6 +6,7 @@ module.controller('IndexController', function($scope,
                                               $rootScope,
                                               $ionicModal,
                                               $interval,
+                                              $ionicLoading,
                                               featuredMusicService, 
                                               musicService, 
                                               artistService, 
@@ -172,7 +173,8 @@ module.controller('IndexController', function($scope,
                     freeDownloadLabel : response[0].playerBean.freeDownloadLabel,
                     downloadCompleteLabel : response[0].playerBean.downloadCompleteLabel,
                     downloadingLabel : response[0].playerBean.downloadingLabel,
-                    availableLabel : response[0].playerBean.availableLabel
+                    availableLabel : response[0].playerBean.availableLabel,
+                    saveButtonLabel : response[0].playerBean.saveButtonLabel
                 };
 
                 var config = {
@@ -269,23 +271,36 @@ module.controller('IndexController', function($scope,
                 $scope.teste = 'Failed'; 
             }
         ).finally(function() {
+            $ionicLoading.hide();
         });
                
     }
 
+    document.addEventListener("deviceready", function(){
+
+        navigator.globalization.getLocaleName(function(result){
+
+            $rootScope.preferredLanguage = result.value.substring(2);
+            $rootScope.locale = result.value.substring(3,5);
+
+            loadLanguageModalIfNeeded();
+
+        }, function(err){console.log(err)});
+        
+    }, false);
+
+
     $scope.$watch("$viewContentLoaded", function() {
+
+    });
+
+    var loadLanguageModalIfNeeded = function(){
 
         var key;
         var password;
+        var spinner = '<ion-spinner icon="dots" class="spinner-stable"></ion-spinner><br/>';
 
         $scope.loginData = {key: "", password: ""};
-
-        $ionicModal.fromTemplateUrl('templates/level.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
-            $scope.modal = modal;
-        });
 
         $ionicModal.fromTemplateUrl('templates/language.html', {
             scope: $rootScope,
@@ -296,6 +311,8 @@ module.controller('IndexController', function($scope,
 
             if (window.localStorage.getItem("key")){
 
+                $ionicLoading.show({ template: spinner + 'Loading Backing Tracks...' });
+
                 key = window.localStorage.getItem("key");
                 password = window.localStorage.getItem("password");
                 
@@ -303,7 +320,7 @@ module.controller('IndexController', function($scope,
                    
                     $interval(function(){
                         cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
-                    },100);
+                    },1000);
 
                     onLoad(response.token, response.userType);
 
@@ -315,7 +332,7 @@ module.controller('IndexController', function($scope,
 
         });
 
-    });
+    }
 
 
 var teste = function(token){

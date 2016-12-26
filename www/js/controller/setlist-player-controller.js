@@ -10,14 +10,6 @@ module.controller('SetlistPlayerController', function($scope,
                                                       msPlayer) {
 
 
-    document.addEventListener("deviceready", onDeviceReady, false);
-
-    function onDeviceReady() {
-        
-        msPlayer.loadSetlist($stateParams.id);
-        
-    }
-
     $scope.suspend = function(){
 
         msPlayer.suspend($scope);
@@ -46,8 +38,7 @@ module.controller('SetlistPlayerController', function($scope,
 
     $scope.loadMusic = function(musicId){
 
-        msPlayer.stop();
-        msPlayer.loadMusic(musicId);
+        msPlayer.gotoMusicInSetlist(musicId);
 
     };
 

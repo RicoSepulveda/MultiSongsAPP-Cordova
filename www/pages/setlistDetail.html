@@ -150,7 +150,7 @@ ms-setlist .item-right-edit {
 
                         <div class="row" style="padding-top:20px;padding-bottom:20px;"  ng-if="setlistMusics.length == 0">
                             <div class="col-33">
-                                <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/setlist-music-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                                <img src="{{environment}}/MultiSongs/api/download/image/{{token}}/setlist-music-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
                             </div>
                             <div class="col=77">
                                 <p style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;">{{i18.setlistDetail.tutorialDescriptionLabel}}</p>
@@ -168,7 +168,7 @@ ms-setlist .item-right-edit {
                                     <ion-reorder-button ng-if="showChangeItemPosition" class="ion-navicon ms-font-multisongs" on-reorder="moveItem(music, $fromIndex, $toIndex)">
                                     </ion-reorder-button>
 
-                                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;" ng-if="showChangeItemPosition == false"/>
+                                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;" ng-if="showChangeItemPosition == false"/>
 
 
                                     <a href="#/tracks/{{music.musicId}}">
@@ -242,7 +242,7 @@ ms-setlist .item-right-edit {
                                 <ion-toggle ng-repeat="music in musics" style="padding:0px;" ng-model="music.added" ng-checked="music.added">
                                     <div class="item-thumbnail-left toggle-small" >
                                     
-                                      <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;">
+                                      <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;">
                                       <h2>{{music.musicName}}</h2>
                                       <p style="padding:0px;margin:0px;line-height:16px;">{{music.artistName}}</p>
                                     </div>

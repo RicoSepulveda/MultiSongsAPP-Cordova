@@ -20,7 +20,7 @@
         
             <div style="background-color:#000000;">
 
-                <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
+                <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
                 <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
                 <div style="padding-left:10px">
                     <p class="ms-font-big ms-font-white" style="margin-bottom: 0px;padding-bottom:0px;">{{featuredSong.firstRow}}</p>
@@ -38,7 +38,7 @@
 
                     <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in featuredSong.musics" href="#/tracks/{{music.musicId}}">
 
-                        <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 
                         <h2 style="line-height:20px;">{{music.musicName}}</h2>
 
