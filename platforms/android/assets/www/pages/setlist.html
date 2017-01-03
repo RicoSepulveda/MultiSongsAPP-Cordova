@@ -46,7 +46,7 @@
 
                         <div class="row" style="padding-top:20px;padding-bottom:20px;"  ng-if="setlistGroupsSize == 0">
                             <div class="col-33">
-                                <img src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/setlist-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
+                                <img src="{{environment}}/MultiSongs/api/download/image/{{token}}/setlist-add-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
                             </div>
                             <div class="col=77">
                                 <p ng-bind-html="i18.setlist.tutorialLabel" style="padding-left:10px;margin-left:10px;vertical-align:center;margin-right:10px;font-size:14px;color:#333333;font-weight: 350;"></p>
@@ -66,7 +66,7 @@
                         
                         <ion-list>
                             <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="setList in setLists" href="#/setlistDetail/{{setList.id}}">
-                                <img ng-src="http://www.multisongs.audio/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;"> 
+                                <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/ivete.jpg" style="width:45px;height:45px;"> 
                                 <h2 style="line-height:20px;">{{setList.title}}</h2>
                                 <p style="padding:0px;margin:0px;line-height:20px;">{{setList.musics.length}} backing tracks</p>
                                 <ion-option-button ng-click="openModal(setList)">

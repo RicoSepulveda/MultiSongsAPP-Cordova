@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="audio.multisongs" version="0.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="audio.multisongs" version="0.0.76" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
@@ -13,19 +13,26 @@
     <feature name="FileTransfer">
         <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
     </feature>
-    <feature name="InAppBillingV3">
-        <param name="android-package" value="com.alexdisler.inapppurchases.InAppBillingV3" />
+    <feature name="Globalization">
+        <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
+    </feature>
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
+    </feature>
+    <feature name="SplashScreen">
+        <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen" />
+        <param name="onload" value="true" />
     </feature>
     <feature name="MultiSongsPlugin">
         <param name="android-package" value="audio.multisongs.plugin.MultiSongsPlugin" />
     </feature>
     <allow-intent href="market:*" />
-    <splash density="land-ldpi" src="resources\android\splash\drawable-land-ldpi-screen.png" />
-    <splash density="land-mdpi" src="resources\android\splash\drawable-land-mdpi-screen.png" />
-    <splash density="land-hdpi" src="resources\android\splash\drawable-land-hdpi-screen.png" />
-    <splash density="land-xhdpi" src="resources\android\splash\drawable-land-xhdpi-screen.png" />
-    <splash density="land-xxhdpi" src="resources\android\splash\drawable-land-xxhdpi-screen.png" />
-    <splash density="land-xxxhdpi" src="resources\android\splash\drawable-land-xxxhdpi-screen.png" />
+    <icon density="ldpi" src="resources\android\icon\drawable-ldpi-icon.png" />
+    <icon density="mdpi" src="resources\android\icon\drawable-mdpi-icon.png" />
+    <icon density="hdpi" src="resources\android\icon\drawable-hdpi-icon.png" />
+    <icon density="xhdpi" src="resources\android\icon\drawable-xhdpi-icon.png" />
+    <icon density="xxhdpi" src="resources\android\icon\drawable-xxhdpi-icon.png" />
+    <icon density="xxxhdpi" src="resources\android\icon\drawable-xxxhdpi-icon.png" />
     <splash density="port-ldpi" src="resources\android\splash\drawable-port-ldpi-screen.png" />
     <splash density="port-mdpi" src="resources\android\splash\drawable-port-mdpi-screen.png" />
     <splash density="port-hdpi" src="resources\android\splash\drawable-port-hdpi-screen.png" />
@@ -39,7 +46,7 @@
     <author email="contact@multisongs.audio" href="http://www.multisongs.audio">
         MultiSongs Team
   </author>
-    <icon src="res/logo.png" />
+    <icon src="resources\android\icon\drawable-xhdpi-icon.png" />
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -50,8 +57,8 @@
     <allow-intent href="geo:*" />
     <preference name="ShowSplashScreen" value="true" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="30000" />
-    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreenDelay" value="4000" />
+    <preference name="AutoHideSplashScreen" value="true" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="FadeSplashScreen" value="false" />
     <preference name="orientation" value="portrait" />

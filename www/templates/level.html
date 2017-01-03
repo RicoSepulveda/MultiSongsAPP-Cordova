@@ -85,7 +85,70 @@
 
 			<div class="ms-levels-left" id="msLevelsLeft">
 
-				<div class="ms-levels-content">
+
+
+
+
+				<div id="msLevelsContent" class="ms-levels-content">
+
+        <ion-slides auto-play="true" options="slides.options" slider="data.slider" ng-if="msPlayer.getPlayer().showCards == true">
+
+            <ion-slide-page ng-repeat="trackCard in msPlayer.getPlayer().currentMusic.trackCards">
+
+
+						<div id="" class="ms-level" ng-repeat="track in trackCard">
+								
+							<img class="ms-level-base" src="img/level.png"/>
+
+							<div class="ms-level-message-window">	
+								<div class="ms-level-message" ng-if="track.showMessage">{{track.message}}</div>
+							</div>
+							
+
+							<a ng-click="changeSolo(track)">
+								<img ng-if="track.solo == false && track.enabled == true" class="ms-level-solo-btn" src="img/solo-disabled-btn.png"/>
+								<img ng-if="track.solo == true && track.enabled == true" class="ms-level-solo-btn" src="img/solo-active-btn.png"/>
+								<img ng-if="track.enabled == false" class="ms-level-solo-btn" src="img/solo-btn.png"/>
+							</a>
+
+							<div class="ms-level-pan">
+									<input ng-if="track.enabled == true" type="range" min=-1 max=1 step=0.05 ng-model="track.pan" ng-change="changePan(track)"/>
+									<input ng-if="track.enabled == false" type="range" min=-1 max=1 step=0.05 value=0 disabled/>
+							</div>
+
+							<div class="ms-level-level">
+									<input ng-if="track.enabled == true"  type="range" min=0 max=1 step=0.05 ng-model="track.level" ng-change="changeLevel(track)"/>
+									<input ng-if="track.enabled == false"  type="range" min=0 max=1 step=0.05 value=0 disabled/>
+							</div>
+
+							<img class="ms-level-leds-left" ng-src="{{track.leds.left}}"/>
+							<img class="ms-level-leds-right" ng-src="{{track.leds.right}}"/>
+
+							<a ng-click="changeEnabled(track)">
+								<img ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.enabled == true" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentEnabledImagePath}}"/>
+								<img ng-if="track.enabled == false || (msPlayer.getPlayer().status.isPlayerInConsistentStatus && track.isLoaded == true)" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentDisabledImagePath}}"/>
+
+								<img ng-if="msPlayer.getPlayer().statusisPlayerInConsistentStatus && track.isLoaded == false" class="ms-level-instrument" src="img/loading.gif"/>
+							</a>
+							
+							<div class="ms-level-instrument-name">{{track.instrumentName}}</div>
+
+						</div>
+
+
+            </ion-slide>
+
+        </ion-slide-box>
+
+				</div>
+
+
+
+
+
+<!--
+
+
 
 					<div ng-repeat="track in msPlayer.getPlayer().currentMusic.tracks">
 
@@ -130,7 +193,8 @@
 
 					</div>
 
-				</div>
+-->
+
 
 			</div>
 

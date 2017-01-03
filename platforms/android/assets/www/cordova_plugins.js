@@ -164,6 +164,34 @@ module.exports = [
         "clobbers": [
             "window.FileTransfer"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-globalization/www/GlobalizationError.js",
+        "id": "cordova-plugin-globalization.GlobalizationError",
+        "clobbers": [
+            "window.GlobalizationError"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-globalization/www/globalization.js",
+        "id": "cordova-plugin-globalization.globalization",
+        "clobbers": [
+            "navigator.globalization"
+        ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
+        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
+        "clobbers": [
+            "store"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+        "id": "cordova-plugin-splashscreen.SplashScreen",
+        "clobbers": [
+            "navigator.splashscreen"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -172,7 +200,10 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.2.2",
     "cordova-plugin-compat": "1.0.0",
     "cordova-plugin-file": "4.3.0",
-    "cordova-plugin-file-transfer": "1.6.0"
+    "cordova-plugin-file-transfer": "1.6.0",
+    "cordova-plugin-globalization": "1.0.5",
+    "cc.fovea.cordova.purchase": "6.0.0",
+    "cordova-plugin-splashscreen": "4.0.1"
 };
 // BOTTOM OF METADATA
 });

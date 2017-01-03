@@ -53,8 +53,8 @@ module.controller('SetlistController', function($scope,
             function(response) { 
 
                 var alertPopup = $ionicPopup.alert({
-                    title: 'SetList criada',
-                    template: 'Sua SetList foi criada com sucesso. Agora você pode adicionar as músicas que você baixou à sua nova SetList.'
+                    title: $rootScope.i18.setlist.createdMessageTitle,
+                    template: $rootScope.i18.setlist.createdMessage
                 });
 
                 alertPopup.then(function(res) {
@@ -149,8 +149,8 @@ module.controller('SetlistController', function($scope,
         $ionicListDelegate.closeOptionButtons();
         
        var confirmPopup = $ionicPopup.confirm({
-         title: 'Remover Setlist',
-         template: 'Você deseja realmente remover a setlist? Essa ação não poderá ser desfeita.'
+         title: $rootScope.i18.setlist.dropMessageTitle,
+         template: $rootScope.i18.setlist.dropMessage
        });
 
        confirmPopup.then(function(res) {

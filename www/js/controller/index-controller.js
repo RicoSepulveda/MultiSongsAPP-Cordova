@@ -145,7 +145,11 @@ module.controller('IndexController', function($scope,
                     classLabel : response[0].setlistBean.classLabel,
                     otherLabel : response[0].setlistBean.otherLabel,
                     tutorialLabel :  response[0].setlistBean.tutorialLabel,
-                    tutorialDescriptionLabel : response[0].setlistBean.tutorialDescriptionLabel
+                    tutorialDescriptionLabel : response[0].setlistBean.tutorialDescriptionLabel,
+                    createdMessageTitle : response[0].setlistBean.createdMessageTitle,
+                    createdMessage : response[0].setlistBean.createdMessage,
+                    dropMessageTitle : response[0].setlistBean.dropMessageTitle,
+                    dropMessage : response[0].setlistBean.dropMessage
                 };
 
                 var musics = {

@@ -188,7 +188,9 @@ module.controller('TrackController', function($scope,
 
         console.log("width:" + (realWidth - 80) + "px");
 
-         document.getElementById('msLevelsLeft').setAttribute("style","width:" + (realWidth - 80) + "px");
+        document.getElementById('msLevelsLeft').setAttribute("style","width:240px");
+        document.getElementById('msLevelsContent').setAttribute("style","width:" + (realWidth - 80) + "px");
+        //document.getElementById('msLevelsLeft').setAttribute("style","width:" + 240 + "px");
 
     }
 
@@ -202,6 +204,8 @@ module.controller('TrackController', function($scope,
 
         $ionicNavBarDelegate.showBar(false);
         $scope.token = auth.token;
+
+        $scope.slides  = {options : {autoplay:3000, autoplayDisableOnInteraction:true}};
 
         isAnApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
 

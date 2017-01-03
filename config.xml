@@ -1,67 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-
 <widget id="audio.multisongs" version="0.0.76" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  
   <name>MultiSongs</name>
-  
   <description>
         Improve your shows with incredible arrangements.
   </description>
-  
   <author email="contact@multisongs.audio" href="http://www.multisongs.audio">
         MultiSongs Team
   </author>
-  
-  <icon src="res/logo.png"/>
-  
+  <icon src="resources\android\icon\drawable-xhdpi-icon.png"/>
   <content src="index.html"/>
-  
   <plugin name="cordova-plugin-whitelist" spec="1"/>
-  
   <access origin="*"/>
-  
   <allow-intent href="http://*/*"/>
   <allow-intent href="https://*/*"/>
   <allow-intent href="tel:*"/>
   <allow-intent href="sms:*"/>
   <allow-intent href="mailto:*"/>
   <allow-intent href="geo:*"/>
-  
   <platform name="android">
-    
     <allow-intent href="market:*"/>
-    <splash src="resources\android\splash\drawable-land-ldpi-screen.png" density="land-ldpi"/>
-    <splash src="resources\android\splash\drawable-land-mdpi-screen.png" density="land-mdpi"/>
-    <splash src="resources\android\splash\drawable-land-hdpi-screen.png" density="land-hdpi"/>
-    <splash src="resources\android\splash\drawable-land-xhdpi-screen.png" density="land-xhdpi"/>
-    <splash src="resources\android\splash\drawable-land-xxhdpi-screen.png" density="land-xxhdpi"/>
-    <splash src="resources\android\splash\drawable-land-xxxhdpi-screen.png" density="land-xxxhdpi"/>
+    <icon src="resources\android\icon\drawable-ldpi-icon.png" density="ldpi"/>
+    <icon src="resources\android\icon\drawable-mdpi-icon.png" density="mdpi"/>
+    <icon src="resources\android\icon\drawable-hdpi-icon.png" density="hdpi"/>
+    <icon src="resources\android\icon\drawable-xhdpi-icon.png" density="xhdpi"/>
+    <icon src="resources\android\icon\drawable-xxhdpi-icon.png" density="xxhdpi"/>
+    <icon src="resources\android\icon\drawable-xxxhdpi-icon.png" density="xxxhdpi"/>
     <splash src="resources\android\splash\drawable-port-ldpi-screen.png" density="port-ldpi"/>
     <splash src="resources\android\splash\drawable-port-mdpi-screen.png" density="port-mdpi"/>
     <splash src="resources\android\splash\drawable-port-hdpi-screen.png" density="port-hdpi"/>
     <splash src="resources\android\splash\drawable-port-xhdpi-screen.png" density="port-xhdpi"/>
     <splash src="resources\android\splash\drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
     <splash src="resources\android\splash\drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
-
   </platform>
-
   <platform name="ios">
     <allow-intent href="itms:*"/>
     <allow-intent href="itms-apps:*"/>
   </platform>
-
-  <engine name="android" spec="~5.1.1"/> 
-
+  <engine name="android" spec="~5.1.1"/>
   <preference name="ShowSplashScreen" value="true"/>
   <preference name="SplashScreen" value="screen"/>
-  <preference name="SplashScreenDelay" value="30000"/>
-  <preference name="AutoHideSplashScreen" value="false"/>
+  <preference name="SplashScreenDelay" value="4000"/>
+  <preference name="AutoHideSplashScreen" value="true"/>
   <preference name="SplashShowOnlyFirstTime" value="false"/>
   <preference name="FadeSplashScreen" value="false"/>
-  <preference name="orientation" value="portrait" />
-
-<feature name="SplashScreen">
-  <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>
-</feature>
-
+  <preference name="orientation" value="portrait"/>
+  <feature name="SplashScreen">
+    <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>
+  </feature>
 </widget>
