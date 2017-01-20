@@ -81,13 +81,22 @@ module.controller('TrackController', function($scope,
 
             } else {
 
-                // SO REALIZA A COMPRA SE ESTIVER CONFIGURADO PARA ISSO
-                if (window.localStorage.getItem("shouldFinishPurchase") == true){
-                    store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
-                } else {
-                    console.log("ATTENTION! =======>>>>>>> PURCHASE WAS NOT REGISTRED ON THE STORE! APP MUST BE RECONFIGURED AND REDEPLOYED.");
-                    finishPurchase(); // Chama diretamente o finishPurchase sem o uso do evento da store
+                if (msPlayer.getPlayer().currentMusic.price == 0){ // Se musica gratuita...
+                    
+                    download();
+
+                }else{
+
+                    // SO REALIZA A COMPRA SE ESTIVER CONFIGURADO PARA ISSO
+                    //if (window.localStorage.getItem("shouldFinishPurchase") == true){
+                        store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
+                    //} else {
+                    //    console.log("ATTENTION! =======>>>>>>> PURCHASE WAS NOT REGISTRED ON THE STORE! APP MUST BE RECONFIGURED AND REDEPLOYED.");
+                    //    finishPurchase(); // Chama diretamente o finishPurchase sem o uso do evento da store
+                    //}
+
                 }
+
 
             }
 
@@ -235,16 +244,39 @@ module.controller('TrackController', function($scope,
         var productId = "audio.multisongs.multitrack." + $stateParams.musicId;
         var promisses = [];
 
+        $rootScope.musicId = $stateParams.musicId;
+
         // Let's set a pretty high verbosity level, so that we see a lot of stuff
         // in the console (reassuring us that something is happening).
         store.verbosity = store.DEBUG;
 
-        // We register a dummy product. It's ok, it shouldn't
-        // prevent the store "ready" event from firing.
-        store.register({
-            id:    productId,
-            type:  store.CONSUMABLE
-        });
+        if (!store.products.byId[productId]){
+
+            console.log("Product " + productId + " was not registered before.");
+
+            // We register a dummy product. It's ok, it shouldn't
+            // prevent the store "ready" event from firing.
+            store.register({
+                id:    productId,
+                alias: $stateParams.musicId,
+                type:  store.CONSUMABLE
+            });
+
+            store.when(productId).updated(function (product) {
+                console.log(product);
+                $rootScope.store = {price : product.price};
+                window.localStorage.setItem(product.id, product.price);
+            });
+
+            store.when(productId).approved(function (product){
+                download();
+                product.finish();
+            });
+
+        }else{
+            console.log(window.localStorage.getItem(productId));
+            $rootScope.store = {price : window.localStorage.getItem(productId)};
+        }
 
         // When every goes as expected, it's time to celebrate!
         // The "ready" event should be welcomed with music and fireworks,
@@ -253,19 +285,12 @@ module.controller('TrackController', function($scope,
             console.log("\\o/ STORE READY \\o/");
         });
 
-        store.when(productId).updated(function (product) {
-            $rootScope.store = {price : product.price};
-            console.log(product);
-        });
-
-        store.when(productId).approved(function(product){finishPurchase(product);});
-
         // After we've done our setup, we tell the store to do
         // it's first refresh. Nothing will happen if we do not call store.refresh()
         store.refresh();
 
     }
-
+/*
     var finishPurchase = function(product){
 
 
@@ -277,17 +302,12 @@ module.controller('TrackController', function($scope,
         });
 
         alertPopup.then(function(res) {
-            donwload(function(){
-
-                if (window.localStorage.getItem("shouldFinishPurchase") == true){
-                    product.finish();
-                }
-
-            });
+            donwload();
+            product.finish();
         });
 
     }
-
+*/
     var download = function(callbackFunction){
 
         var promisses = [];

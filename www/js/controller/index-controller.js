@@ -106,7 +106,7 @@ module.controller('IndexController', function($scope,
                     editLabel : response[0].generalBean.editLabel,
                     removeLabel : response[0].generalBean.removeLabel,
                     saveLabel : response[0].generalBean.saveLabel,
-                    wishlistButtonLabel : response[0].generalBean.wishlistButtonLabel
+                    wishlistButtonLabel : response[0].generalBean.wishlistLabel
 
 
                 };

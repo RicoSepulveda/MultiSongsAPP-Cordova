@@ -182,7 +182,7 @@ module.controller('MainController', function($scope,
         window.localStorage.setItem("environment_name", "environment_homolog");
 
         window.localStorage.setItem("environment", window.localStorage.getItem(window.localStorage.getItem("environment_name")));
-        window.localStorage.setItem("shouldFinishPurchase", false); // COLOCAR TRUE PARA PRODUCAO
+        //window.localStorage.setItem("shouldFinishPurchase", true); // COLOCAR TRUE PARA PRODUCAO
 
     });
     

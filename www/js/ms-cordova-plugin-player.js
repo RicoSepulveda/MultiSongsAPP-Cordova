@@ -34,8 +34,28 @@ module.factory('msCordovaPluginPlayer', function(){
 		
 		},
 
-		unload : function(){
+		unload : function(onSuccessCallback, onErrorCallback){
+
+	        cordova.exec(
+	        	function(message){
+	        		isPlaying = false;
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        			console.log(error);
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"unload", 
+	    		[]
+	    	);
+
 			isPlaying = false;
+
 		},
 
 		state : function(){
