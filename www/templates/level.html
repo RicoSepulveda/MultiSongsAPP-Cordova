@@ -29,32 +29,32 @@
 
 						<ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" style="background:#333333;">
 
-							<img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{msPlayer.getPlayer().currentMusic.artistPhotoPath}}" style="width:58px;height:58px;"><p ng-if="msPlayer.getPlayer().currentMusic.status != 1" style="position:absolute;top:75px;left:10px;width:60px;text-align:center;color:#FFFFFF;">Demo</p>
+							<img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{msPlayer.getPlayer().currentMusic.music.artistPhotoPath}}" style="width:58px;height:58px;"><p ng-if="msPlayer.getPlayer().currentMusic.music.status != 1" style="position:absolute;top:75px;left:10px;width:60px;text-align:center;color:#FFFFFF;">Demo</p>
 
-	                        <h2 style="line-height:20px;margin-bottom:0px;color:#FFFFFF;">{{msPlayer.getPlayer().currentMusic.musicName}}</h2>
+	                        <h2 style="line-height:20px;margin-bottom:0px;color:#FFFFFF;">{{msPlayer.getPlayer().currentMusic.music.musicName}}</h2>
 
-	                        <p style="padding:0px;margin:0px;line-height:15px;">{{msPlayer.getPlayer().currentMusic.artistName}} - {{msPlayer.getPlayer().currentMusic.style}}</p>
+	                        <p style="padding:0px;margin:0px;line-height:15px;">{{msPlayer.getPlayer().currentMusic.music.artistName}} - {{msPlayer.getPlayer().currentMusic.music.style}}</p>
 
-							<div class="ms-player-slider" style="vertical-align:middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input id="slicePlayer" type="range" min=0 max={{msPlayer.getPlayer().currentMusic.calculatedTotalTime}} step=1 ng-model="msPlayer.getPlayer().currentTime" ng-change="changePosition()"/><div style="float:right;">&nbsp;{{msPlayer.getPlayer().currentTimeAsString}}</div></div>
+							<div class="ms-player-slider" style="vertical-align:middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input id="slicePlayer" type="range" min=0 max={{msPlayer.getPlayer().currentMusic.music.calculatedTotalTime}} step=1 ng-model="msPlayer.getPlayer().currentTime" ng-change="changePosition()"/><div style="float:right;">&nbsp;{{msPlayer.getPlayer().currentTimeAsString}}</div></div>
 
 	                        <div>
 
 								<div class="file-info-buttons">
 									<div class="file-info-button">
 										<div class="file-info-button-title">Key</div>
-										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.key == null || msPlayer.getPlayer().currentMusic.key == ''?"--":msPlayer.getPlayer().currentMusic.key}}</div>
+										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.music.key == null || msPlayer.getPlayer().currentMusic.music.key == ''?"--":msPlayer.getPlayer().currentMusic.music.key}}</div>
 									</div>
 									<div class="file-info-button">
 										<div class="file-info-button-title">Bpm</div>
-										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.bpm == null?"--":msPlayer.getPlayer().currentMusic.bpm}}</div>
+										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.music.bpm == null?"--":msPlayer.getPlayer().currentMusic.music.bpm}}</div>
 									</div>
 									<div class="file-info-button">
 										<div class="file-info-button-title">Kbps</div>
-										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.bits == null?"--":msPlayer.getPlayer().currentMusic.bits}}</div>
+										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.music.bits == null?"--":msPlayer.getPlayer().currentMusic.music.bits}}</div>
 									</div>
 									<div class="file-info-button">
 										<div class="file-info-button-title">Khz</div>
-										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.khz == null?"--":msPlayer.getPlayer().currentMusic.khz}}</div>
+										<div class="file-info-button-value">{{msPlayer.getPlayer().currentMusic.music.khz == null?"--":msPlayer.getPlayer().currentMusic.music.khz}}</div>
 									</div>
 								</div>
 
@@ -136,9 +136,9 @@
 						</div>
 
 
-            </ion-slide>
+            </ion-slide-page>
 
-        </ion-slide-box>
+        </ion-slides>
 
 				</div>
 
@@ -233,7 +233,7 @@
 
 <div class="col-50">
 
-    <span class="file-info-description" style="text-align:right;" ng-if="msPlayer.getPlayer().currentMusic.status != 1">
+    <span class="file-info-description" style="text-align:right;" ng-if="msPlayer.getPlayer().currentMusic.music.status != 1">
     	<div style="padding-top:5px;">This is a 30 seconds DEMO. Download the full song and access it on <a href='#/musics' class="ms-font-multisongs">your musics</a> anytime</div>
 	</span>
 
@@ -248,19 +248,19 @@
             <div class="col">
 
             	<span ng-if="msPlayer.getPlayer().status.isPlayerInConsistentStatus && !msPlayer.getPlayer().status.isDownloading">
-                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price > 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.music.price > 0 && msPlayer.getPlayer().currentMusic.music.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
                     	{{i18.general.buyLabel}} {{store.price}}<!--{{msPlayer.getPlayer().currentMusic.price}}-->
                     </button>
-                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.price == 0 && msPlayer.getPlayer().currentMusic.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().currentMusic.music.price == 0 && msPlayer.getPlayer().currentMusic.music.status != 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
                     	{{i18.player.freeDownloadLabel}}
                     </button>
 
-                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().saveButtonEnabled == true && msPlayer.getPlayer().currentMusic.status == 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                	<button class="button small-button-buy" ng-if="msPlayer.getPlayer().saveButtonEnabled == true && msPlayer.getPlayer().currentMusic.music.status == 1" ng-click="verifyIfLoginIsNeededBeforeDownload()">
                     	{{i18.player.saveButtonLabel}}
                     </button>
 
 
-                    <div ng-if="msPlayer.getPlayer().currentMusic.status != 1" class="file-info-description" style="padding-top:5px;">{{msPlayer.getPlayer().currentMusic.ccdescription}}</div>
+                    <div ng-if="msPlayer.getPlayer().currentMusic.music.status != 1" class="file-info-description" style="padding-top:5px;">{{msPlayer.getPlayer().currentMusic.music.ccdescription}}</div>
                 </span>
                 <span ng-if="msPlayer.getPlayer().downloadProgress > 0">
                 	<progress id="progressbar" max="100" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>

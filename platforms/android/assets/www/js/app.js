@@ -72,6 +72,16 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
             }
         }
    })
+   .state('createAccount', { 
+       cache: false,
+       url: '/createAccount', 
+       views: {
+            "config-view": {
+                templateUrl: "templates/account/createAccount.html",
+                controller: "ConfigController"
+            }
+        }
+   })
    .state('searchByType', { 
        cache: false,
        url: '/searchByType/:type/:keyword', 

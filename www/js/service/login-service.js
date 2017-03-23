@@ -2,26 +2,28 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, auth){
     
     return {
 
-        createAccount: function(token, key, password, name, idiom, country, callbackFunction) { 
+        createAccount: function(token, key, password, name, idiom, country, age, instruments, generes, objectives, callbackFunction) { 
 
             var ms_hostname = window.localStorage.getItem("environment");
             
              var request = $http({
                 method: "post",
-                url: ms_hostname + "/MultiSongs/api/auth/create",
+                url: ms_hostname + "/MultiSongs/api/auth/create/v2",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {token : token, key : key, password: password, name : name, idiom : idiom, country : country, type : 2, locale : $rootScope.locale}
+               data: {token : token, key : key, password: password, name : name, idiom : idiom, country : country, type : 2, age : age, instruments : instruments, generes : generes, objectives : objectives, locale : $rootScope.locale}
             });
 
 
             request.success(
                 function( response ) {
 
-                    auth.token = response.token;
-                    auth.userType = response.userType;
+                    if (response.success == true){
+                        auth.token = response.token;
+                        auth.userType = response.userType;
+                    }
 
                     callbackFunction(response);
 

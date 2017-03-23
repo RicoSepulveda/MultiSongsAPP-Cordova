@@ -201,7 +201,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 */
 		if (player.setlist != null && player.setlist.musics != null && player.setlist.musics.length > 0 && getIndexOfCurrentMusicInSetlist() + 1 < player.setlist.musics.length){
 			if (player.currentMusic.calculatedTotalTime - player.currentTime < 10){
-				player.setlist.timeToNext = player.currentMusic.totalTimeInSeconds - player.currentTime;
+				player.setlist.timeToNext = player.currentMusic.music.totalTimeInSeconds - player.currentTime;
 				player.setlist.nextMusic = player.setlist.musics[getIndexOfCurrentMusicInSetlist()+1].musicName;
 			}
 		}
@@ -215,7 +215,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		player.setlist.musics.forEach(function(entry){
 
-			if (player.currentMusic.musicId == entry.musicId){
+			if (player.currentMusic.music.musicId == entry.musicId){
 				result = idx;
 			}
 
@@ -330,7 +330,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
             	if (response[0].bean.status != 1){
             		player.currentMusic.calculatedTotalTime = 29;
             	}else{
-		        	player.currentMusic.calculatedTotalTime = parseInt(player.currentMusic.totalTimeInSeconds) - 1;
+		        	player.currentMusic.calculatedTotalTime = parseInt(player.currentMusic.music.totalTimeInSeconds) - 1;
             	}
 
 
@@ -382,8 +382,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
         // Prepara URLs de leitura das tracks para player SingleTrack
         if (player.type == PLAYER_TYPE_SINGLETRACK){
 
-	        uri = {uri : player.currentMusic.musicId + ".song" ,
-	               id : player.currentMusic.musicId,
+	        uri = {uri : player.currentMusic.music.musicId + ".song" ,
+	               id : player.currentMusic.music.musicId,
 	               isMute : false,
 	               isSolo : false,
 	               level : 1,
@@ -398,7 +398,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			player.currentMusic.tracks.forEach(function (entry){
 
-	            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.status != 1),
+	            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.music.status != 1),
 	                   id : entry.id,
 	                   isMute : entry.enabled == false,
 	                   isSolo : entry.solo,
@@ -411,7 +411,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
         }
 
-		msCordovaPluginPlayer.createPlugin((player.currentMusic.status != 1), 44100, 16, 2, urls, player.fileSystem, 
+		msCordovaPluginPlayer.createPlugin((player.currentMusic.music.status != 1), 44100, 16, 2, urls, player.fileSystem, 
 			function(message){
 /*
 				intervalToCheckStatus = $interval(
@@ -492,7 +492,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		msCordovaPluginPlayer.play();
 
 
-			if (player.currentMusic.status != 1){
+			if (player.currentMusic.music.status != 1){
 
 				player.currentMusic.tracks.forEach(function (entry){
 					msCordovaPluginPlayer.fade(0, entry.level * player.masterLevel, 2000, entry.id);
@@ -607,7 +607,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	       		player.checkStatusSoundInterval = null;
 			}
 
-			if (player.status.id != STATUS_PLAYING.id || player.currentMusic.musicId != musicId){
+			if (player.status.id != STATUS_PLAYING.id || player.currentMusic.music.musicId != musicId){
 
 				msCordovaPluginPlayer.unload(function(message){
 
@@ -873,7 +873,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 			var intervalToCheckDownload;
 	        var promises = [];
 
-			player.currentMusic.status = 1;
+			player.currentMusic.music.status = 1;
 			player.saveButtonEnabled = false;
 
 			player.downloadProgress = 1;
@@ -891,14 +891,14 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 	            	console.log("Music config was successfully created. Starting download");
 
-					msCordovaPluginPlayer.download(player.currentMusic.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/" + auth.token + "/" + player.currentMusic.musicId, 
+					msCordovaPluginPlayer.download(player.currentMusic.music.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/" + auth.token + "/" + player.currentMusic.music.musicId, 
 						function(message){
 							console.log(message)
 						}, 
 						function(error){
 							console.log(error);
 							$interval.cancel(intervalToCheckDownload);
-							player.currentMusic.status = 0;
+							player.currentMusic.music.status = 0;
 						}
 					);
 

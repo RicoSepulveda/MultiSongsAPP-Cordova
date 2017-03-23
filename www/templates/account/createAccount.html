@@ -1,0 +1,280 @@
+
+<ion-view>
+
+	<ion-content>
+
+        <div class="ms-new-account-cards">
+
+            <div class"ms-create-banner"><img src="img/banner3.jpg"/ width="100%"></div>
+
+		        <ion-slides slider="data.slider" options="options">
+
+		            <ion-slide-page>
+
+			            <p class="ms-font-medium ms-account-title">{{i18.account.firstQuestion}}</p>
+
+						<div class="row">
+
+			                <span ng-repeat="instrument in accountConfig.instruments.line1">
+
+			                    <div class="col" ng-click="changeInstrument(instrument)">
+			                        <img class="full-image" src="img/instruments/{{instrument.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{instrument.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+						<div class="row">
+
+			                <span ng-repeat="instrument in accountConfig.instruments.line2">
+
+			                    <div class="col" ng-click="changeInstrument(instrument)">
+			                        <img class="full-image" src="img/instruments/{{instrument.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{instrument.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+						<div class="row">
+
+			                <span ng-repeat="instrument in accountConfig.instruments.line3">
+
+			                    <div class="col" ng-click="changeInstrument(instrument)">
+			                        <img class="full-image" src="img/instruments/{{instrument.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{instrument.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+<!--
+						<div class="row">
+							<div class="col-50">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>Anterior</p></div>
+							</div>
+							<div class="col-50">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>Próximo</p></div>
+							</div>
+						</div>
+-->
+			        </ion-slide-page>
+
+		            <ion-slide-page> 
+
+			            <p class="ms-font-medium ms-account-title">{{i18.account.secondQuestion}}</p>
+
+						<div class="row">
+
+			                <span ng-repeat="genere in accountConfig.generes.line1">
+
+			                    <div class="col" ng-click="changeGenere(genere)">
+			                        <img class="full-image" src="img/persons/{{genere.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{genere.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+
+						<div class="row">
+
+			                <span ng-repeat="genere in accountConfig.generes.line2">
+
+			                    <div class="col" ng-click="changeGenere(genere)">
+			                        <img class="full-image" src="img/persons/{{genere.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{genere.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+						<div class="row">
+
+			                <span ng-repeat="genere in accountConfig.generes.line3">
+
+			                    <div class="col" ng-click="changeGenere(genere)">
+			                        <img class="full-image" src="img/persons/{{genere.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{genere.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+<!--
+						<div class="row">
+							<div class="col-50">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>Anterior</p></div>
+							</div>
+							<div class="col-50">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>Próximo</p></div>
+							</div>
+						</div>
+-->
+			        </ion-slide-page>
+<!--
+		            <ion-slide-page> 
+
+		            	<div class="list">
+
+							<div class="item item-divider">
+								<p>SUA RELAÇÃO COM A MÚSICA</p>
+							</div>
+
+							<li class="item item-toggle">
+								Estudo música em escola/conservatório
+								<label class="toggle toggle-assertive">
+									<input type="checkbox">
+									<div class="track">
+										<div class="handle"></div>
+									</div>
+								</label>
+							</li>
+
+							<li class="item item-toggle">
+								Dou aulas de música
+								<label class="toggle toggle-assertive">
+									<input type="checkbox">
+									<div class="track">
+										<div class="handle"></div>
+									</div>
+								</label>
+							</li>
+
+							<li class="item item-toggle">
+								Faço apresentações/shows
+								<label class="toggle toggle-assertive">
+									<input type="checkbox">
+									<div class="track">
+										<div class="handle"></div>
+									</div>
+								</label>
+							</li>
+
+							<li class="item item-toggle">
+								Música é meu trabalho principal
+								<label class="toggle toggle-assertive">
+									<input type="checkbox">
+									<div class="track">
+										<div class="handle"></div>
+									</div>
+								</label>
+							</li>
+
+						</div>
+
+			        </ion-slide-page>
+-->
+
+		            <ion-slide-page> 
+
+			            <p class="ms-font-medium ms-account-title">{{i18.account.thirdQuestion}}</p>
+
+						<div class="row">
+
+			                <span ng-repeat="objective in accountConfig.objectives.line1">
+
+			                    <div class="col" ng-click="changeObjective(objective)">
+			                        <img class="full-image" src="img/persons/{{objective.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">
+			                        {{objective.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+
+						<div class="row">
+
+			                <span ng-repeat="objective in accountConfig.objectives.line2">
+
+			                    <div class="col" ng-click="changeObjective(objective)">
+			                        <img class="full-image" src="img/persons/{{objective.currentImagePath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
+			                        <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{objective.name}}</p>
+			                    </div>
+
+			                </span>
+
+						</div>
+<!--
+						<div class="row">
+							<div class="col-50" style="padding-left:10px;padding-right:10px;">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>Anterior</p></div>
+							</div>
+							<div class="col-50" style="padding-left:10px;padding-right:10px;">
+								<div class="ms-login-small-button" ng-click="createAccount()"><p>{{i18.general.saveLabel}}</p></div>
+							</div>
+						</div>
+-->
+			        </ion-slide-page>
+
+
+		            <ion-slide-page>
+
+						<div class="list">
+
+							<div class="item item-divider">
+								<p>{{i18.account.fourthQuestion}}</p>
+							</div>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.name}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.nameLabel}}" ng-model="createAccountData.name">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.key}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.emailLabel}}" ng-model="createAccountData.key">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.password}}</span>
+							<label class="item item-input">
+								<input type="password" placeholder="{{i18.general.passwordLabel}}" ng-model="createAccountData.password">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.age}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.ageLabel}}" ng-model="createAccountData.age">
+							</label>
+<!--
+							<label class="item ">
+							    <div class="item-content">Sua idade - {{age}} anos</div>
+							    <div class="range range-positive">
+							        <i class="icon ion-minus-circled"></i>
+							        <input type="range" name="age" min="0" max="100" value="16"  ngModel="age">
+							        <i class="icon ion-plus-circled"></i>
+							    </div>
+							</label>
+-->
+
+						</div>
+
+						<div style="text-align:center;width:100%;padding-top:25px;">
+							<div class="button small-button-buy" ng-click="createAccount()"><p style="margin-top:14px">{{i18.general.saveLabel}}</p></div>
+						</div>
+
+
+			        </ion-slide-page>
+
+			    </ion-slides>
+			
+		        <div class="custom-swiper-pagination swiper-pagination"></div>
+
+        </div>
+
+    </ion-content>
+
+</ion-view>

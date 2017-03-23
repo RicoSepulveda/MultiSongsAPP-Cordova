@@ -8,7 +8,7 @@ module.factory('styleService', function($http, $q, $interval){
 
             if ($rootScope.buffer.styles.valid){
 
-                $interval(function(){deferred.resolve($rootScope.buffer.styles.data);}, 50, 1);
+                $interval(function(){deferred.resolve($rootScope.buffer.styles.data);}, 100, 1);
 
             }else{
 

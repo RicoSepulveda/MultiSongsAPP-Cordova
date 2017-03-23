@@ -48,7 +48,7 @@ module.controller('IndexController', function($scope,
 
     };
 
-    var onLoad = function(token, userType){
+    var loadConfig = function(token, userType){
 
         var promises = [];
 
@@ -60,7 +60,7 @@ module.controller('IndexController', function($scope,
         $scope.token = auth.token;
 
         if (!$rootScope.buffer){
-            $rootScope.buffer = {styles : {valid : false}, sugestions : {valid : false}, topMusics : {valid : false}, newSongs : {valid : false}, config : {valid : false}, featuredMusicSet : [], featuredMusicSets : {valid : false}, topArtists : {valid : false}};
+            $rootScope.buffer = {styles : {valid : false}, account : {valid : false}, sugestions : {valid : false}, topMusics : {valid : false}, newSongs : {valid : false}, config : {valid : false}, featuredMusicSet : [], featuredMusicSets : {valid : false}, topArtists : {valid : false}};
         }
 
         promises.push(configService.getConfig($rootScope, $scope, token, msSessionConfig));
@@ -91,6 +91,7 @@ module.controller('IndexController', function($scope,
                     musicMenuTitleLabel : response[0].generalBean.musicMenuTitleLabel,
                     configMenuTitleLabel : response[0].generalBean.configMenuTitleLabel,
                     emailLabel : response[0].generalBean.emailLabel,
+                    ageLabel : response[0].generalBean.ageLabel,
                     loginDescriptionMessage : response[0].generalBean.loginDescriptionMessage,
                     bloquedResourceMessage : response[0].generalBean.bloquedResourceMessage,
                     loggedInMessage : response[0].generalBean.loggedInMessage,
@@ -188,6 +189,13 @@ module.controller('IndexController', function($scope,
                     barTitleLabel : response[0].configBean.barTitleLabel
                 };
 
+                var account = {
+                    firstQuestion : response[0].accountBean.instrumentsQuestion,
+                    secondQuestion : response[0].accountBean.genresQuestion,
+                    thirdQuestion : response[0].accountBean.useQuestion,
+                    fourthQuestion : response[0].accountBean.personalDataQuestion
+                };
+
                 var setlistDetail = {
                     barTitleLabel : response[0].setlistDetailBean.barTitleLabel,
                     setlistMusicsLabel : response[0].setlistDetailBean.setlistMusicsLabel,
@@ -208,6 +216,7 @@ module.controller('IndexController', function($scope,
                                   search : search, 
                                   setlist : setlist, 
                                   player : player,
+                                  account : account,
                                   setlistDetail : setlistDetail,
                                   config : config};
                 
@@ -284,10 +293,10 @@ module.controller('IndexController', function($scope,
 
         navigator.globalization.getLocaleName(function(result){
 
-            $rootScope.preferredLanguage = result.value.substring(2);
+            $rootScope.preferredLanguage = result.value.substring(0, 2);
             $rootScope.locale = result.value.substring(3,5);
 
-            loadLanguageModalIfNeeded();
+            startLoading();
 
         }, function(err){console.log(err)});
         
@@ -298,116 +307,58 @@ module.controller('IndexController', function($scope,
 
     });
 
-    var loadLanguageModalIfNeeded = function(){
+    var startLoading = function(){
 
         var key;
         var password;
         var spinner = '<ion-spinner icon="dots" class="spinner-stable"></ion-spinner><br/>';
 
-        $scope.loginData = {key: "", password: ""};
+        if (window.localStorage.getItem("key")){
+        }else{
+            chooseUserByIdiom($rootScope.preferredLanguage + "-" + $rootScope.locale);
+        }
 
-        $ionicModal.fromTemplateUrl('templates/language.html', {
-            scope: $rootScope,
-            animation: 'slide-in-up'
-        }).then(function(modal) {
+        $ionicLoading.show({ template: spinner + 'Loading Backing Tracks...' });
 
-            $rootScope.languageModal = modal;
+        key = window.localStorage.getItem("key");
+        password = window.localStorage.getItem("password");
+        
+        loginService.login($scope, key, password, function(response){
+           
+            $interval(function(){
+                cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
+            },1000);
 
-            if (window.localStorage.getItem("key")){
-
-                $ionicLoading.show({ template: spinner + 'Loading Backing Tracks...' });
-
-                key = window.localStorage.getItem("key");
-                password = window.localStorage.getItem("password");
-                
-                loginService.login($scope, key, password, function(response){
-                   
-                    $interval(function(){
-                        cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
-                    },1000);
-
-                    onLoad(response.token, response.userType);
-
-                });
-
-            } else {
-                $rootScope.languageModal.show();
-            }
+            loadConfig(response.token, response.userType);
 
         });
 
     }
 
+    var chooseUserByIdiom = function(lang){
 
-var teste = function(token){
+        var loginData;
 
-    timerBasedPlayer.load(token, 336, false, 10, function(){
-        timerBasedPlayer.play();
-    });
+        if (lang == "pt-BR"){
+            window.localStorage.setItem("defaultKey", msSessionConfig.portugueseDefaultUser);
+            window.localStorage.setItem("defaultPassword", msSessionConfig.portugueseDefaultPassword);
+            loginData = {key : msSessionConfig.portugueseDefaultUser, password : msSessionConfig.portugueseDefaultPassword};
+        } else {
+            window.localStorage.setItem("defaultKey", msSessionConfig.englishDefaultUser);
+            window.localStorage.setItem("defaultPassword", msSessionConfig.englishDefaultPassword);
+            loginData = {key : msSessionConfig.englishDefaultUser, password : msSessionConfig.englishDefaultPassword};
+        }
 
-}
+        window.localStorage.setItem("key", loginData.key);
+        window.localStorage.setItem("password", loginData.password);
 
-/*
+        //$rootScope.languageModal.hide();
 
-    var teste = function(token){
-        html5Player.create("audio/mp3");
-        html5Player.addNode("http://172.21.0.170:8180/MultiSongs/api/download/music/4072063611479431601497-12620/342/false");
-        html5Player.addNode("http://172.21.0.170:8180/MultiSongs/api/download/music/4072063611479431601497-12620/343/false");
-        html5Player.addNode("http://172.21.0.170:8180/MultiSongs/api/download/music/4072063611479431601497-12620/344/false");
-        html5Player.addNode("http://172.21.0.170:8180/MultiSongs/api/download/music/4072063611479431601497-12620/346/false");
-        html5Player.addNode("http://172.21.0.170:8180/MultiSongs/api/download/music/4072063611479431601497-12620/347/false");
-        html5Player.play();
-    }
-*/
-/*
-    var teste = function(token){
+        //window.location.reload(true);
+
+    }    
 
 
-        var audioCtx = new AudioContext();
 
-        var myAudio1 = document.getElementById('teste1');
-        var myAudio2 = document.getElementById('teste2');
-        var myAudio3 = document.getElementById('teste3');
-        var myAudio4 = document.getElementById('teste4');
-        var myAudio5 = document.getElementById('teste5');
-
-        // Create a MediaElementAudioSourceNode
-        // Feed the HTMLMediaElement into it
-        var source1 = audioCtx.createMediaElementSource(myAudio1);
-        var source2 = audioCtx.createMediaElementSource(myAudio2);
-        var source3 = audioCtx.createMediaElementSource(myAudio3);
-        var source4 = audioCtx.createMediaElementSource(myAudio4);
-        var source5 = audioCtx.createMediaElementSource(myAudio5);
-
-        //console.log(source);
-
-        // Create a gain node
-        var gainNode = audioCtx.createGain();
-
-    gainNode.gain.value = 1;
-    myAudio1.volume = 1;
-    myAudio2.volume = 1;
-    myAudio3.volume = 1;
-    myAudio4.volume = 1;
-    myAudio5.volume = 1;
-
-        // connect the AudioBufferSourceNode to the gainNode
-        // and the gainNode to the destination, so we can play the
-        // music and adjust the volume using the mouse cursor
-        source1.connect(gainNode);
-        source2.connect(gainNode);
-        source3.connect(gainNode);
-        source4.connect(gainNode);
-        source5.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-console.log("TA CERTO...");
-        myAudio1.play();  
-        myAudio2.play();  
-        myAudio3.play();  
-        myAudio4.play();  
-        myAudio5.play();  
-
-    }
-*/
 });
 

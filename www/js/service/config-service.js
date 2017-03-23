@@ -50,6 +50,52 @@ module.factory('configService', function($http, $interval, $q){
         }, 
 
 
+        getAccountConfig: function($rootScope, token) { 
+              
+            var deferred = $q.defer();
+
+            if ($rootScope.buffer.account.valid){
+
+                $interval(function(){deferred.resolve($rootScope.buffer.account.data);}, 50, 1);
+
+            } else {
+
+                var ms_hostname = window.localStorage.getItem("environment");
+                
+                var request = $http({
+                    method: "post",
+                    url: ms_hostname + "/MultiSongs/api/general/data",
+                    headers: {
+                       "Accept": "application/json;charset=utf-8"
+                    },
+                    dataType:"json",
+                    data: {token : token}
+                });
+
+                request.success(
+                    
+                    function( response ) {
+
+                        $rootScope.buffer.account.data = response;
+                        $rootScope.buffer.account.valid = true;
+
+                        deferred.resolve(response);
+
+                    }
+                );
+
+                request.error(
+                        function( response ) { 
+                            deferred.reject(response);
+                        }
+                );
+
+            }   
+
+            return deferred.promise;
+            
+        }, 
+
         changeMusicConfig: function(token, idTrilha, level, pan, mute, solo) { 
               
             var deferred = $q.defer();
