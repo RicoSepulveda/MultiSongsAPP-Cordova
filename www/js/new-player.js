@@ -173,37 +173,40 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 	var checkStatusSound = function(){
 
+        if (player.currentMusic){
 
-		msCordovaPluginPlayer.playing(
-			function(response){
-				if(response.status == 4 || response.status == -1 || response.status == 5){ // NOT PLAYING
-					console.log(response);
+			msCordovaPluginPlayer.playing(
+				function(response){
+					if(response.status == 4 || response.status == -1 || response.status == 5){ // NOT PLAYING
+						console.log(response);
+						handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
+					} else if(response.status == 6 && player.status.id != STATUS_BUFFERING.id){ // BUFFERING
+						handleEvent({type : EVENT_BUFFERING, caller : 'checkStatusSound', success : true, obj : null});
+					} else if (player.status.id == STATUS_BUFFERING.id && response.status == 1){
+						handleEvent({type : EVENT_START_PLAYING, caller : 'checkStatusSound', success : true, obj : null});
+					} else if (player.status.id == STATUS_BUFFERING.id){
+						$ionicLoading.show({ template: spinner + 'Buffering. Please wait ' + response.buffer + '% ...' });
+					}
+				}, function(error){
+					// @TODO TRATAR QUANDO NAO EH POSSIVEL CAPTURAR O STATUS DO PLAYER. POR ENQUANTO ESTA PARANDO
+					console.log(error);
 					handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
-				} else if(response.status == 6 && player.status.id != STATUS_BUFFERING.id){ // BUFFERING
-					handleEvent({type : EVENT_BUFFERING, caller : 'checkStatusSound', success : true, obj : null});
-				} else if (player.status.id == STATUS_BUFFERING.id && response.status == 1){
-					handleEvent({type : EVENT_START_PLAYING, caller : 'checkStatusSound', success : true, obj : null});
-				} else if (player.status.id == STATUS_BUFFERING.id){
-					$ionicLoading.show({ template: spinner + 'Buffering. Please wait ' + response.buffer + '% ...' });
 				}
-			}, function(error){
-				// @TODO TRATAR QUANDO NAO EH POSSIVEL CAPTURAR O STATUS DO PLAYER. POR ENQUANTO ESTA PARANDO
-				console.log(error);
-				handleEvent({type : EVENT_SOUND_STOPS, caller : 'checkStatusSound', success : true, obj : null});
+			);
+	/*
+			if (player.currentMusic.calculatedTotalTime - player.currentTime == 2 && player.currentMusic.status != 1){
+				player.currentMusic.tracks.forEach(function (entry){
+					msCordovaPluginPlayer.fade(entry.level * player.masterLevel, 0, 2000, entry.id);
+				});
 			}
-		);
-/*
-		if (player.currentMusic.calculatedTotalTime - player.currentTime == 2 && player.currentMusic.status != 1){
-			player.currentMusic.tracks.forEach(function (entry){
-				msCordovaPluginPlayer.fade(entry.level * player.masterLevel, 0, 2000, entry.id);
-			});
-		}
-*/
-		if (player.setlist != null && player.setlist.musics != null && player.setlist.musics.length > 0 && getIndexOfCurrentMusicInSetlist() + 1 < player.setlist.musics.length){
-			if (player.currentMusic.calculatedTotalTime - player.currentTime < 10){
-				player.setlist.timeToNext = player.currentMusic.music.totalTimeInSeconds - player.currentTime;
-				player.setlist.nextMusic = player.setlist.musics[getIndexOfCurrentMusicInSetlist()+1].musicName;
+	*/
+			if (player.setlist != null && player.setlist.musics != null && player.setlist.musics.length > 0 && getIndexOfCurrentMusicInSetlist() + 1 < player.setlist.musics.length){
+				if (player.currentMusic.calculatedTotalTime - player.currentTime < 10){
+					player.setlist.timeToNext = player.currentMusic.music.totalTimeInSeconds - player.currentTime;
+					player.setlist.nextMusic = player.setlist.musics[getIndexOfCurrentMusicInSetlist()+1].musicName;
+				}
 			}
+
 		}
 
 	}
@@ -213,16 +216,20 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		var idx = 0;
 		var result = -1;
 
-		player.setlist.musics.forEach(function(entry){
+        if (player.currentMusic){
 
-			if (player.currentMusic.music.musicId == entry.musicId){
-				result = idx;
-			}
+	 		player.setlist.musics.forEach(function(entry){
 
-			idx++;
+				if (player.currentMusic.music.musicId == entry.musicId){
+					result = idx;
+				}
 
-		})
+				idx++;
 
+			})
+
+        }
+    
 		return result;
 
 	}
@@ -398,12 +405,22 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			player.currentMusic.tracks.forEach(function (entry){
 
-	            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/wav/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.music.status != 1),
+
+				/*
+				* INIT: Inicio da alteracao para uso de MP3
+				*/
+
+
+	            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/track/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.music.status != 1),
 	                   id : entry.id,
 	                   isMute : entry.enabled == false,
 	                   isSolo : entry.solo,
 	                   level : entry.level,
 	                   pan : entry.pan};
+
+	            /*
+	            * END: Fim da alteracao para uso de MP3
+	            */
 
 				urls.push(uri);
 
@@ -619,6 +636,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		        		if (response.success){
 
 		        			player.log(LOG_LEVEL_ERROR, "Music detail successfully read.", "loadMusic", response);
+
+		        			// Limpa a SetList
+
+			            	player.setlist.musics = response.musics;
+			            	player.setlist.name = response.title;
+			            	player.setlist.id = response.id;
+
 
 		           		}else{
 

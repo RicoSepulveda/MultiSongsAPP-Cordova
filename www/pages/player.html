@@ -63,6 +63,13 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
             <!--<img style="width: 100%" src="http://upload.wikimedia.org/wikipedia/commons/2/2e/BMW_Z3_1.9L_1998.jpg"/>-->
             <div style="padding-left:10px;padding-right:10px">
 
+                <div class="row">
+                    <div class="col" style="margin:0px;padding: 0px !important;">
+                        <p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">
+                            {{msPlayer.getPlayer().currentMusic.music.musicName}}
+                        </p>
+                    </div>
+                </div>
                 <div class="row" style="padding-bottom:0px !important;padding-top: 0px !important;">
                     <div class="col" style="margin:0px;padding: 0px !important;">
                         <div class="ms-player-slider" style="vertical-align: middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input id="slicePlayer"  type="range" min=0 max={{msPlayer.getPlayer().currentMusic.calculatedTotalTime}} step=1 ng-model="msPlayer.getPlayer().currentTime" ng-change="changePosition()"/></div>
@@ -73,23 +80,15 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
                         <p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{msPlayer.getPlayer().currentTimeAsString}}</p>
                     </div>
                     <div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-                        <p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{msPlayer.getPlayer().currentMusic.totalTime}}</p>
+                        <p class="ms-font-medium ms-font-light-gray" style="margin-bottom: 0px;padding-bottom:0px;">{{msPlayer.getPlayer().currentMusic.music.totalTime}}</p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-67" style="margin-top:0px;margin-bottom:0px;text-align:left;">
-                        <p class="ms-font-medium ms-font-white" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{msPlayer.getPlayer().currentMusic.musicName}}</p>
+                    <div class="col-50" style="margin-top:0px;margin-bottom:5px;text-align:left;">
+                        <p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;line-height:12px;">{{msPlayer.getPlayer().currentMusic.music.artistName}}</p>
                     </div>
-                    <div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-                        <p ng-if="msPlayer.getPlayer().setlist.timeToNext > -1 && msPlayer.getPlayer().setlist.timeToNext <= 10" class="ms-font-medium ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;">{{i18.player.nextLabel}} {{msPlayer.getPlayer().setlist.timeToNext}}s</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-67" style="margin-top:0px;margin-bottom:5px;text-align:left;">
-                        <p class="ms-font-little ms-font-light-gray"  style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;line-height:12px;">{{msPlayer.getPlayer().currentMusic.artistName}}</p>
-                    </div>
-                    <div class="col-33" style="margin-top:0px;margin-bottom:0px;text-align:right;">
-                        <p ng-if="msPlayer.getPlayer().setlist.nextMusic != ''" class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;line-height:12px;">{{msPlayer.getPlayer().setlist.nextMusic}}</p>
+                    <div class="col-50" style="margin-top:0px;margin-bottom:0px;text-align:right;">
+                        <p ng-if="msPlayer.getPlayer().setlist.timeToNext > -1 && msPlayer.getPlayer().setlist.timeToNext <= 10" class="ms-font-little ms-font-light-gray" style="margin-top: 0px;padding-top:0px;margin-bottom: 0px;padding-bottom:0px;line-height:12px;">{{msPlayer.getPlayer().setlist.nextMusic}} {{msPlayer.getPlayer().setlist.timeToNext}}s</p>
                     </div>
                 </div>
                 
@@ -104,8 +103,6 @@ ms-setlist-player .item-thumbnail-left, ms-setlist-player .item-thumbnail-left .
                         <i class="icon ion-ios-cloud-download-outline ms-font-multisongs" style="font-size:2em;"></i>
                     </p>
                 </div>
-
-
 
                 <ion-list>
 

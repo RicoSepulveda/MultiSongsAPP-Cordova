@@ -89,7 +89,8 @@ module.controller('TrackController', function($scope,
 
                     // SO REALIZA A COMPRA SE ESTIVER CONFIGURADO PARA ISSO
                     //if (window.localStorage.getItem("shouldFinishPurchase") == true){
-                        store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
+                        download();
+                        //store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
                     //} else {
                     //    console.log("ATTENTION! =======>>>>>>> PURCHASE WAS NOT REGISTRED ON THE STORE! APP MUST BE RECONFIGURED AND REDEPLOYED.");
                     //    finishPurchase(); // Chama diretamente o finishPurchase sem o uso do evento da store
@@ -222,6 +223,8 @@ module.controller('TrackController', function($scope,
             
             document.addEventListener("deviceready", function(){
 
+
+                /* TODO - Reiniciar a store.... retirar comentario */
                 initStore();
 
                 msPlayer.setFileSystem(cordova.file.dataDirectory);
