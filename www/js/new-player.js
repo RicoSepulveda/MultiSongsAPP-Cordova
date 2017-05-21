@@ -625,7 +625,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 			}
 
 			if (player.status.id != STATUS_PLAYING.id || player.currentMusic.music.musicId != musicId){
-
+console.log("Vai chamar o plugin...");
 				msCordovaPluginPlayer.unload(function(message){
 
 		      		handleEvent({type : EVENT_BUFFERING, caller : 'loadMusic', success : true, obj : musicId});

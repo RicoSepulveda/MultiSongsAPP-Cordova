@@ -5,11 +5,27 @@
     },
     "config_munge": {
         "files": {
+            "AndroidManifest.xml": {
+                "parents": {
+                    "/manifest": [
+                        {
+                            "xml": "<uses-permission android:name=\"com.android.vending.BILLING\" />",
+                            "count": 1
+                        }
+                    ],
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+                            "count": 2
+                        }
+                    ]
+                }
+            },
             "res/xml/config.xml": {
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
                             "count": 1
                         },
                         {
@@ -29,32 +45,16 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"SplashScreen\"><param name=\"android-package\" value=\"org.apache.cordova.splashscreen.SplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"MultiSongsPlugin\"><param name=\"android-package\" value=\"audio.multisongs.plugin.MultiSongsPlugin\" /></feature>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 2
-                        }
-                    ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"com.android.vending.BILLING\" />",
-                            "count": 1
                         }
                     ]
                 }
@@ -72,26 +72,26 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
-        },
-        "cordova-plugin-compat": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
-        },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
-        },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
-        },
-        "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "audio.multisongs"
-        },
         "cc.fovea.cordova.purchase": {
             "BILLING_KEY": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlu4021JWWKzhMyRtA795rawySipa8mL4buS4SyrBPGyzEz4HsfwROzkgj0z9SdT4WgtlBbGkkJqaQvPlkf92kvI+r7/qJgYC9uqAZUKL7YzAFEAl+9gRyiYFD52Emnf1z4uKpx8CyK2nqH910Qp10tRFAufjx+P36p/JJBWTtyKOn7yVdzmDeISFPqbLmoujvlRd4D+VKdVj1dH41a9Er7HCTO/ARqkffV2NbwBLJvN9Jusz0KaHfdCIxeUNxCKuQVGFak5Qk91ec8veDdn0J2mFNJxS8DINXUw+8LqfiFSfpUNzE4nQLI/BqiJabsEOzrbT7fWDAfpz6iZDDs4sKQIDAQAB",
             "PACKAGE_NAME": "audio.multisongs"
         },
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "audio.multisongs"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "audio.multisongs"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "audio.multisongs"
+        },
+        "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "audio.multisongs"
+        },
         "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "audio.multisongs"
+        },
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "audio.multisongs"
         },
         "audio.multisongs.plugin": {
@@ -100,6 +100,13 @@
     },
     "dependent_plugins": {},
     "modules": [
+        {
+            "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
+            "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
+            "clobbers": [
+                "store"
+            ]
+        },
         {
             "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
             "id": "cordova-plugin-file.DirectoryEntry",
@@ -280,35 +287,21 @@
             ]
         },
         {
-            "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
-            "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
-            "clobbers": [
-                "store"
-            ]
-        },
-        {
             "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
             "id": "cordova-plugin-splashscreen.SplashScreen",
             "clobbers": [
                 "navigator.splashscreen"
             ]
-        },
-        {
-            "file": "plugins/audio.multisongs.plugin/www/MultiSongsPlugin.js",
-            "id": "audio.multisongs.plugin.MultiSongsPlugin",
-            "clobbers": [
-                "cordova.plugins.MultiSongsPlugin"
-            ]
         }
     ],
     "plugin_metadata": {
-        "cordova-plugin-whitelist": "1.2.2",
+        "cc.fovea.cordova.purchase": "6.0.0",
         "cordova-plugin-compat": "1.0.0",
         "cordova-plugin-file": "4.3.0",
         "cordova-plugin-file-transfer": "1.6.0",
         "cordova-plugin-globalization": "1.0.5",
-        "cc.fovea.cordova.purchase": "6.0.0",
         "cordova-plugin-splashscreen": "4.0.1",
+        "cordova-plugin-whitelist": "1.2.2",
         "audio.multisongs.plugin": "0.0.1"
     }
 }

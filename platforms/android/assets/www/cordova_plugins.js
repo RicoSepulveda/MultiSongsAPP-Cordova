@@ -1,6 +1,13 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
+        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
+        "clobbers": [
+            "store"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "clobbers": [
@@ -180,13 +187,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
-        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
         "id": "cordova-plugin-splashscreen.SplashScreen",
         "clobbers": [
@@ -197,13 +197,13 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-plugin-whitelist": "1.2.2",
+    "cc.fovea.cordova.purchase": "6.0.0",
     "cordova-plugin-compat": "1.0.0",
     "cordova-plugin-file": "4.3.0",
     "cordova-plugin-file-transfer": "1.6.0",
     "cordova-plugin-globalization": "1.0.5",
-    "cc.fovea.cordova.purchase": "6.0.0",
-    "cordova-plugin-splashscreen": "4.0.1"
+    "cordova-plugin-splashscreen": "4.0.1",
+    "cordova-plugin-whitelist": "1.2.2"
 };
 // BOTTOM OF METADATA
 });
