@@ -915,7 +915,7 @@ console.log("Vai chamar o plugin...");
 
 	            	console.log("Music config was successfully created. Starting download");
 
-					msCordovaPluginPlayer.download(player.currentMusic.music.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/" + auth.token + "/" + player.currentMusic.music.musicId, 
+					msCordovaPluginPlayer.download(player.currentMusic.music.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/ogg/" + auth.token + "/" + player.currentMusic.music.musicId, 
 						function(message){
 							console.log(message)
 						}, 
