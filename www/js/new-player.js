@@ -416,6 +416,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	                   isMute : entry.enabled == false,
 	                   isSolo : entry.solo,
 	                   level : entry.level,
+	                   channels : entry.canais,
 	                   pan : entry.pan};
 
 	            /*

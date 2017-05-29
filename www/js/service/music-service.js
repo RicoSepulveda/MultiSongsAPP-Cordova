@@ -114,6 +114,46 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
                 
         },
+        getMyRemovedSongs : function($scope, token) { 
+            
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/music/removed",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token: token}
+            });
+
+
+            request.success(
+
+                function( response ) {
+                    //$scope.destaqueStr = response;
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+            );
+
+            return deferred.promise;
+            
+        },
         changeFavorite : function($scope, token, musicId) { 
             
             var deferred = $q.defer();
@@ -148,6 +188,46 @@ module.factory('musicService', function($http, $interval, $q){
 
                         deferred.reject(response);
                         $scope.destaqueStr = response; 
+
+                    }
+            );
+            
+            return deferred.promise;
+                
+        },
+        removeSongFromUser : function($scope, token, musicId) { 
+            
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+            
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/music/remove",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token: token, id: musicId}
+            });
+
+
+            request.success(
+
+                function( response ) {
+                    //$scope.destaqueStr = response;
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
 
                     }
             );

@@ -35,7 +35,7 @@ module.factory('msCordovaPluginPlayer', function(){
 		},
 
 		unload : function(onSuccessCallback, onErrorCallback){
-console.log("chamou unload...");
+
 	        cordova.exec(
 	        	function(message){
 	        		console.log("SUCESSO!");
@@ -55,7 +55,6 @@ console.log("chamou unload...");
 	    		[]
 	    	);
 
-console.log("saindo unload...");
 			isPlaying = false;
 
 		},
