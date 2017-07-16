@@ -35,7 +35,7 @@
 
 	                        <p style="padding:0px;margin:0px;line-height:15px;">{{msPlayer.getPlayer().currentMusic.music.artistName}} - {{msPlayer.getPlayer().currentMusic.music.style}}</p>
 
-							<div class="ms-player-slider" style="vertical-align:middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input id="slicePlayer" type="range" min=0 max={{msPlayer.getPlayer().currentMusic.calculatedTotalTime}} step=1 ng-model="msPlayer.getPlayer().currentTime" ng-change="changePosition()"/><div style="float:right;">&nbsp;{{msPlayer.getPlayer().currentTimeAsString}}</div></div>
+							<div class="ms-player-slider" style="vertical-align:middle;color:#FFFFFF !important;font-size:12px;line-height:20px;"><input id="slicePlayer" type="range" min=0 max={{msPlayer.getPlayer().currentMusic.calculatedTotalTime}} step=1 ng-model="msPlayer.getPlayer().currentTime" on-release="changePosition()"/><div style="float:right;">&nbsp;{{msPlayer.getPlayer().currentTimeAsString}}</div></div>
 
 	                        <div>
 

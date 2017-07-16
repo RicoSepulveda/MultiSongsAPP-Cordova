@@ -151,7 +151,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		// Se o evento for de buffering...
 		if (event.type.id == EVENT_BUFFERING.id){
-			$ionicLoading.show({ template: spinner + 'Buffering. Please wait 0%...' });
+			$ionicLoading.show({ template: spinner + 'Buffering. Please wait...' });
 		} else if (player.status.id == STATUS_BUFFERING.id){ // Se o evento for diferente de buffering, mas o status atual eh buffering...
 			$ionicLoading.hide();
 		}
@@ -185,7 +185,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 					} else if (player.status.id == STATUS_BUFFERING.id && response.status == 1){
 						handleEvent({type : EVENT_START_PLAYING, caller : 'checkStatusSound', success : true, obj : null});
 					} else if (player.status.id == STATUS_BUFFERING.id){
-						$ionicLoading.show({ template: spinner + 'Buffering. Please wait ' + response.buffer + '% ...' });
+						//$ionicLoading.show({ template: spinner + 'Buffering. Please wait ' + response.buffer + '% ...' });
+						$ionicLoading.show({ template: spinner + 'Buffering. Please wait...' });
 					}
 				}, function(error){
 					// @TODO TRATAR QUANDO NAO EH POSSIVEL CAPTURAR O STATUS DO PLAYER. POR ENQUANTO ESTA PARANDO
@@ -903,7 +904,7 @@ console.log("Vai chamar o plugin...");
 
 			player.downloadProgress = 1;
 
-			$ionicLoading.show({ template: spinner + 'Download in Progress...' });
+			$ionicLoading.show({ template: spinner + 'Sua música está sendo preparada. Aguarde.' });
 
 			player.currentMusic.tracks.forEach(function (entry){
 		        promises.push(configService.changeMusicConfig(auth.token, entry.id, entry.level, entry.pan, entry.enabled, entry.solo));
@@ -969,7 +970,7 @@ console.log("Vai chamar o plugin...");
 
 
 			if (player.status == STATUS_PLAYING){
-				handleEvent({type : EVENT_SEEKING, caller : 'changePosition', success : true});
+				//handleEvent({type : EVENT_SEEKING, caller : 'changePosition', success : true});
 				
 			}
 
@@ -978,7 +979,7 @@ console.log("Vai chamar o plugin...");
 				player.seekInterval = null;
 
 				msCordovaPluginPlayer.seek(parseInt(player.currentTime), function(obj){
-					handleEvent({type : EVENT_SUSPENDING, caller : 'changePosition', success : true});
+					//handleEvent({type : EVENT_SUSPENDING, caller : 'changePosition', success : true});
 	        		if (player.currentTime != obj.position){
 	        			player.currentTime = obj.position;
 						calculateLedscounter = obj.position * 10;
