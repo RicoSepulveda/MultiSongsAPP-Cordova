@@ -34,6 +34,15 @@
     color:#FD6631 !important;
 }
 
+.ms-collapse-button {
+    color:#FD6631;
+    background-color: #444444;
+    font-size:14px;
+    text-align: center;
+    min-height: 20px;
+    width: 100%;
+}
+
 .no-padding {
     padding: 0px !important;
 }
@@ -467,4 +476,69 @@ a {
 
 ms-musics .button {
     border-radius: 0px;
+}
+
+.ms-mini-player-main {
+    width: 100%;
+    background-color: #333333;
+    min-height: 120px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.ms-mini-player-image-column {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    width: 80px;
+    height: 80px;
+}
+
+.ms-mini-player-image {
+    width: 100%;
+    border: 1px;
+    border-color: #dddddd;
+    border-style: solid;
+}
+
+.ms-mini-player-song-column {
+    width: 70%;
+    min-height: 120px;
+}
+
+.ms-mini-player-control-column {
+    width: 30%;
+    min-height: 120px;
+}
+
+.ms-new-playback-banner {
+    width: 100%;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.ms-new-playback-introduction{
+   padding-right: 10px;
+   padding-left: 10px;
+   padding-top: 20px;
+   padding-bottom: 20px;
+}
+
+.item-radio .item-content {
+  background-color: white !important;
+  color: #333333;
+}
+
+
+.ms-promotion-title {
+    padding-top:20px;
+    padding-bottom:20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.ms-promotion-introduction{
+    padding:10px;
 }

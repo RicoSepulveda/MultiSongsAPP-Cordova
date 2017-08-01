@@ -20,9 +20,20 @@
       {{i18.store.barTitleLabel}}
     </ion-nav-title>
 
+    <ng-include src="'templates/mplayer/miniPlayer.html'">
+
+    </ng-include>
+
     <ion-content class="has-header">
 
         <ms-search>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        </div>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        </div>
+
 
             <div class="row" style="margin:0px;border:0px;padding:0px;">
                 
@@ -36,7 +47,9 @@
                                 </p>
                             </div>
                         
-                            <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in musics" href="#/tracks/{{music.musicId}}">
+                            <div ng-repeat="music in musics" >
+
+                                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-click="play(music.musicId)">
 
                                     <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 
@@ -48,14 +61,16 @@
                                     <ion-option-button style="background-color:#999999;color:#ffffff;" ng-click="changeFavorite({{music}})">
                                         {{i18.general.wishlistButtonLabel}}
                                     </ion-option-button>
-
+<!--
                                     <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
                                         {{i18.general.buyLabel}} {{music.price}}
                                     </ion-option-button>
+-->
+                                    <i class="icon ion-play ms-font-multisongs" style="font-size:1.5em;"></i>
 
-                                    <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                                </ion-item>
 
-                            </ion-item>
+                            </div>
 
                             <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="artist in artists" href="#/searchByType/4/{{artist.artistName}}">
 
@@ -76,8 +91,6 @@
                 </div>
 
             </div>
-            
-            {{teste}}
 
         </ms-search>
 

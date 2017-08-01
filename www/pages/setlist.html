@@ -62,8 +62,6 @@
                             </p>
                         </div>
                         
-                        {{debugTxt}}
-                        
                         <ion-list>
                             <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="setList in setLists" href="#/setlistDetail/{{setList.id}}">
                                 <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/musica12.jpg" style="width:45px;height:45px;"> 
@@ -110,7 +108,39 @@
             
                 <ion-content>
 
-                    <div class="row" style="margin:0px;border:0px;padding:0px;">
+                    <div class="ms-new-playback-banner"><img src="img/banner3.jpg"/ width="100%"></div>
+
+                    <div class="list" style="padding-top: 20px;">
+
+                        <div class="item item-divider">
+                            <p>{{i18.setlist.createLabel}}</p>
+                        </div>
+
+                        <label class="item item-input">
+                            <input type="text" placeholder="Digite o nome da Setlist aqui" ng-model="setlist.name">
+                        </label>
+
+                        <label class="item item-input">
+                            <span class="input-label">{{i18.setlist.typeLabel}}</span>
+                            <select ng-model="setlist.type">
+                                <option value="SHOWS_SETLIST_GROUP">{{i18.setlist.showLabel}}</option>
+                                <option value="REHEARSALS_SETLIST_GROUP">{{i18.setlist.rehearsalLabel}}</option>
+                                <option value="PRESENTATIONS_SETLIST_GROUP">{{i18.setlist.presentationLabel}}</option>
+                                <option value="TRAINING_SETLIST_GROUP">{{i18.setlist.trainningLabel}}</option>
+                                <option value="CLASSES_SETLIST_GROUP">{{i18.setlist.classLabel}}</option>
+                                <option value="OTHERS_SETLIST_GROUP">{{i18.setlist.otherLabel}}</option>
+                            </select>
+                        </label>
+
+                    </div>
+
+                    <div style="text-align:center;width:100%;padding-top:40px;">
+                        <div class="button small-button-buy" ng-click="persistSetlist()"><p style="margin-top:14px">{{i18.general.saveLabel}}</div>
+                        <div class="button small-button-buy" ng-click="closeModal()"><p style="margin-top:14px">{{i18.general.cancelLabel}}</div>
+                    </div>
+
+<!--
+                    <div class="row" style="margin:0px;border:0px;padding:0px;padding-top:20px;">
 
                         <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
 
@@ -152,7 +182,7 @@
                         </div>
 
                     </div>
-
+-->
                 </ion-content>
                 
             </div>

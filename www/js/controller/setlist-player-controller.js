@@ -4,9 +4,7 @@ module.controller('SetlistPlayerController', function($scope,
                                                       $rootScope,
                                                       $stateParams,
                                                       auth, 
-                                                      musicService,
                                                       msSessionConfig, 
-                                                      setlistService,
                                                       msPlayer) {
 
 

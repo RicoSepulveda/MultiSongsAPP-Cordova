@@ -23,7 +23,7 @@ module.controller('SetlistDetailController', function($scope,
         
         var promises = [];
         
-        promises.push(setlistService.updateMode($scope, auth.token, $scope.setlistId, music.musicId, music.inicio));
+        promises.push(setlistService.updateMode(auth.token, $scope.setlistId, music.musicId, music.inicio));
         
         $q.all(promises).then(
             function(response) {
@@ -47,7 +47,7 @@ module.controller('SetlistDetailController', function($scope,
 
         });
 
-        promises.push(setlistService.updateSetlist($scope, auth.token, $scope.setlistId, newSetlistMusics));
+        promises.push(setlistService.updateSetlist(auth.token, $scope.setlistId, newSetlistMusics));
         
         $q.all(promises).then(
             function(response) { 
@@ -90,7 +90,7 @@ module.controller('SetlistDetailController', function($scope,
 
         });
 
-        promises.push(setlistService.updateSetlist($scope, auth.token, $scope.setlistId, newSetlistMusics));
+        promises.push(setlistService.updateSetlist(auth.token, $scope.setlistId, newSetlistMusics));
         
         $scope.modal.hide();
         
@@ -168,7 +168,7 @@ var isInPlaylist = function(musicId){
         
         $ionicNavBarDelegate.showBar(false);
 
-        promises.push(musicService.getMyMusics($scope, auth.token));
+        promises.push(musicService.getMyMusics(auth.token));
         promises.push(setlistService.getSetlistDetail(auth.token, $stateParams.id));
         
         $q.all(promises).then(

@@ -20,9 +20,21 @@
       {{i18.musics.barTitleLabel}}
     </ion-nav-title>
 
+    <ng-include src="'templates/mplayer/miniPlayer.html'">
+
+    </ng-include>
+
+
     <ion-content class="has-header">
         
         <ms-musics>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        </div>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        </div>
+
 <!--
             <div class="no-padding" ng-if="musics.length > 0">
                 <p class="ms-font-medium ms-font-white" style="font-decoration:none;font-weight:normal;padding-top:10px;padding-left:15px;margin-bottom:0px;padding-bottom:0px;background-color:#333333;">
@@ -57,7 +69,7 @@
                 </div>
             </div>
             
-            <div class="row" style="margin:0px;border:0px;padding:0px;">
+            <div  ng-if="musics.length > 0" class="row" style="margin:0px;border:0px;padding:0px;padding-top:20px;">
                 <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
                     <button ng-class="downloadedClass" ng-click="loadDownloadedSongs()">Músicas baixadas</button>
                 </div>
@@ -66,7 +78,7 @@
                 </div>
             </div>
 
-            <div class="row" style="margin:0px;border:0px;padding:0px;">
+            <div ng-if="musics.length > 0" class="row" style="margin:0px;border:0px;padding:0px;">
 
                 <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
 
@@ -83,29 +95,23 @@
                 <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
                     
                     <div class="list" >
-<!--
-                        <div class="item item-divider" style="background-color:#ffffff;" ng-if="musics.length > 0">
-                            <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                                {{i18.musics.backingTracksLabel}}
-                            </p>
-                            <p class="ms-subtitle">
-                                Você possui {{musics.length}} trilhas nesse celular.
-                            </p>
-                            <p class="ms-subtitle-obs">
-                                Você pode baixar mais {{20 - musics.length}} trilhas.
-                            </p>
-                        </div>
--->
+
                         <div ng-repeat="music in musics">
 
                             <div class="item item-thumbnail-left item-complex item-icon-right item-content">
                                 
                                 <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;">
-
+<!--
                                 <a href="#/tracks/{{music.musicId}}">
                                     <h2 style="line-height:20px;">{{music.musicName}}</h2>
                                     <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
                                 </a>
+-->
+
+                                <div ng-click="miniPlayer.play(music.musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL)">
+                                    <h2 style="line-height:20px;">{{music.musicName}}</h2>
+                                    <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
+                                </div>
 
                                 <i class="icon ion-ios-trash-outline ms-font-multisongs" style="font-size:1.2em;" ng-click="removeSong(music)">
                                     

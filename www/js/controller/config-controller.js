@@ -5,6 +5,7 @@ module.controller('ConfigController', function($scope,
                                                $ionicPopup,
                                                $ionicModal,
                                                $q, 
+                                               $stateParams,
                                                auth,
                                                loginService,
                                                configService) {
@@ -177,6 +178,167 @@ module.controller('ConfigController', function($scope,
 
     }
 
+    $scope.subscribe = function(objective){
+
+      $scope.confirmPopup = $ionicPopup.show({
+        template: '<input type="text" ng-model="discount.code">',
+        title: $rootScope.i18.config.promotionCodeLabel,
+        subTitle: $rootScope.i18.config.promotionCodeDescriptionLabel,
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Continuar</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+
+              e.preventDefault();
+
+              if (!$scope.discount.code) {
+
+                console.log("Product id = " + window.localStorage.getItem("subscription_id"));
+
+                $scope.discount.codeOnStore = window.localStorage.getItem("subscription_id");
+
+                store.order(window.localStorage.getItem("subscription_id"));
+
+                $scope.confirmPopup.close();
+
+              } else {
+
+                console.log("Vai validar o codigo promocional " + $scope.oferta.codigoNaLoja);
+
+                loginService.validateDiscountCode($scope.discount.code, auth.token, 
+
+                  function(obj){
+
+                    if (obj.success == true){
+
+                      console.log("O codigo promocional eh valido. " + obj.bean);
+
+                      $scope.discount.codeOnStore = obj.bean.codigoNaLoja;
+
+                      store.order(obj.bean.codigoNaLoja);
+
+                      $scope.confirmPopup.close();
+
+                    } else {
+
+                      console.log("O codigo promocional eh invalido.");
+
+                      var result = document.getElementsByClassName("popup-sub-title");
+
+                      angular.element(result).html($rootScope.i18.config.promotionCodeErrorDescriptionLabel);
+
+                    }
+
+                  }
+
+                );
+
+              }
+            }
+          }
+        ]
+      });
+
+    }
+
+    var initStore = function(){
+
+        var promisses = [];
+
+        // Let's set a pretty high verbosity level, so that we see a lot of stuff
+        // in the console (reassuring us that something is happening).
+        store.verbosity = store.DEBUG;
+
+        store.validator = function(product, callback) {
+
+            callback(true, {}); // success!
+
+            //callback(false, "Impossible to proceed with validation");
+
+        };
+
+        $scope.discount.beans.forEach(function (entry){
+
+          if (!store.products.byId[entry.codigoNaLoja]){
+
+              console.log("Product " + entry.codigoNaLoja + " was not registered before.");
+
+              // We register a dummy product. It's ok, it shouldn't
+              // prevent the store "ready" event from firing.
+              store.register({
+                  id:    entry.codigoNaLoja,
+                  alias: entry.codigo,
+                  type:  store.PAID_SUBSCRIPTION
+              });
+
+              store.when(entry.codigoNaLoja).approved(function(p) {
+                  console.log("verify subscription");
+                  p.verify();
+              });
+
+              store.when(entry.codigoNaLoja).verified(function(p) {
+                  console.log("subscription verified");
+                  p.finish();
+              });
+
+              store.when(entry.codigoNaLoja).unverified(function(p) {
+                  console.log("subscription unverified");
+              });
+
+              store.when(entry.codigoNaLoja).updated(function(p) {
+
+                  if (p.owned) {
+
+                      $scope.discount.code = null;
+                      auth.type = 4; // USUARIO PREMIUM. Esse codigo eh alterado quando o metodo subscribe eh chamado...
+
+                        alertPopup = $ionicPopup.alert({
+                            title: "Legal!",
+                            template: "Sua assinatura da MultiSongs Premium está ativada. Agora você pode manter até 20 PSlaybacks Premium no seu celular."
+                        });
+
+                        alertPopup.then(function(res) {
+                            $scope.shouldCreate = false;
+                            $scope.modal.hide();
+                        });
+
+                        loginService.subscribe(auth.token, $scope.discount.code);
+
+                  }
+                  else {
+                      console.log("Nao assinou...");
+                  }
+
+              });
+
+
+          }else{
+              console.log("Product " + entry.codigoNaLoja + " ALREADY registered before.");
+          }
+
+        });
+
+        // When every goes as expected, it's time to celebrate!
+        // The "ready" event should be welcomed with music and fireworks,
+        // go ask your boss about it! (just in case)
+        store.ready(function() {
+
+            console.log("\\o/ STORE READY \\o/");
+
+          if ($stateParams.codigoNaLoja && $stateParams.codigoNaLoja != ''){ // So tenta realizar a compra se foi passado codigo de promocao como parametro da url
+            store.order($stateParams.codigoNaLoja);
+          }
+
+        });
+
+        // After we've done our setup, we tell the store to do
+        // it's first refresh. Nothing will happen if we do not call store.refresh()
+        store.refresh();
+
+    }
+
     $scope.changeObjective = function(objective){
 
       if(objective.selected == false){
@@ -210,7 +372,8 @@ module.controller('ConfigController', function($scope,
                                         objectives : [],
                                         generes : []};
 
-        promises.push(configService.getAccountConfig($rootScope, auth.token));
+        promises.push(configService.getAccountConfig(auth.token));
+        promises.push(loginService.getDiscountCodes(auth.token, function(){}));
 
         $q.all(promises).then(
 
@@ -254,7 +417,15 @@ module.controller('ConfigController', function($scope,
                                   objectives : objectives,
                                   generes : generes};
 
-          console.log($scope.accountConfig);
+          $scope.discount = {beans : response[1].promocaoBeans, code : $stateParams.codigoNaLoja, codeOnStore : null};
+
+          if ($scope.discount.code && $scope.discount.code != '' && $scope.discount.code != null){
+            window.localStorage.setItem("subscription_code", $scope.discount.code); // Caso tenha passado por parametro...
+          } else {
+            $scope.discount.code = window.localStorage.getItem("subscription_code");
+          }
+
+          initStore();
 
         },
             function() { 

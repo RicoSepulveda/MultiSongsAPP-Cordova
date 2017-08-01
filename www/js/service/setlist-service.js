@@ -2,7 +2,7 @@ module.factory('setlistService', function($http, $q){
      
     return {
         
-        getSetlists: function($scope, token) { 
+        getSetlists: function(token) { 
 
             var deferred = $q.defer();
 
@@ -34,7 +34,6 @@ module.factory('setlistService', function($http, $q){
                     function( response ) { 
                         
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
                         
                     }
             );
@@ -82,7 +81,7 @@ module.factory('setlistService', function($http, $q){
             return deferred.promise;
             
         },
-        updateSetlist: function($scope, token, setlistId, musicsId) { 
+        updateSetlist: function(token, setlistId, musicsId) { 
 
             var deferred = $q.defer();
 
@@ -114,7 +113,6 @@ module.factory('setlistService', function($http, $q){
                     function( response ) { 
 
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
 
                     }
             );
@@ -122,7 +120,7 @@ module.factory('setlistService', function($http, $q){
             return deferred.promise;
 
         },
-        removeSetlist: function($scope, token, setlistId) { 
+        removeSetlist: function(token, setlistId) { 
 
             var deferred = $q.defer();
 
@@ -161,7 +159,7 @@ module.factory('setlistService', function($http, $q){
             return deferred.promise;
 
         },
-        updateSetlistAttributes: function($scope, token, setlistId, setlistName, setlistGroupCode) { 
+        updateSetlistAttributes: function(token, setlistId, setlistName, setlistGroupCode) { 
 
             var deferred = $q.defer();
 
@@ -193,7 +191,6 @@ module.factory('setlistService', function($http, $q){
                     function( response ) { 
 
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
 
                     }
             );
@@ -201,7 +198,7 @@ module.factory('setlistService', function($http, $q){
             return deferred.promise;
 
         },
-        updateMode: function($scope, token, idSetlist, idMusic, mode) { 
+        updateMode: function(token, idSetlist, idMusic, mode) { 
 
             var deferred = $q.defer();
 
@@ -240,7 +237,7 @@ module.factory('setlistService', function($http, $q){
             return deferred.promise;
 
         },
-        createSetlist: function($scope, token, name, groupCode) { 
+        createSetlist: function(token, name, groupCode) { 
 
             var deferred = $q.defer();
 

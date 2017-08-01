@@ -1,8 +1,8 @@
-module.factory('configService', function($http, $interval, $q){
+module.factory('configService', function($http, $interval, $q, $rootScope){
      
     return {
         
-        getConfig: function($rootScope, $scope, token, sessionConfig) { 
+        getConfig: function(token, sessionConfig) { 
               
             var deferred = $q.defer();
 
@@ -39,7 +39,6 @@ module.factory('configService', function($http, $interval, $q){
                 request.error(
                         function( response ) { 
                             deferred.reject(response);
-                            $scope.destaqueStr = response; 
                         }
                 );
 
@@ -50,11 +49,11 @@ module.factory('configService', function($http, $interval, $q){
         }, 
 
 
-        getAccountConfig: function($rootScope, token) { 
+        getAccountConfig: function(token) { 
               
             var deferred = $q.defer();
 
-            if ($rootScope.buffer.account.valid){
+            if ($rootScope.buffer.account && $rootScope.buffer.account.valid){
 
                 $interval(function(){deferred.resolve($rootScope.buffer.account.data);}, 50, 1);
 

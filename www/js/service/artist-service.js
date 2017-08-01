@@ -1,8 +1,8 @@
-module.factory('artistService', function($http, $interval, $q){
+module.factory('artistService', function($http, $interval, $q, $rootScope){
      
     return {
         
-        getTopArtists: function($rootScope, $scope, token, limit) { 
+        getTopArtists: function(token, limit) { 
             
             var deferred = $q.defer();
 
@@ -41,8 +41,6 @@ module.factory('artistService', function($http, $interval, $q){
                     function( response ) { 
                         
                         deferred.reject(response);
-                        
-                        $scope.destaqueStr = response; 
                         
                     }
                     

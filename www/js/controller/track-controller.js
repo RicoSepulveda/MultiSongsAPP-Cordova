@@ -37,8 +37,8 @@ module.controller('TrackController', function($scope,
         if (auth.type == 1){
 
             var confirmPopup = $ionicPopup.confirm({
-                title: 'Login needed.',
-                template: 'You have to be logged in to download this song. Do you want to go to your login area now?'
+                title: 'Download restrito.',
+                template: 'Você precisa entrar na sua conta para usar essa música. Deseja entrar em sua conta agora?'
             });
 
             confirmPopup.then(function(res) {
@@ -69,8 +69,8 @@ module.controller('TrackController', function($scope,
             if (msPlayer.getPlayer().currentMusic.status == 1){ // Musica ja comprada anteriormente. Somente realizando novo download
 
                 var confirmPopup = $ionicPopup.confirm({
-                  title: 'Song Replacement!',
-                  template: 'Do you really want to use this version on your playlists instead of the previous one?'
+                  title: 'Sobreposição de Música!',
+                  template: 'Você quer sobrepor as suas configurações anteriores por essa nova configuração?'
                 });
 
                 confirmPopup.then(function(res) {
@@ -81,7 +81,7 @@ module.controller('TrackController', function($scope,
 
             } else {
 
-                if (msPlayer.getPlayer().currentMusic.price == 0){ // Se musica gratuita...
+                if (msPlayer.getPlayer().currentMusic.music.price == 0){ // Se musica gratuita...
                     
                     download();
 
@@ -225,99 +225,37 @@ module.controller('TrackController', function($scope,
 
 
                 /* TODO - Reiniciar a store.... retirar comentario */
-                initStore();
+                //initStore();
+                /*
+                msPlayer.setFileSystem(cordova.file.dataDirectory);
+                msPlayer.loadMusic($stateParams.musicId, true);
+                */
+
+                msPlayer.stop();
 
                 msPlayer.setFileSystem(cordova.file.dataDirectory);
-                msPlayer.loadMusic($stateParams.musicId);
+                
+                msPlayer.loadMusic($stateParams.musicId, true, msPlayer.PLAYER_TYPE_MULTITRACK);
 
             }, false);
 
         }else{
-            if (!msPlayer.getPlayer().status.isPlaying || msPlayer.getPlayer().status.isPlaying && msPlayer.getPlayer().currentMusic.musicId != $stateParams.musicId){
+            if (!msPlayer.getPlayer().status.isPlaying || msPlayer.getPlayer().status.isPlaying && msPlayer.getPlayer().currentMusic.music.musicId != $stateParams.musicId){
                 msPlayer.unloadSetlist(); // Garante que se o usuario entrou no player multitrack depois de ter ido na playlist, remove a setlist.
-                msPlayer.loadMusic($stateParams.musicId);
+                msPlayer.loadMusic($stateParams.musicId, true, msPlayer.PLAYER_TYPE_MULTITRACK);
             }
         }
 
         
     });
 
-    var initStore = function(){
-
-        var productId = "audio.multisongs.multitrack." + $stateParams.musicId;
-        var promisses = [];
-
-        $rootScope.musicId = $stateParams.musicId;
-
-        // Let's set a pretty high verbosity level, so that we see a lot of stuff
-        // in the console (reassuring us that something is happening).
-        store.verbosity = store.DEBUG;
-
-        if (!store.products.byId[productId]){
-
-            console.log("Product " + productId + " was not registered before.");
-
-            // We register a dummy product. It's ok, it shouldn't
-            // prevent the store "ready" event from firing.
-            store.register({
-                id:    productId,
-                alias: $stateParams.musicId,
-                type:  store.CONSUMABLE
-            });
-
-            store.when(productId).updated(function (product) {
-                console.log(product);
-                $rootScope.store = {price : product.price};
-                window.localStorage.setItem(product.id, product.price);
-            });
-
-            store.when(productId).approved(function (product){
-                download();
-                product.finish();
-            });
-
-        }else{
-            console.log(window.localStorage.getItem(productId));
-            $rootScope.store = {price : window.localStorage.getItem(productId)};
-        }
-
-        // When every goes as expected, it's time to celebrate!
-        // The "ready" event should be welcomed with music and fireworks,
-        // go ask your boss about it! (just in case)
-        store.ready(function() {
-            console.log("\\o/ STORE READY \\o/");
-        });
-
-        // After we've done our setup, we tell the store to do
-        // it's first refresh. Nothing will happen if we do not call store.refresh()
-        store.refresh();
-
-    }
-/*
-    var finishPurchase = function(product){
-
-
-        var startDownload;
-
-        var alertPopup = $ionicPopup.alert({
-          title: 'Song was successfully purchased!',
-          template: 'Your backing track was successfully purchased and your download will start now.'
-        });
-
-        alertPopup.then(function(res) {
-            donwload();
-            product.finish();
-        });
-
-    }
-*/
     var download = function(callbackFunction){
 
         var promisses = [];
 
         console.log("Will start download...");
 
-        promisses.push(musicService.buy($scope, $stateParams.musicId, auth.token));
+        promisses.push(musicService.buy($stateParams.musicId, auth.token));
 
         $q.all(promisses).then(
             function(response) { 

@@ -9,7 +9,8 @@ module.controller('WishlistController', function($scope,
                                                  wishlistService,
                                                  musicService,
                                                  auth,
-                                                 msSessionConfig) {
+                                                 msSessionConfig,
+                                                 miniPlayer) {
 
     $scope.changeFavorite = function(music){
         
@@ -17,7 +18,7 @@ module.controller('WishlistController', function($scope,
         
         $ionicListDelegate.closeOptionButtons();
 
-        promises.push(musicService.changeFavorite($scope, auth.token, music.musicId));
+        promises.push(musicService.changeFavorite(auth.token, music.musicId));
         
         $q.all(promises).then(
             function(response) { 
@@ -30,6 +31,10 @@ module.controller('WishlistController', function($scope,
 
     var onLoad = function(){
 
+        $scope.miniPlayer = miniPlayer;
+
+        miniPlayer.loadPlayer();
+
         $scope.$parent.showSearch = false;
 
         $ionicNavBarDelegate.showBar(true);
@@ -39,8 +44,8 @@ module.controller('WishlistController', function($scope,
         
         $scope.token = auth.token;
 
-        promises.push(wishlistService.getWishlists($scope, auth.token));
-        promises.push(musicService.getSugestions($rootScope, $scope, auth.token));
+        promises.push(wishlistService.getWishlists(auth.token));
+        promises.push(musicService.getSugestions(auth.token));
 
         //$ionicNavBarDelegate.setTitle(msSessionConfig.myWishlistBarTitle);
         
@@ -106,5 +111,25 @@ module.controller('WishlistController', function($scope,
         onLoad();
 
     });
+
+    $scope.play = function(musicId){
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK); // Carrega musica com player singletrack e download da musica remota
+    }
+
+    $scope.suspend = function(){
+        miniPlayer.suspend();
+    }
+
+    $scope.resume = function(musicDetail){
+        miniPlayer.resume(musicDetail);
+    }
+
+    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
+        miniPlayer.verifyIfLoginIsNeededBeforeDownload();
+    }
+
+    $scope.changePlayerExpantion = function(){
+        miniPlayer.changePlayerExpantion();
+    }
 
 });

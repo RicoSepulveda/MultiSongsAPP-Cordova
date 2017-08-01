@@ -16,9 +16,20 @@
       {{i18.wishlist.barTitleLabel}}
     </ion-nav-title>
 
+    <ng-include src="'templates/mplayer/miniPlayer.html'">
+
+    </ng-include>
+
     <ion-content class="has-header">
         
         <ms-wishlist>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        </div>
+
+        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        </div>
+
         
             <div class="row" style="margin:0px;border:0px;padding:0px;">
                 
@@ -42,7 +53,7 @@
                             </div>
                         </div>
                         
-                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in wishList" href="#/tracks/{{music.musicId}}">
+                        <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in wishList" ng-click="play(music.musicId}">
                             
                             <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
                             
@@ -55,11 +66,11 @@
                                 {{i18.general.removeLabel}}
                             </ion-option-button>
                             
-                            <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="showConfirm({{music.musicId}})">
-                                {{i18.general.buyLabel}} {{music.price}}
+                            <ion-option-button style="background-color:#FD6631;color:#ffffff;" ng-click="verifyIfLoginIsNeededBeforeDownload()">
+                                Baixar
                             </ion-option-button>
                             
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                            <i class="icon ion-play ms-font-multisongs" style="font-size:1.5em;"></i>
                             
                         </ion-item>
                         
@@ -71,7 +82,7 @@
 
             <ion-list>
 
-                <div class="item item-divider" style="background-color:#FFFFFF;border-style:none;" ng-if="wishList.length > 0">
+                <div class="item item-divider" style="background-color:#FFFFFF;border-style:none;" ng-if="sugestions.length > 0">
                     <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal">
                         {{i18.wishlist.suggestionsLabel}}
                     </p>
@@ -82,13 +93,11 @@
                     <ion-slide  ng-repeat="cardSugestion in sugestions">
 
                         <div class="row">
-                            <div class="col-33" style="border:0px;margin:0px;padding-left:3px;padding-right:3px;" ng-repeat="sugestion in cardSugestion">
-                                <a href="#/tracks/{{sugestion.musicId}}">
+                            <div class="col-33" style="border:0px;margin:0px;padding-left:3px;padding-right:3px;" ng-repeat="sugestion in cardSugestion" ng-click="play(sugestion.musicId}">
                                     <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{sugestion.artistPhotoPath}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                                     <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{sugestion.musicName}}</p>
                                     <p class="ms-font-little ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{sugestion.artistName}}</p>
                                     <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{sugestion.style}}</p>
-                                </a>
                             </div>
                         </div>
 

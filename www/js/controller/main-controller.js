@@ -65,8 +65,7 @@ module.controller('MainController', function($scope,
             $scope.loginData = {key : "", password : ""};
         }
 
-        loginService.login($scope, 
-                           $scope.loginData.key, 
+        loginService.login($scope.loginData.key, 
                            $scope.loginData.password, 
                            function(response){
 
@@ -126,6 +125,11 @@ module.controller('MainController', function($scope,
         window.localStorage.setItem("environment_homolog", "http://homolog.multisongs.audio");
         window.localStorage.setItem("environment_dev", "http://192.168.0.12:8180");
         window.localStorage.setItem("environment_prod", "http://api.multisongs.audio");
+        window.localStorage.setItem("subscription_id", "audio.multisongs.premium_account");
+
+        if (!window.localStorage.getItem("subscription_code")){
+            window.localStorage.setItem("subscription_code" , "");
+        }
 
         window.localStorage.setItem("environment_name", "environment_prod");
 

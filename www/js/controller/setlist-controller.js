@@ -47,36 +47,50 @@ module.controller('SetlistController', function($scope,
         
         var promises = [];
         
-        promises.push(setlistService.createSetlist($scope, auth.token, $scope.setlist.name, $scope.setlist.type));
-        
-        $q.all(promises).then(
-            function(response) { 
+        if ($scope.setlist.name == ''){
 
-                var alertPopup = $ionicPopup.alert({
-                    title: $rootScope.i18.setlist.createdMessageTitle,
-                    template: $rootScope.i18.setlist.createdMessage
-                });
+            var alertPopup = $ionicPopup.alert({
+                title: "Ops!",
+                template: "Você precisa preencher todos os campos antes de criar sua SetList."
+            });
 
-                alertPopup.then(function(res) {
-                    $scope.modal.hide();
-                    $location.path("/setlistDetail/" + response[0].id);
-                });
+            alertPopup.then(function(res) {
+            });
 
-            },
-            function() { 
-                $scope.debugTxt = 'Failed'; 
-            }
+        } else {
 
-        ).finally(function() {
-        });
-        
+            promises.push(setlistService.createSetlist(auth.token, $scope.setlist.name, $scope.setlist.type));
+            
+            $q.all(promises).then(
+                function(response) { 
+
+                    var alertPopup = $ionicPopup.alert({
+                        title: $rootScope.i18.setlist.createdMessageTitle,
+                        template: $rootScope.i18.setlist.createdMessage
+                    });
+
+                    alertPopup.then(function(res) {
+                        $scope.modal.hide();
+                        $location.path("/setlistDetail/" + response[0].id);
+                    });
+
+                },
+                function() { 
+                    $scope.debugTxt = 'Failed'; 
+                }
+
+            ).finally(function() {
+            });
+
+        }
+
     };
     
     $scope.removeSetlist = function(setlistId){
         
         var promises = [];
         
-        promises.push(setlistService.removeSetlist($scope, auth.token, setlistId));
+        promises.push(setlistService.removeSetlist(auth.token, setlistId));
         
         $q.all(promises).then(
             function(response) {
@@ -95,7 +109,7 @@ module.controller('SetlistController', function($scope,
         
         var promises = [];
         
-        promises.push(setlistService.updateSetlistAttributes($scope, auth.token, $scope.setlist.id, $scope.setlist.name, $scope.setlist.type));
+        promises.push(setlistService.updateSetlistAttributes(auth.token, $scope.setlist.id, $scope.setlist.name, $scope.setlist.type));
         
         $q.all(promises).then(
             function(response) { 
@@ -115,7 +129,7 @@ module.controller('SetlistController', function($scope,
         var promises = [];
         var setlistGroups = {};
         
-        promises.push(setlistService.getSetlists($scope, auth.token));
+        promises.push(setlistService.getSetlists(auth.token));
         
         $q.all(promises).then(
             function(response) { 

@@ -4,12 +4,13 @@ module.controller('SearchByTypeController', function($scope,
                                                      $location,
                                                      $stateParams,
                                                      $ionicNavBarDelegate,
-                                                     featuredMusicService,
+                                                     $rootScope,
                                                      auth,
                                                      musicService,
                                                      artistService,
                                                      searchService,
-                                                     msSessionConfig) {
+                                                     msSessionConfig,
+                                                     miniPlayer) {
     
     
     $scope.changeFavorite = function(music){
@@ -18,7 +19,7 @@ module.controller('SearchByTypeController', function($scope,
         
         $ionicListDelegate.closeOptionButtons();
 
-        promises.push(musicService.changeFavorite($scope, auth.token, music.musicId));
+        promises.push(musicService.changeFavorite(auth.token, music.musicId));
 
         $q.all(promises).then(
             function(response) { 
@@ -39,23 +40,28 @@ module.controller('SearchByTypeController', function($scope,
         
         if ($stateParams.type == "1"){ // New Musics
             
-            promises.push(musicService.getNewSongs($scope, auth.token));
+            $rootScope.buffer.newSongs.valid = false; // Invalida cache para realizar a busca novamente 
+                                                      // com 20 musicas e nao somente 6 como acontece na home
+
+            promises.push(musicService.getNewSongs(auth.token, 20));
             
         } else if ($stateParams.type == "2"){ // Top Musics
+
+            $rootScope.buffer.topMusics.valid = false;
             
-            promises.push(musicService.getTopMusics($scope, auth.token, 10));
+            promises.push(musicService.getTopMusics(auth.token, 20));
             
         } else if ($stateParams.type == "3"){ // Top Artists
             //$scope.teste = "chamou....";
-            promises.push(artistService.getTopArtists($scope, auth.token, 10));
+            promises.push(artistService.getTopArtists(auth.token, 10));
             
         } else if ($stateParams.type == "4"){ // Top Artists
             //$scope.teste = "chamou....";
-            promises.push(searchService.searchByType($scope, auth.token, 10, $stateParams.keyword, 1));
+            promises.push(searchService.searchByType(auth.token, 20, $stateParams.keyword, 1));
             
         } else if ($stateParams.type == "5"){ // Top Artists
             //$scope.teste = "chamou....";
-            promises.push(searchService.searchByType($scope, auth.token, 10, $stateParams.keyword, 3));
+            promises.push(searchService.searchByType(auth.token, 10, $stateParams.keyword, 3));
             
         }
 
@@ -75,8 +81,34 @@ module.controller('SearchByTypeController', function($scope,
                 $scope.teste = response; 
             }
         );
+
+        $scope.miniPlayer = miniPlayer;
+
+        miniPlayer.loadPlayer();
+
         
     });
+
+    $scope.play = function(musicId){
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK);
+    }
+
+    $scope.suspend = function(){
+        miniPlayer.suspend();
+    }
+
+    $scope.resume = function(musicDetail){
+        miniPlayer.resume(musicDetail);
+    }
+
+    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
+        miniPlayer.verifyIfLoginIsNeededBeforeDownload();
+    }
+
+    $scope.changePlayerExpantion = function(){
+        miniPlayer.changePlayerExpantion();
+    }
+
 
 });
 

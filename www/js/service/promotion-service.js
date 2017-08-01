@@ -1,24 +1,24 @@
-module.factory('searchService', function($http, $q){
-     
+module.factory('promotionService', function($http, $q){
+    
     return {
         
-        searchByKeyword: function(token, limit, keyword) { 
-            
+        getPromotion : function(token) { 
+
             var deferred = $q.defer();
 
             var ms_hostname = window.localStorage.getItem("environment");
-            
-            var request = $http({
+
+             var request = $http({
                 method: "post",
-                url: ms_hostname + "/MultiSongs/api/music/search/keyword",
+                url: ms_hostname + "/MultiSongs/api/promotion/get",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-
-                data: {token : token, limit : limit, keyword: keyword}
+                data: {token: token}
             });
-            
+
+
             request.success(
 
                 function( response ) {
@@ -26,39 +26,39 @@ module.factory('searchService', function($http, $q){
                     deferred.resolve(response);
 
                 }
+ 
             );
 
             request.error(
 
-                function( response ) { 
+                    function( response ) { 
 
-                    deferred.reject(response);
+                        deferred.reject(response);
 
-                }
-
+                    }
             );
             
             return deferred.promise;
-
+            
         },
-        
-        searchByType: function(token, limit, keyword, type) { 
-            
+
+        setAnswer : function(promotionId, questionId, token, answer) { 
+
             var deferred = $q.defer();
 
             var ms_hostname = window.localStorage.getItem("environment");
-            
-            var request = $http({
+
+             var request = $http({
                 method: "post",
-                url: ms_hostname + "/MultiSongs/api/music/search/by",
+                url: ms_hostname + "/MultiSongs/api/promotion/answer/set",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-
-                data: {token : token, limit : limit, keyword: keyword, searchType: type}
+                data: {promotionId : promotionId, questionId : questionId, token : token, answer : answer}
             });
-            
+
+
             request.success(
 
                 function( response ) {
@@ -66,22 +66,22 @@ module.factory('searchService', function($http, $q){
                     deferred.resolve(response);
 
                 }
+ 
             );
 
             request.error(
 
-                function( response ) { 
+                    function( response ) { 
 
-                    deferred.reject(response);
+                        deferred.reject(response);
 
-                }
-
+                    }
             );
             
             return deferred.promise;
-
+            
         }
-        
+
     }
-    
+
 });

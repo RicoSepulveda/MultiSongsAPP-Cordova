@@ -5,9 +5,9 @@ module.controller('MyMusicsController', function($scope,
                                                  $ionicModal,
                                                  $ionicPopup,
                                                  musicService,
-                                                 wishlistService,
                                                  auth,
-                                                 msSessionConfig) {
+                                                 msSessionConfig,
+                                                 miniPlayer) {
 
     $scope.SONG_TYPE_UNDEFINED = 0;
     $scope.SONG_TYPE_DOWNLOADED = 1;
@@ -27,7 +27,7 @@ module.controller('MyMusicsController', function($scope,
         $scope.token = auth.token;
         
         //promises.push(musicService.getRecentlyAdded($scope, auth.token));
-        promises.push(musicService.getMyMusics($scope, auth.token));
+        promises.push(musicService.getMyMusics(auth.token));
 
         $scope.downloadedClass = "button small-button-category-selected";
         $scope.wishlistClass = "button small-button-category";
@@ -35,6 +35,7 @@ module.controller('MyMusicsController', function($scope,
         $q.all(promises).then(
             function(response) { 
 
+                $scope.musics = response[0].musicas;
                 $scope.songType = $scope.SONG_TYPE_DOWNLOADED;
 
             },
@@ -60,7 +61,7 @@ module.controller('MyMusicsController', function($scope,
         $scope.token = auth.token;
         
         //promises.push(musicService.getRecentlyAdded($scope, auth.token));
-        promises.push(musicService.getMyRemovedSongs($scope, auth.token));
+        promises.push(musicService.getMyRemovedSongs(auth.token));
         
         $scope.downloadedClass = "button small-button-category";
         $scope.wishlistClass = "button small-button-category-selected";
@@ -112,7 +113,7 @@ module.controller('MyMusicsController', function($scope,
 
          if(res) {
 
-            promises.push(musicService.removeSongFromUser($scope, $scope.token, music.musicId));
+            promises.push(musicService.removeSongFromUser($scope.token, music.musicId));
 
             $q.all(promises).then(
                 function(response) { 
@@ -139,6 +140,27 @@ module.controller('MyMusicsController', function($scope,
 
         loadDownloadedSongs();
 
+        $scope.miniPlayer = miniPlayer;
+
+        miniPlayer.loadPlayer();
+
     });
+
+    $scope.play = function(musicId){
+        console.log("miniPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL: " + miniPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL);
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL); // Carrega musica com single player e leitura de musica local
+    }
+
+    $scope.suspend = function(){
+        miniPlayer.suspend();
+    }
+
+    $scope.resume = function(musicDetail){
+        miniPlayer.resume(musicDetail);
+    }
+
+    $scope.changePlayerExpantion = function(){
+        miniPlayer.changePlayerExpantion();
+    }
 
 });

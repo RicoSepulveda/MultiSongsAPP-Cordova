@@ -54,7 +54,7 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
    })
    .state('config', { 
        cache: false,
-       url: '/config', 
+       url: '/config/:codigoNaLoja', 
        views: {
             "config-view": {
                 templateUrl: "pages/config.html",

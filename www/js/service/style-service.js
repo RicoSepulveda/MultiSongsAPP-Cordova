@@ -1,14 +1,13 @@
-module.factory('styleService', function($http, $q, $interval){
+module.factory('styleService', function($http, $q, $interval, $rootScope){
     
     return {
         
-        getStyles : function($rootScope, $scope, token) { 
+        getStyles : function(token) { 
 
             var deferred = $q.defer();
 
             if ($rootScope.buffer.styles.valid){
-
-                $interval(function(){deferred.resolve($rootScope.buffer.styles.data);}, 100, 1);
+                $interval(function(){deferred.resolve($rootScope.buffer.styles.data);}, 50, 1);
 
             }else{
 
@@ -28,47 +27,9 @@ module.factory('styleService', function($http, $q, $interval){
 
                     function( response ) {
 
-                        var remainder;
-                        var counter;
-                        var cardIndex;
-                        var styleIndex;
-
                         $rootScope.buffer.styles.data = response;
                         $rootScope.buffer.styles.valid = true;
 
-                        counter = 0;
-                        cardIndex = -1;
-                        styleIndex = -1;
-
-                        $scope.styleCards = [];
-
-                        $scope.styleCards[0] = [];                        
-
-                        response.estilos.forEach(function (entry){
-
-                            remainder = counter % 4;
-
-                            if (remainder == 0) {
-
-                                cardIndex++;
-                                styleIndex = 0;
-
-                                $scope.styleCards[cardIndex] = [];                        
-
-                            } else {
-                                styleIndex++;
-                            }
-
-                            $scope.styleCards[cardIndex][styleIndex] = entry;
-
-                            entry.margin = (styleIndex==0)?"padding-right:2px;":
-                                           (styleIndex==1 || styleIndex==2)?"padding-right:1px;padding-left:1px;":"padding-left:2px;";
-
-                            counter++;
-
-                        });
-
-                        //$scope.musicStyles = response.estilos;
                         deferred.resolve(response);
 
                     }

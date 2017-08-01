@@ -1,7 +1,7 @@
 module.factory('wishlistService', function($http, $q){
      
     return {
-        getWishlists: function($scope, token) { 
+        getWishlists: function(token) { 
 
             var deferred = $q.defer();
 

@@ -171,6 +171,10 @@ ms-setlist .item-right-edit {
                                         <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:45px;height:45px;" ng-if="showChangeItemPosition == false"/>
 
 
+                                        <h2 style="line-height:18px;">{{music.musicName}}</h2>
+                                        <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
+
+<!--
                                     <a href="#/tracks/{{music.musicId}}">
 
                                         <h2 style="line-height:18px;">{{music.musicName}}</h2>
@@ -178,7 +182,7 @@ ms-setlist .item-right-edit {
                                         <p style="padding:0px;margin:0px;line-height:18px;">{{music.artistName}}</p>
 
                                     </a>
-                                   
+-->
 
                                     <i class="icon ms-font-multisongs" style="font-size:1.5em;z-index:-1;" ng-if="showChangeItemPosition == false">
                                         <div class="item-note">

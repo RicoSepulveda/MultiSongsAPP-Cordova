@@ -5,16 +5,21 @@ module.controller('IndexController', function($scope,
                                               $ionicListDelegate,
                                               $rootScope,
                                               $ionicModal,
+                                              $ionicPopup,
                                               $interval,
                                               $ionicLoading,
+                                              $location,
                                               featuredMusicService, 
                                               musicService, 
                                               artistService, 
                                               loginService,
                                               configService,
                                               styleService,
+                                              wishlistService,
+                                              promotionService,
                                               auth,
-                                              msSessionConfig) {
+                                              msSessionConfig,
+                                              miniPlayer) {
 
     //$ionicNavBarDelegate.showBar(true);
 
@@ -33,7 +38,7 @@ module.controller('IndexController', function($scope,
         
         $ionicListDelegate.closeOptionButtons();
 
-        promises.push(musicService.changeFavorite($scope, auth.token, music.musicId));
+        promises.push(musicService.changeFavorite(auth.token, music.musicId));
 
         $q.all(promises).then(
             function(response) { 
@@ -63,13 +68,13 @@ module.controller('IndexController', function($scope,
             $rootScope.buffer = {styles : {valid : false}, account : {valid : false}, sugestions : {valid : false}, topMusics : {valid : false}, newSongs : {valid : false}, config : {valid : false}, featuredMusicSet : [], featuredMusicSets : {valid : false}, topArtists : {valid : false}};
         }
 
-        promises.push(configService.getConfig($rootScope, $scope, token, msSessionConfig));
-        promises.push(featuredMusicService.getFeaturedMusicSets($rootScope, $scope, token));
-        promises.push(musicService.getNewSongs($rootScope, $scope, token));
-        promises.push(musicService.getTopMusics($rootScope, $scope, token, 5));
-        promises.push(artistService.getTopArtists($rootScope, $scope, token, 5));
-        promises.push(styleService.getStyles($rootScope, $scope, token));
-        //promises.push(wishlistService.getWishlists($scope, response.token));
+        promises.push(configService.getConfig(token, msSessionConfig));
+        promises.push(featuredMusicService.getFeaturedMusicSets(token));
+        promises.push(musicService.getNewSongs(token, 6));
+        promises.push(musicService.getTopMusics(token, 5));
+        promises.push(artistService.getTopArtists(token, 5));
+        promises.push(styleService.getStyles(token));
+        promises.push(wishlistService.getWishlists(token));
         
         $q.all(promises).then(
 
@@ -107,6 +112,7 @@ module.controller('IndexController', function($scope,
                     editLabel : response[0].generalBean.editLabel,
                     removeLabel : response[0].generalBean.removeLabel,
                     saveLabel : response[0].generalBean.saveLabel,
+                    cancelLabel : response[0].generalBean.cancelLabel,
                     wishlistButtonLabel : response[0].generalBean.wishlistLabel
 
 
@@ -186,7 +192,13 @@ module.controller('IndexController', function($scope,
                     descriptionLabel : response[0].configBean.descriptionLabel,
                     socialLabel : response[0].configBean.socialLabel,
                     disclaimerLabel : response[0].configBean.disclaimerLabel,
-                    barTitleLabel : response[0].configBean.barTitleLabel
+                    barTitleLabel : response[0].configBean.barTitleLabel,
+                    subscriptionButtonLabel : response[0].configBean.subscriptionButtonLabel,
+                    subscriptionLabel : response[0].configBean.subscriptionLabel,
+                    promotionCodeLabel : response[0].configBean.promotionCodeLabel,
+                    promotionCodeDescriptionLabel : response[0].configBean.promotionCodeDescriptionLabel,
+                    commentsLabel : response[0].configBean.commentsLabel,
+                    promotionCodeErrorDescriptionLabel : response[0].configBean.promotionCodeErrorDescriptionLabel
                 };
 
                 var account = {
@@ -249,15 +261,17 @@ module.controller('IndexController', function($scope,
                 $scope.newSongsRow2[0].margin="margin-right:6px";
                 $scope.newSongsRow2[1].margin="margin-right:3px;margin-left:3px";
                 $scope.newSongsRow2[2].margin="margin-left:6px";
-                
+
                 $scope.topMusics = response[3].musicas;
 
                 $scope.topArtists = response[4].artistas;
                 
                 $ionicNavBarDelegate.showBar(true);
                 $ionicNavBarDelegate.title($rootScope.i18.store.barTitleLabel);
+
+                createStyles(response[5]);
                 
-                $scope.wishlist = response[5];
+                $scope.wishlist = response[6];
 
                 if ($scope.wishlist) {
 
@@ -289,6 +303,48 @@ module.controller('IndexController', function($scope,
                
     }
 
+    var createStyles = function(obj){
+
+        var remainder;
+        var counter;
+        var cardIndex;
+        var styleIndex;
+        var styles = {styleCards : []};
+
+        counter = 0;
+        cardIndex = -1;
+        styleIndex = -1;
+
+        styles.styleCards[0] = [];                        
+
+        obj.estilos.forEach(function (entry){
+
+            remainder = counter % 4;
+
+            if (remainder == 0) {
+
+                cardIndex++;
+                styleIndex = 0;
+
+                styles.styleCards[cardIndex] = [];                        
+
+            } else {
+                styleIndex++;
+            }
+
+            styles.styleCards[cardIndex][styleIndex] = entry;
+
+            entry.margin = (styleIndex==0)?"padding-right:2px;":
+                           (styleIndex==1 || styleIndex==2)?"padding-right:1px;padding-left:1px;":"padding-left:2px;";
+
+            counter++;
+
+        });
+
+        $scope.styleCards = styles.styleCards;
+
+    }
+
     document.addEventListener("deviceready", function(){
 
         navigator.globalization.getLocaleName(function(result){
@@ -297,6 +353,15 @@ module.controller('IndexController', function($scope,
             $rootScope.locale = result.value.substring(3,5);
 
             startLoading();
+            //loadPlayer();
+
+            $scope.miniPlayer = miniPlayer;
+
+            miniPlayer.loadPlayer();
+
+            $scope.intervals = [];
+
+            $scope.newPlaybackRequest = {musicName : "", artistName : ""};
 
         }, function(err){console.log(err)});
         
@@ -306,11 +371,41 @@ module.controller('IndexController', function($scope,
     $scope.$watch("$viewContentLoaded", function() {
 
     });
+/*
+    var loadPlayer = function(){
 
+        $scope.playerExpanded = true;
+
+        $scope.msPlayer = msPlayer;
+
+        $scope.token = auth.token;
+
+        isAnApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
+
+        if ( isAnApp ) {
+            
+            msPlayer.setFileSystem(cordova.file.dataDirectory);
+
+        }else{
+        }
+
+    }
+
+    $scope.play = function(musicId){
+
+            if (!msPlayer.getPlayer().status.isPlaying || 
+                msPlayer.getPlayer().status.isPlaying && 
+                msPlayer.getPlayer().currentMusic.music.musicId != musicId){
+                    msPlayer.loadMusic(musicId, true);
+            }
+
+    }
+*/
     var startLoading = function(){
 
         var key;
         var password;
+        var promises = [];
         var spinner = '<ion-spinner icon="dots" class="spinner-stable"></ion-spinner><br/>';
 
         if (window.localStorage.getItem("key")){
@@ -318,13 +413,25 @@ module.controller('IndexController', function($scope,
             chooseUserByIdiom($rootScope.preferredLanguage + "-" + $rootScope.locale);
         }
 
-        $ionicLoading.show({ template: spinner + 'Loading Backing Tracks...' });
+        $ionicLoading.show({ template: spinner + 'Carregando músicas...' });
 
         key = window.localStorage.getItem("key");
         password = window.localStorage.getItem("password");
         
-        loginService.login($scope, key, password, function(response){
-           
+        loginService.login(key, password, function(response){
+
+            promises.push(promotionService.getPromotion(response.token));
+
+            $q.all(promises).then(
+
+                function(response) {
+                    $scope.promotion = response[0].bean;
+                },
+                function() {
+                    $scope.promotion = null;
+                }
+            );
+
             $interval(function(){
                 cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
             },1000);
@@ -357,8 +464,384 @@ module.controller('IndexController', function($scope,
         //window.location.reload(true);
 
     }    
+/*
+    $scope.changePlayerExpantion = function(){
+
+        $scope.playerExpanded = ($scope.playerExpanded == false);
+
+    }
+
+    $scope.suspend = function(){
+
+        msPlayer.suspend($scope);
+
+        $scope.isPlaying = false;
+
+    };
+
+    $scope.resume = function(musicDetail){
+
+        if (msPlayer.getPlayer().status.isPaused){ //IS_SUSPENDED_STATUS
+
+            msPlayer.resume();
+
+        } else {
+            
+            msPlayer.play();
+
+        }
+
+        $scope.isPlaying = true;
+
+        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
+
+    };
+
+    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
+
+        var promises = [];
+
+        if (auth.type == 1){
+
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Download restrito.',
+                template: 'Você precisa entrar na sua conta para usar essa música. Deseja entrar em sua conta agora?'
+            });
+
+            confirmPopup.then(function(res) {
+
+                if(res) {
+
+                    $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
+                    $rootScope.originalDescription = $rootScope.description;
+
+                    $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
+
+                    $ionicModal.fromTemplateUrl('templates/login.html', {
+                        scope: $rootScope,
+                        animation: 'slide-in-up'
+                    }).then(function(modal) {
+                        $rootScope.loginModal = modal;
+                        $rootScope.loginModal.show();
+                    });
+
+                } else {
+
+                }
+
+            });
+
+        } else {
+
+            if (msPlayer.getPlayer().currentMusic.status == 1){ // Musica ja comprada anteriormente. Somente realizando novo download
+
+                var confirmPopup = $ionicPopup.confirm({
+                  title: 'Sobreposição de Música!',
+                  template: 'Você quer sobrepor as suas configurações anteriores por essa nova configuração?'
+                });
+
+                confirmPopup.then(function(res) {
+                    if(res) {
+                        download();
+                    }
+                });
+
+            } else {
+
+                if (msPlayer.getPlayer().currentMusic.price == 0){ // Se musica gratuita...
+                    
+                    download();
+
+                }else{
+
+                    // SO REALIZA A COMPRA SE ESTIVER CONFIGURADO PARA ISSO
+                    //if (window.localStorage.getItem("shouldFinishPurchase") == true){
+                        download();
+                        //store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
+                    //} else {
+                    //    console.log("ATTENTION! =======>>>>>>> PURCHASE WAS NOT REGISTRED ON THE STORE! APP MUST BE RECONFIGURED AND REDEPLOYED.");
+                    //    finishPurchase(); // Chama diretamente o finishPurchase sem o uso do evento da store
+                    //}
+
+                }
 
 
+            }
+
+
+        }
+
+
+    }
+
+
+    var download = function(callbackFunction){
+
+        var promisses = [];
+
+        console.log("Will start download...");
+        promisses.push(musicService.buy($scope, msPlayer.getPlayer().currentMusic.music.musicId, auth.token));
+
+        $q.all(promisses).then(
+            function(response) { 
+
+                if (callbackFunction){
+                    callbackFunction();
+                }
+
+                msPlayer.download();
+
+            },
+            function(err) {
+                // PRECISA TRATAR O ERRO NO DOWNLOAD
+                console.log(err);
+            }
+        ).finally(function() {
+            
+        });
+
+    }
+*/
+
+    $ionicModal.fromTemplateUrl('templates/newPlaybackRequest.html', {
+        scope: $scope,
+        controller: 'SearchController',
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modal = modal;
+    });
+
+    $ionicModal.fromTemplateUrl('templates/promotion/promotion.html', {
+        scope: $scope,
+        controller: 'IndexController',
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.promotionModal = modal;
+    });
+
+    $scope.createPrivateDiscountCode = function(){
+
+        var confirmPopup;
+        var alertPopup;
+        
+        $scope.shouldCreate = true;
+
+        $scope.promotion.questions.forEach(function (entry){
+
+            if(entry.mandatory && (!entry.answer || entry.answer == '') && $scope.shouldCreate){
+
+                $scope.shouldCreate = false;
+
+                alertPopup = $ionicPopup.alert({
+                    title: "Ops!",
+                    template: "Você precisa responder todas as questões antes de enviar suas respostas..."
+                });
+
+                alertPopup.then(function(res) {
+                    $scope.modal.hide();
+                });
+
+            }
+
+        });
+
+        if ($scope.shouldCreate){
+
+            loginService.createPrivateDiscountCodes(auth.token, $scope.promotion.id, function(obj){
+
+                // Se for uma promocao do tipo assinatura especial...
+                if ($scope.promotion.discount.codigoNaLoja && $scope.promotion.discount.codigoNaLoja != null){
+
+                    $scope.confirmPopup = $ionicPopup.confirm({
+                        title: "Obrigado!",
+                        template: "Sua contribuição é muito importante e por isso você tem direito a '" + $scope.promotion.discount.direito + "'. Quer resgatar seu prêmio agora?"
+                    });
+
+                    $scope.confirmPopup.then(function(res) {
+
+                        if(res) {
+                            $scope.promotionModal.hide();
+                            $location.path('/config/' + $scope.promotion.discount.codigo);
+                        } else {
+                        }
+
+                    });
+
+                }
+
+            });
+
+        }
+
+    }
+
+    $scope.setAnswers = function(questionId, answer){
+
+        console.log($scope.promotion );
+
+        if ($scope.intervals[questionId]  && $scope.intervals[questionId] != null){
+            $interval.cancel($scope.intervals[questionId]);
+        }
+
+        $scope.intervals[questionId] = $interval(function(){
+            
+            console.log("Enviando resposta para servidor");
+            
+            promotionService.setAnswer($scope.promotion.id, questionId, auth.token, answer);
+            
+            $scope.intervals[questionId] = null;
+
+        }, 1000, 1);
+
+    }
+
+    // Checkbox tem um metodo especifico porque deve ser disparado assim que foi selecionado
+    $scope.setCheckboxAnswer = function(questionId, answer){
+
+        console.log($scope.promotion );
+
+        promotionService.setAnswer($scope.promotion.id, questionId, auth.token, answer);
+
+    }
+
+    $scope.openPromotion = function(){
+
+            var promises = [];
+
+            if (auth.type == 1){ // Nao logado...
+/*
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Ops!',
+                    template: 'Você precisa entrar na sua conta para participar dessa promoção. Deseja entrar em sua conta agora?'
+                });
+
+                confirmPopup.then(function(res) {
+
+                if(res) {
+*/
+                    $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
+                    $rootScope.originalDescription = $rootScope.description;
+
+                    $rootScope.callback = {func : function(args){
+                        $scope.userType = auth.type;
+                        startLoading();
+                    }, args : "args"};
+
+                    $ionicModal.fromTemplateUrl('templates/login.html', {
+                        scope: $rootScope,
+                        animation: 'slide-in-up'
+                    }).then(function(modal) {
+                        $rootScope.loginModal = modal;
+                        $rootScope.loginModal.show();
+                    });
+/*
+                } else {
+
+                }
+
+                });
+*/
+            } else {
+                $scope.promotionModal.show();
+            }
+
+
+    }
+
+    $scope.openNewRequest = function(){
+
+
+        if (auth.type == 1){ // Nao logado...
+            $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
+            $rootScope.originalDescription = $rootScope.description;
+
+            $rootScope.callback = {func : function(args){
+                $scope.userType = auth.type;
+                startLoading();
+            }, args : "args"};
+
+            $ionicModal.fromTemplateUrl('templates/login.html', {
+                scope: $rootScope,
+                animation: 'slide-in-up'
+            }).then(function(modal) {
+                $rootScope.loginModal = modal;
+                $rootScope.loginModal.show();
+            });
+        } else {
+            $scope.modal.show();
+        }
+
+    }
+
+    $scope.submitRequest = function(){
+
+        var promises = [];
+    
+        if ($scope.newPlaybackRequest.musicName == '' || $scope.newPlaybackRequest.artistName == ''){
+
+            var alertPopup = $ionicPopup.alert({
+                title: "Ops!",
+                template: "Você precisa preencher todos os campos antes de enviar seu pedido."
+            });
+
+            alertPopup.then(function(res) {
+            });
+
+
+        }else{
+
+            promises.push(musicService.newPlayback(auth.token, $scope.newPlaybackRequest.musicName, $scope.newPlaybackRequest.artistName));
+
+            $q.all(promises).then(
+
+                function(response) {
+
+                        var alertPopup = $ionicPopup.alert({
+                            title: "Pedido registrado",
+                            template: "Avisaremos você quando seu Playback estiver disponível na MultiSongs."
+                        });
+
+                        alertPopup.then(function(res) {
+                            $scope.modal.hide();
+                        });
+
+                },
+                function() { 
+                        var alertPopup = $ionicPopup.alert({
+                            title: "Ops!",
+                            template: "Não conseguimos registrar seu pedido. Tente novamente em alguns minutos."
+                        });
+
+                        alertPopup.then(function(res) {
+                            $scope.modal.hide();
+                        });
+                }
+            );
+
+
+        }
+
+    }
+
+    $scope.play = function(musicId){
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK); // Carrega musica com player singletrack e download da musica remota
+    }
+
+    $scope.suspend = function(){
+        miniPlayer.suspend();
+    }
+
+    $scope.resume = function(musicDetail){
+        miniPlayer.resume(musicDetail);
+    }
+
+    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
+        miniPlayer.verifyIfLoginIsNeededBeforeDownload();
+    }
+
+    $scope.changePlayerExpantion = function(){
+        miniPlayer.changePlayerExpantion();
+    }
 
 });
 

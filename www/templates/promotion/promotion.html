@@ -1,0 +1,105 @@
+
+
+<ion-modal-view>
+
+	<ion-content>
+
+        <div class="ms-promotion-container">
+
+            <div class="ms-promotion-img"><img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{promotion.internalBanner}}" width="100%"/></div>
+
+            <div class="ms-promotion-title ms-font-big ms-font-dark-gray">{{promotion.title}}</div>
+
+            <div class="ms-promotion-introduction ms-font-little ms-font-dark-gray">{{promotion.description}}</div>
+
+            <div class="ms-promotion-questions">
+
+		        <div class="card">
+		            <div class="ms-promotion-question" ng-repeat="question in promotion.questions">
+
+				        <div class="item item-divider" style="word-wrap: break-word;white-space: normal !important;">{{question.title}}</div>
+						<!--
+						<input type="text" placeholder="{{question.placeholder}}" ng-model="question.answer" ng-if="question.type == 'text'" style="padding-right:20px;padding-left:20px;padding-top:40px;padding-bottom:40px;">
+-->
+
+						<textarea placeholder="{{question.placeholder}}" ng-model="question.answer" ng-if="question.type == 'text'" ng-blur="setAnswers(question.id, question.answer)" rows="4" style="padding-right:20px;padding-left:20px;padding-top:40px;padding-bottom:40px;width: 100%;"></textarea>
+
+						<div radio-group ng-if="question.type == 'radio'" >
+				        	<ion-radio name="{{question.id}}" ng-model="question.answer" ng-value="{{opt.value}}" ng-repeat="opt in question.options" ng-change="setAnswers(question.id, opt.value)">{{opt.label}}</ion-radio>
+						</div>
+
+						<div class = "item range" ng-if="question.type == 'range'">
+						   <i class = "icon" ng-class="question.leftIcon"></i>
+						   <input type = "range" ng-model="question.answer" ng-change="setAnswers(question.id, question.answer)">
+						   <i class = "icon" ng-class="question.rightIcon"></i>
+						</div>
+
+					  	<ion-checkbox id="{{opt.value}}" name="{{opt.value}}" color="dark" ng-value="{{opt.value}}" checked="{{opt.checked}}" ng-repeat="opt in question.options" ng-if="question.type == 'checkbox'" ng-change="setCheckboxAnswer(question.id, opt.value)">{{opt.label}}</ion-checkbox>
+
+					</div>
+				</div>
+<!--
+					<span class="ms-font-little ms-font-multisongs" style="padding-left:10px;padding-top:15px;padding-bottom:5px;">{{question.title}}</span>
+
+					<label class="item item-input" ng-if="question.type == 'text'">
+						<input type="text" placeholder="{{question.placeholder}}" ng-model="question.answer">
+					</label>
+-->
+					<div class = "item range" ng-if="question.type == 'range'">
+					   <i class = "icon" ng-class="question.leftIcon"></i>
+					   <input type = "range" ng-model="question.answer">
+					   <i class = "icon" ng-class="question.rightIcon"></i>
+					</div>
+
+
+        <div class="card" ng-if="question.type == 'radio'">
+
+        	<div class="item item-divider">{{question.title}}</div>
+
+	        	<ion-radio ng-model="question.answer" ng-value="{{opt.value}}" icon="icon ion-checkmark-circled" ng-repeat="opt in question.options">{{opt.label}}</ion-radio>
+
+        	</div>
+
+
+					<div class="list" ng-if="question.type == 'radio'" >
+
+					   <label class="item item-radio" ng-repeat="opt in question.options">
+
+					      <input type="radio" name="x" ng-model="question.answer" value="{{opt.value}}">
+
+					      <div class="item-content">
+					         {{opt.label}}
+					      </div>
+
+					      <i class="radio-icon ion-checkmark-circled"></i>
+
+					   </label>
+<!--
+					  	<ion-item ng-repeat="opt in question.options">
+					    	<ion-label>{{opt.label}}</ion-label>
+					    	<ion-radio checked="{{opt.checked}}" value="{{opt.value}}"></ion-radio>
+					  	</ion-item>
+-->
+					</div>
+
+					<ion-list radio-group ng-if="question.type == 'checkbox'">
+						<ion-item ng-repeat="opt in question.options" ng-model="question.answer">
+						  	<ion-label>{{opt.label}}</ion-label>
+						  	<ion-checkbox color="dark" checked="{{opt.checked}}"></ion-checkbox>
+						</ion-item>
+					</ion-list>
+
+	            </div>
+
+            </div>
+
+			<div style="text-align:center;width:100%;padding-top:40px;">
+				<div class="button small-button-buy" ng-click="createPrivateDiscountCode()"><p style="margin-top:14px">Enviar Respostas</p></div>
+			</div>
+
+        </div>
+
+
+    </ion-content>
+
+</ion-modal-view>

@@ -40,6 +40,10 @@
   background-color:#444444;
 }
 
+a:link, a:visited, a:hover, a:active{
+  color:#ffffff;
+}
+
 
 .file-info-button-title{
   font-size: 12px;

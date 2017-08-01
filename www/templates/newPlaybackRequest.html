@@ -1,0 +1,82 @@
+<ion-modal-view>
+
+	<ion-content>
+
+        <div class="ms-new-playback-request">
+
+            <div class="ms-new-playback-banner"><img src="img/banner3.jpg"/ width="100%"></div>
+<!--
+            <div class="ms-new-playback-introduction ms-font-little ms-font-dark-gray">Envie seu pedido de Playback para nós e avisaremos você assim que ela estiver diponível na MultiSongs.</div>
+
+
+
+				<span class="ms-font-little ms-font-multisongs" style="padding-left:10px;padding-top:15px;padding-bottom:5px;">Nome da Música</span>
+				<label class="item item-input">
+					<input type="text" placeholder="Música" ng-model="newPlaybackRequest.musicName">
+				</label>
+
+				<span class="ms-font-little ms-font-multisongs" style="padding-left:10px;padding-top:15px;padding-bottom:5px;">Nome do Artista</span>
+				<label class="item item-input">
+					<input type="text" placeholder="Artista" ng-model="newPlaybackRequest.artistName">
+				</label>
+
+				<div style="text-align:center;width:100%;padding-top:40px;">
+					<div class="button small-button-buy" ng-click="submitRequest()"><p style="margin-top:14px">Enviar</p></div>
+				</div>
+
+	        </div>
+
+						<div class="list">
+
+							<div class="item item-divider">
+								<p>>Envie seu pedido de Playback para nós e avisaremos você assim que ela estiver diponível na MultiSongs.</p>
+							</div>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.name}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.nameLabel}}" ng-model="createAccountData.name">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.key}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.emailLabel}}" ng-model="createAccountData.key">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.password}}</span>
+							<label class="item item-input">
+								<input type="password" placeholder="{{i18.general.passwordLabel}}" ng-model="createAccountData.password">
+							</label>
+
+							<span class="ms-font-little ms-font-multisongs">{{errors.age}}</span>
+							<label class="item item-input">
+								<input type="text" placeholder="{{i18.general.ageLabel}}" ng-model="createAccountData.age">
+							</label>
+
+						</div>
+
+-->
+
+		<div class="list" style="padding-top: 20px;">
+
+			<div class="item item-divider">
+				<p>Envie seu pedido de Playback!</p>
+			</div>
+
+			<label class="item item-input">
+				<input type="text" placeholder="Digite o nome da música" ng-model="newPlaybackRequest.musicName">
+			</label>
+
+			<label class="item item-input">
+				<input type="text" placeholder="Digite o nome do artista" ng-model="newPlaybackRequest.artistName">
+			</label>
+
+		</div>
+
+		<div style="text-align:center;width:100%;padding-top:40px;">
+			<div class="button small-button-buy" ng-click="submitRequest()"><p style="margin-top:14px">Enviar seu pedido</p></div>
+		</div>
+
+
+    </ion-content>
+
+</ion-modal-view>

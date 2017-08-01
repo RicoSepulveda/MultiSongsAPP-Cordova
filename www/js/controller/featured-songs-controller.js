@@ -11,7 +11,7 @@ module.controller('FeaturedSongController', function($scope,
 
         $scope.token = auth.token;
 
-        promises.push(featuredMusicService.getFeaturedMusicSet($rootScope, $scope, auth.token, $stateParams.id));
+        promises.push(featuredMusicService.getFeaturedMusicSet(auth.token, $stateParams.id));
         
         $q.all(promises).then(
             function(response) { 

@@ -15,7 +15,7 @@
 
         <link href="css/level.css" rel="stylesheet"/>
         
-        <link href="lib/ionicframework/css/ionic.min.css" rel="stylesheet"/>
+        <link href="lib/ionicframework/css/ionic.css" rel="stylesheet"/>
         <script src="lib/ionicframework/js/ionic.bundle.js"></script>
 
         <script src="js/app.js"></script>
@@ -30,6 +30,7 @@
         <script src="js/service/setlist-service.js"></script>
         <script src="js/service/style-service.js"></script>
         <script src="js/service/wishlist-service.js"></script>
+        <script src="js/service/promotion-service.js"></script>
 
         <script src="js/controller/main-controller.js"></script>
         <script src="js/controller/config-controller.js"></script>
@@ -43,6 +44,8 @@
         <script src="js/controller/setlist-player-controller.js"></script>
         <script src="js/controller/track-controller.js"></script>
         <script src="js/controller/wishlist-controller.js"></script>
+
+        <script src="js/scripts/mini-player.js"></script>
 
         <script src="lib/howler/howler.min.js"></script>        
 
@@ -86,7 +89,7 @@
                 <ion-nav-view name='favorite-view'></ion-nav-view>
             </ion-tab>
 
-            <ion-tab title="{{i18.general.configMenuTitleLabel}}" icon="ion-gear-a" ng-click="go('/config')">
+            <ion-tab title="{{i18.general.configMenuTitleLabel}}" icon="ion-gear-a" ng-click="go('/config/')">
                 <ion-nav-view name='config-view'></ion-nav-view>
             </ion-tab>
 

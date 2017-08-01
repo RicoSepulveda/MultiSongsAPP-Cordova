@@ -1,8 +1,8 @@
-module.factory('musicService', function($http, $interval, $q){
+module.factory('musicService', function($http, $interval, $q, $rootScope){
     
     return {
         
-        getNewSongs : function($rootScope, $scope, token) { 
+        getNewSongs : function(token, limit) { 
             
             var deferred = $q.defer();
 
@@ -20,7 +20,7 @@ module.factory('musicService', function($http, $interval, $q){
                        "Accept": "application/json;charset=utf-8"
                    },
                    dataType:"json",
-                    data: {token: token, limit: 6}
+                    data: {token: token, limit: limit}
                 });
 
 
@@ -33,17 +33,6 @@ module.factory('musicService', function($http, $interval, $q){
                         $rootScope.buffer.newSongs.data = response;
                         $rootScope.buffer.newSongs.valid = true;
 
-                        $scope.newSongsRow1 = response.musicas.slice(0,3);
-                        $scope.newSongsRow2 = response.musicas.slice(3,6);
-
-                        $scope.newSongsRow1[0].margin="margin-right:6px";
-                        $scope.newSongsRow1[1].margin="margin-right:3px;margin-left:3px";
-                        $scope.newSongsRow1[2].margin="margin-left:6px";
-
-                        $scope.newSongsRow2[0].margin="margin-right:6px";
-                        $scope.newSongsRow2[1].margin="margin-right:3px;margin-left:3px";
-                        $scope.newSongsRow2[2].margin="margin-left:6px";
-
                     }
 
                 );
@@ -53,7 +42,6 @@ module.factory('musicService', function($http, $interval, $q){
                         function( response ) { 
 
                             deferred.reject(response);
-                            $scope.destaqueStr = response; 
 
                         }
 
@@ -64,7 +52,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
             
         },
-        getTopMusics : function($rootScope, $scope, token, limit) { 
+        getTopMusics : function(token, limit) { 
             
             var deferred = $q.defer();
 
@@ -104,7 +92,6 @@ module.factory('musicService', function($http, $interval, $q){
                         function( response ) { 
 
                             deferred.reject(response);
-                            $scope.destaqueStr = response; 
 
                         }
                 );
@@ -114,7 +101,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
                 
         },
-        getMyRemovedSongs : function($scope, token) { 
+        getMyRemovedSongs : function(token) { 
             
             var deferred = $q.defer();
 
@@ -154,7 +141,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
             
         },
-        changeFavorite : function($scope, token, musicId) { 
+        changeFavorite : function(token, musicId) { 
             
             var deferred = $q.defer();
 
@@ -187,7 +174,6 @@ module.factory('musicService', function($http, $interval, $q){
                     function( response ) { 
 
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
 
                     }
             );
@@ -195,7 +181,47 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
                 
         },
-        removeSongFromUser : function($scope, token, musicId) { 
+        vote : function(token, pedidoId) {  // Vota em um pedido de playback feito por um usuario
+            
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+            
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/music/vote",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token: token, id: pedidoId}
+            });
+
+
+            request.success(
+
+                function( response ) {
+                    //$scope.destaqueStr = response;
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+            );
+            
+            return deferred.promise;
+                
+        },
+        removeSongFromUser : function(token, musicId) { 
             
             var deferred = $q.defer();
 
@@ -235,7 +261,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
                 
         },
-        getRecentlyAdded : function($scope, token) { 
+        getRecentlyAdded : function(token) { 
             
             var deferred = $q.defer();
 
@@ -266,7 +292,6 @@ module.factory('musicService', function($http, $interval, $q){
                     function( response ) { 
 
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
 
                     }
             );
@@ -274,7 +299,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
               
         },
-        getMyMusics : function($scope, token) {
+        getMyMusics : function(token) {
             
             var deferred = $q.defer();
 
@@ -296,7 +321,6 @@ module.factory('musicService', function($http, $interval, $q){
                 function( response ) {
 
                     deferred.resolve(response);
-                    $scope.musics = response.musicas;
 
                 }
 
@@ -307,7 +331,6 @@ module.factory('musicService', function($http, $interval, $q){
                     function( response ) { 
 
                         deferred.reject(response);
-                        $scope.destaqueStr = response; 
 
                     }
             );
@@ -315,7 +338,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
             
         },
-        getSugestions : function($rootScope, $scope, token) {
+        getSugestions : function(token) {
             
             var deferred = $q.defer();
 
@@ -354,7 +377,6 @@ module.factory('musicService', function($http, $interval, $q){
                         function( response ) { 
 
                             deferred.reject(response);
-                            $scope.destaqueStr = response; 
 
                         }
                 );
@@ -364,7 +386,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
             
         },
-        buy : function($scope, id, token) {
+        buy : function(id, token) {
             
             var deferred = $q.defer();
 
@@ -385,7 +407,7 @@ module.factory('musicService', function($http, $interval, $q){
                 function( response ) {
 
                     deferred.resolve(response);
-                    $scope.musics = response.musicas;
+                    //$scope.musics = response.musicas;
 
                 }
 
@@ -403,7 +425,7 @@ module.factory('musicService', function($http, $interval, $q){
             return deferred.promise;
             
         },
-        getMusicDetails : function(token, musicId) {
+        getMusicDetails : function(token, musicId, trackType) {
             
             var deferred = $q.defer();
 
@@ -416,7 +438,46 @@ module.factory('musicService', function($http, $interval, $q){
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-                data: {token: token, id : musicId}
+                data: {token: token, id : musicId, trackType : trackType}
+            });
+
+
+            request.success(
+
+                function( response ) {
+
+                    deferred.resolve(response);
+
+                }
+ 
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+            );
+            
+            return deferred.promise;
+            
+        },
+        newPlayback : function(token, nomeMusica, nomeArtista) {
+            
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/music/requisition",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+                data: {token: token, nomeMusica : nomeMusica, nomeArtista : nomeArtista}
             });
 
 

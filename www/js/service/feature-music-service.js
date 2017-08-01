@@ -1,8 +1,8 @@
-module.factory('featuredMusicService', function($http, $interval, $q){
+module.factory('featuredMusicService', function($http, $interval, $q, $rootScope){
      
     return {
         
-        getFeaturedMusicSets: function($rootScope, $scope, token) { 
+        getFeaturedMusicSets: function(token) { 
               
             var deferred = $q.defer();
 
@@ -46,7 +46,7 @@ module.factory('featuredMusicService', function($http, $interval, $q){
             
         },
 
-        getFeaturedMusicSet: function($rootScope, $scope, $rootScope, token, id) { 
+        getFeaturedMusicSet: function(token, id) { 
               
             var deferred = $q.defer();
 

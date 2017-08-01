@@ -14,9 +14,13 @@
 
 		    	<div class="ms-config-logo"><img class="ms-config-logo-img" src="img/logo-gray.png"/></div>
 
-		    	<p class="ms-config-description">{{i18.config.descriptionLabel}}</p>
+		    	<p ng-if="userType != 1" class="ms-config-description">{{i18.config.subscriptionLabel}}</p>
 
-	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="logout()">{{i18.general.logoutLabel}}</button></div>
+	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="subscribe()">{{i18.config.subscriptionButtonLabel}}</button></div>
+
+	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button" ng-click="logout()">{{i18.general.logoutLabel}}</button></div>
+
+		    	<p ng-if="userType == 1" class="ms-config-description">{{i18.config.descriptionLabel}}</p>
 
 	        	<div ng-if="userType == 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="openLogin()">{{i18.general.loginLabel}}</button></div>
 
