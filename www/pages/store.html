@@ -208,6 +208,12 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
             </div>
         </div>
         
+        <div class="row" style="margin:0px;border:0px;padding-top:20px;padding-left:0px;padding-right:0px;padding-bottom:0px;" ng-click="openPromotion()" ng-if="promotion != null">
+            <div class="col" style="margin:0px;border:1px;padding:0px;border-color:#999999;">
+                <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{promotion.banner}}" width="100%"/>
+            </div>
+        </div>
+        
         <div class="row" style="margin:0px;border:0px;padding:0px;">
             <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
                 

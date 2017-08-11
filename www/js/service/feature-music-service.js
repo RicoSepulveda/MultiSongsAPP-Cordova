@@ -70,8 +70,7 @@ module.factory('featuredMusicService', function($http, $interval, $q, $rootScope
                 request.success(
                     function( response ) {
 
-                        $rootScope.buffer.featuredMusicSet[id].data = response;
-                        $rootScope.buffer.featuredMusicSet[id].valid = true;
+                        $rootScope.buffer.featuredMusicSet[id] = {data : response, valid : true};
 
                         deferred.resolve(response);
                         

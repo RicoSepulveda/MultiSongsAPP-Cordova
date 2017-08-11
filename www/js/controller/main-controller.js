@@ -78,9 +78,6 @@ module.controller('MainController', function($scope,
                 window.localStorage.setItem("key", $scope.loginData.key);
                 window.localStorage.setItem("password", $scope.loginData.password);
                 
-                auth.token = response.token;
-                auth.type = response.userType;
-
                 if (auth.type == 1){
                     $rootScope.originalDescription = $rootScope.description;
                     $rootScope.description = $rootScope.i18.general.loginErrorDescriptionMessage;
@@ -125,12 +122,11 @@ module.controller('MainController', function($scope,
         window.localStorage.setItem("environment_homolog", "http://homolog.multisongs.audio");
         window.localStorage.setItem("environment_dev", "http://192.168.0.12:8180");
         window.localStorage.setItem("environment_prod", "http://api.multisongs.audio");
-        window.localStorage.setItem("subscription_id", "audio.multisongs.premium_account");
 
-        if (!window.localStorage.getItem("subscription_code")){
-            window.localStorage.setItem("subscription_code" , "");
-        }
+        //window.localStorage.setItem("subscription_id", "audio.multisongs.premium_account");
 
+        window.localStorage.setItem("discount_id", "");
+        
         window.localStorage.setItem("environment_name", "environment_prod");
 
         window.localStorage.setItem("environment", window.localStorage.getItem(window.localStorage.getItem("environment_name")));

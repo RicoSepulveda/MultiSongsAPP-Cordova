@@ -101,6 +101,45 @@ module.factory('musicService', function($http, $interval, $q, $rootScope){
             return deferred.promise;
                 
         },
+        getCifra : function(token, musicId) { 
+            
+            var deferred = $q.defer();
+
+            var ms_hostname = window.localStorage.getItem("environment");
+
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/music/cifra/get",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+                },
+                dataType:"json",
+                data: {token: token, id: musicId}
+            });
+
+
+            request.success(
+
+                function( response ) {
+
+                    deferred.resolve(response);
+
+                }
+
+            );
+
+            request.error(
+
+                    function( response ) { 
+
+                        deferred.reject(response);
+
+                    }
+            );
+            
+            return deferred.promise;
+                
+        },
         getMyRemovedSongs : function(token) { 
             
             var deferred = $q.defer();

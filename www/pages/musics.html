@@ -59,6 +59,15 @@
                 
             </div>
 -->
+            <div class="row" style="margin:0px;border:0px;padding:0px;padding-top:20px;">
+                <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                    <button ng-class="downloadedClass" ng-click="loadDownloadedSongs()">Músicas baixadas</button>
+                </div>
+                <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                    <button ng-class="wishlistClass" ng-click="loadRemovedSongs()">Músicas removidas</button>
+                </div>
+            </div>
+
             <div class="row" style="padding-top:20px;padding-bottom:20px;background-color: #f0f0f0;"  ng-if="musics.length == 0 && songType == SONG_TYPE_DOWNLOADED">
                 <div class="col-33">
                     <img src="{{environment}}/MultiSongs/api/download/image/{{token}}/download-big.jpg" width="100%" style="margin-left:10px;border:1px;border-style:solid;border-color:#999999;"/>
@@ -69,16 +78,7 @@
                 </div>
             </div>
             
-            <div  ng-if="musics.length > 0" class="row" style="margin:0px;border:0px;padding:0px;padding-top:20px;">
-                <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                    <button ng-class="downloadedClass" ng-click="loadDownloadedSongs()">Músicas baixadas</button>
-                </div>
-                <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                    <button ng-class="wishlistClass" ng-click="loadRemovedSongs()">Músicas removidas</button>
-                </div>
-            </div>
-
-            <div ng-if="musics.length > 0" class="row" style="margin:0px;border:0px;padding:0px;">
+            <div ng-if="musics.length > 0" class="row" style="margin:0px;border:0px;padding:0px;padding-top:20px;">
 
                 <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
 
@@ -110,7 +110,9 @@
 
                                 <div ng-click="miniPlayer.play(music.musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL)">
                                     <h2 style="line-height:20px;">{{music.musicName}}</h2>
-                                    <p style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}</p>
+                                    <progress ng-if="miniPlayer.getPlayer().downloadStarted && miniPlayer.getPlayer().currentMusic.music.musicId == music.musicId" id="_progressbar" max="100" style="width: 100px;height: 5px;display: inline;margin: 0;" value="{{miniPlayer.getPlayer().downloadProgress}}"></progress>
+                                    <p ng-if="!miniPlayer.getPlayer().downloadStarted || miniPlayer.getPlayer().currentMusic.music.musicId != music.musicId" style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}
+                                    </p>
                                 </div>
 
                                 <i class="icon ion-ios-trash-outline ms-font-multisongs" style="font-size:1.2em;" ng-click="removeSong(music)">

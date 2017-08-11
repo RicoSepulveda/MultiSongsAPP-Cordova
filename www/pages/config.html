@@ -14,15 +14,17 @@
 
 		    	<div class="ms-config-logo"><img class="ms-config-logo-img" src="img/logo-gray.png"/></div>
 
-		    	<p ng-if="userType != 1" class="ms-config-description">{{i18.config.subscriptionLabel}}</p>
+		    	<p ng-if="auth.type != 1 && auth.type != 4" class="ms-config-description">{{i18.config.subscriptionLabel}}</p>
 
-	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="subscribe()">{{i18.config.subscriptionButtonLabel}}</button></div>
+		    	<p ng-if="auth.type == 4" class="ms-config-description">Você é um assinante Premium.</p>
 
-	        	<div ng-if="userType != 1" class="ms-config-logout"><button class="button small-button" ng-click="logout()">{{i18.general.logoutLabel}}</button></div>
+	        	<div ng-if="auth.type != 1 && auth.type != 4" class="ms-config-logout"><button class="button small-button-buy" ng-click="subscribe()">{{i18.config.subscriptionButtonLabel}}</button></div>
 
-		    	<p ng-if="userType == 1" class="ms-config-description">{{i18.config.descriptionLabel}}</p>
+	        	<div ng-if="auth.type != 1" class="ms-config-logout"><button class="button small-button" ng-click="logout()">{{i18.general.logoutLabel}}</button></div>
 
-	        	<div ng-if="userType == 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="openLogin()">{{i18.general.loginLabel}}</button></div>
+		    	<p ng-if="auth.type == 1" class="ms-config-description">{{i18.config.descriptionLabel}}</p>
+
+	        	<div ng-if="auth.type == 1" class="ms-config-logout"><button class="button small-button-buy" ng-click="openLogin()">{{i18.general.loginLabel}}</button></div>
 
 	        	<p class="ms-config-social-title">{{i18.config.socialLabel}}</p>
 

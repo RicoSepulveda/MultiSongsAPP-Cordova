@@ -3,7 +3,8 @@ module.controller('FeaturedSongController', function($scope,
                                                      $stateParams,
                                                      $q,
                                                      auth,
-                                                     featuredMusicService) {
+                                                     featuredMusicService,
+                                                     miniPlayer) {
 
     $scope.$watch('$viewContentLoaded', function() {
 
@@ -23,7 +24,32 @@ module.controller('FeaturedSongController', function($scope,
         ).finally(function() {
         });
 
+        $scope.miniPlayer = miniPlayer;
+
+        miniPlayer.loadPlayer();
+
+
     });
+
+    $scope.play = function(musicId){
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK);
+    }
+
+    $scope.suspend = function(){
+        miniPlayer.suspend();
+    }
+
+    $scope.resume = function(musicDetail){
+        miniPlayer.resume(musicDetail);
+    }
+
+    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
+        miniPlayer.verifyIfLoginIsNeededBeforeDownload();
+    }
+
+    $scope.changePlayerExpantion = function(){
+        miniPlayer.changePlayerExpantion();
+    }
 
 
 });

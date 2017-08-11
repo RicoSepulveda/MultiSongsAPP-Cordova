@@ -4,6 +4,7 @@ module.controller('SetlistDetailController', function($scope,
                                                       $rootScope,
                                                       $stateParams,
                                                       $ionicModal,
+                                                      $location, 
                                                       auth, 
                                                       musicService,
                                                       msSessionConfig, 
@@ -31,6 +32,23 @@ module.controller('SetlistDetailController', function($scope,
         );
 
     };
+
+    $scope.go = function ( path ) {
+
+        var description;
+
+        description = $rootScope.i18.general.bloquedResourceMessage; 
+
+        $scope.modal.hide();
+
+        if (path != '/wishlist' && path != '/setlist' && path != '/musics'){
+            $location.path(path);
+        } else {
+            loginService.validateAuthorization(description, function(path){$location.path(path)}, path);
+        }
+
+    }
+
 
     $scope.moveItem = function(item, fromIndex, toIndex) {
         //Move the item in the array

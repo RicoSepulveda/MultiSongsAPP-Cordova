@@ -22,7 +22,8 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
 
                     if (response.success == true){
                         auth.token = response.token;
-                        auth.userType = response.userType;
+                        auth.type = response.userType;
+                        auth.subscriptionCode = '';
                     }
 
                     callbackFunction(response);
@@ -39,33 +40,111 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
 
         },
         
-        subscribe: function(token, discountCode) { 
+        registerSubscriptionAttempt: function(token, codeOnStore, developerPayload, callback) { 
 
             var ms_hostname = window.localStorage.getItem("environment");
             
              var request = $http({
                 method: "post",
-                url: ms_hostname + "/MultiSongs/api/auth/subscribe",
+                url: ms_hostname + "/MultiSongs/api/auth/subscription/attempt",
                 headers: {
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {token : token, code: discountCode}
+               data: {token : token, 
+                      code: codeOnStore, 
+                      developerPayload : developerPayload
+                  }
             });
 
 
             request.success(
                 function( response ) {
+                    callback(response);
                 }
             );
 
             request.error(
                 function( response , textStatus, errorThrown) { 
+                    response.success = false;
+                    callback(response);
                 }
             );
 
         },
         
+        unsubscribe: function(token, callback) { 
+
+            var ms_hostname = window.localStorage.getItem("environment");
+            
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/auth/unsubscribe",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+               data: {token : token}
+            });
+
+
+            request.success(
+                function( response ) {
+                    callback(response);
+                }
+            );
+
+            request.error(
+                function( response , textStatus, errorThrown) { 
+                    callback(response);
+                }
+            );
+
+        },
+        
+        validateSubscription: function(token, product, callback) { 
+
+            var ms_hostname = window.localStorage.getItem("environment");
+
+             var request = $http({
+                method: "post",
+                url: ms_hostname + "/MultiSongs/api/auth//subscription/validate",
+                headers: {
+                   "Accept": "application/json;charset=utf-8"
+               },
+               dataType:"json",
+               data: {token : token, 
+                      orderId: product.transaction.id, 
+                      developerPayload : product.transaction.developerPayload,
+                      purchaseToken : product.transaction.purchaseToken,
+                      signature : product.transaction.signature,
+                      receipt : product.transaction.receipt}
+            });
+
+            request.success(
+
+                function( response ) {
+
+                    console.log("validateSubscription.response... -> " + response);
+
+                    callback(response);
+
+                }
+
+            );
+
+            request.error(
+                function( response , textStatus, errorThrown) { 
+
+                    response.success = false;
+
+                    callback(response);
+            });
+
+        },
+
+
+
         login: function(key, password, callbackFunction) { 
 
             var ms_hostname = window.localStorage.getItem("environment");
@@ -84,9 +163,14 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
             request.success(
                 function( response ) {
 
+                    auth.token = response.token;
+                    auth.type = response.userType;
+                    auth.subscriptionCode = response.subscriptionCode;
+
                     this.token = response.token;
 
                     callbackFunction(response);
+
                 }
             );
 
@@ -109,7 +193,7 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {code : code, token: token, locale : $rootScope.locale}
+               data: {code : code, token: token}
             });
 
 

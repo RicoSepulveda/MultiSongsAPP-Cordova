@@ -23,8 +23,9 @@ module.controller('IndexController', function($scope,
 
     //$ionicNavBarDelegate.showBar(true);
 
-
-
+    var TIPO_PROMOCAO_ASSINATURA_ESPECIAL = 1;
+    var TIPO_PROMOCAO_PRESENTE_FISICO = 2;
+    var TIPO_PROMOCAO_VOLUNTARIA = 3;
 
     $scope.openMusicModal = function(music){
 
@@ -53,14 +54,11 @@ module.controller('IndexController', function($scope,
 
     };
 
-    var loadConfig = function(token, userType){
+    var loadConfig = function(){
 
         var promises = [];
 
         $rootScope.environment = window.localStorage.getItem("environment");
-
-        auth.token = token;
-        auth.type = userType;
 
         $scope.token = auth.token;
 
@@ -75,7 +73,8 @@ module.controller('IndexController', function($scope,
         promises.push(artistService.getTopArtists(token, 5));
         promises.push(styleService.getStyles(token));
         promises.push(wishlistService.getWishlists(token));
-        
+        promises.push(loginService.getDiscountCodes(token, function(){}));
+
         $q.all(promises).then(
 
             function(response) { 
@@ -291,7 +290,11 @@ module.controller('IndexController', function($scope,
 
                 }
 
+                $rootScope.discount = {beans : response[7].promocaoBeans, code : '', codeOnStore : null};
+
                 //$scope.loadingModal.hide();
+
+                initStore();
                 
             },
             function() { 
@@ -436,7 +439,7 @@ module.controller('IndexController', function($scope,
                 cordova.exec(function(message){console.log(message)}, function(erro){console.log("ERRO ao chamar log!" + erro)}, "MultiSongsPlugin", "log", []);
             },1000);
 
-            loadConfig(response.token, response.userType);
+            loadConfig();
 
         });
 
@@ -647,29 +650,53 @@ module.controller('IndexController', function($scope,
 
         if ($scope.shouldCreate){
 
-            loginService.createPrivateDiscountCodes(auth.token, $scope.promotion.id, function(obj){
+            // Se for uma promocao do tipo assinatura especial...
+            if ($scope.promotion.discount.tipo == TIPO_PROMOCAO_ASSINATURA_ESPECIAL){
 
-                // Se for uma promocao do tipo assinatura especial...
-                if ($scope.promotion.discount.codigoNaLoja && $scope.promotion.discount.codigoNaLoja != null){
+                loginService.createPrivateDiscountCodes(auth.token, $scope.promotion.id, function(obj){
 
                     $scope.confirmPopup = $ionicPopup.confirm({
                         title: "Obrigado!",
                         template: "Sua contribuição é muito importante e por isso você tem direito a '" + $scope.promotion.discount.direito + "'. Quer resgatar seu prêmio agora?"
+
                     });
 
                     $scope.confirmPopup.then(function(res) {
 
                         if(res) {
+
                             $scope.promotionModal.hide();
-                            $location.path('/config/' + $scope.promotion.discount.codigo);
+
+                            loginService.registerSubscriptionAttempt(token, $scope.promotion.discount.codigoNaLoja, token, function(result){
+                              
+                              if(result.success){
+                                store.order($scope.promotion.discount.codigoNaLoja, {developerPayload : token});
+                              }
+
+                            });
+
                         } else {
+        
+                            window.localStorage.setItem("discount_id", $scope.promotion.discount.codigo);
+        
                         }
 
                     });
 
-                }
+                });
 
-            });
+            } else {
+
+                var alertPopup = $ionicPopup.alert({
+                    title: "Obrigado!",
+                    template: $scope.promotion.thanksMessage
+                });
+
+                alertPopup.then(function(res) {
+                    $scope.modal.hide();
+                });
+
+            }
 
         }
 
@@ -820,6 +847,184 @@ module.controller('IndexController', function($scope,
 
 
         }
+
+    }
+
+    var initStore = function(){
+
+        var promisses = [];
+
+        // Let's set a pretty high verbosity level, so that we see a lot of stuff
+        // in the console (reassuring us that something is happening).
+        store.verbosity = store.DEBUG;
+
+        store.validator = function(product, callback) {
+
+            console.log(product.transaction);
+
+            loginService.validateSubscription(auth.token, product, function(result){
+
+                if (result.success){
+                    callback(true, {});
+                } else if (result.messageCode == 'INVALID_SUBSCRIPTION_CONFIRMATION'){
+
+                    console.log("A validacao do codigo " + product.transaction.id + " retornou a mensagem INVALID_DISCOUNT_CODE");
+                    callback(false, {code: store.PURCHASE_EXPIRED, error: {message: "Código de subscrição inválido"}});
+
+                } else if (result.messageCode == 'NOT_AN_SUBSCRIPTION_ATTEMPT'){
+                    
+                    callback(false, {code: store.PURCHASE_EXPIRED, error: {message: "Tentativa de subscrição sob reserva inválida ou já subscrito"}});
+                    console.log("A validacao do codigo " + product.transaction.id + " retornou a mensagem NOT_AN_SUBSCRIPTION_ATTEMPT");
+                
+                } else if (result.messageCode == 'CANT_FIND_SUBSCRIPTION_ATTEMP'){
+                    
+                    callback(false, {code: store.PURCHASE_EXPIRED, error: {message: "Tentativa de subscrição sem reserva"}});
+                    console.log("A validacao do codigo " + product.transaction.id + " retornou a mensagem CANT_FIND_SUBSCRIPTION_ATTEMP");
+
+                }else {
+
+                    callback(false, {});
+
+                    alertPopup = $ionicPopup.alert({
+                        title: "Ops!",
+                        template: "Não conseguimos realizar sua assinatura! Que tal tentar novamente mais tarde?"
+                    });
+
+                    alertPopup.then(function(res) {
+                        //$scope.shouldCreate = false;
+                        $scope.modal.hide();
+                    });
+
+                }
+
+            });
+
+        };
+
+        $rootScope.discount.beans.forEach(function (entry){
+
+          if (!store.products.byId[entry.codigoNaLoja]){
+
+            console.log("Product " + entry.codigoNaLoja + " was not registered before.");
+
+            // We register a dummy product. It's ok, it shouldn't
+            // prevent the store "ready" event from firing.
+            store.register({
+                id:    entry.codigoNaLoja,
+                alias: entry.codigo,
+                type:  store.PAID_SUBSCRIPTION
+            });
+
+            store.when(entry.codigoNaLoja).approved(function(p) {
+                console.log("verify subscription");
+                p.verify(); 
+            });
+
+            store.when(entry.codigoNaLoja).verified(function(p) {
+                  
+                console.log("subscription verified");
+                  
+                auth.type = 4; // USUARIO PREMIUM.
+                auth.subscriptionCode = p.id;
+
+                alertPopup = $ionicPopup.alert({
+                    title: "Legal!",
+                    template: "Sua assinatura da MultiSongs Premium está ativa. Agora você pode manter até 20 Playbacks Premium no seu celular."
+                });
+
+                alertPopup.then(function(res) {
+                    $scope.modal.hide();
+                });
+
+                $rootScope.discount.code = null;
+
+                p.finish();
+
+            });
+
+            store.when(entry.codigoNaLoja).unverified(function(p) {
+                console.log("subscription unverified");
+            });
+
+            store.when(entry.codigoNaLoja).cancelled(function(p) {
+
+                loginService.unsubscribe(auth.token, function(response){
+
+                    console.log("A assinatura " + p.id + " foi cancelada na base de dados.");
+
+                });
+
+            });
+
+
+            store.when(entry.codigoNaLoja).expired(function(p) {
+
+                loginService.unsubscribe(auth.token, function(response){
+                    console.log("A assinatura " + p.id + " foi cancelada na base de dados.");
+                    if (auth.type == 4){ // Se usuario PREMIUM, se loga novamente
+                        //startLoading();
+                    }
+                });
+
+            });
+
+            store.when(entry.codigoNaLoja).updated(function(p) {
+            });
+
+        }else{
+            console.log("Product " + entry.codigoNaLoja + " ALREADY registered before.");
+        }
+
+        });
+
+        // When every goes as expected, it's time to celebrate!
+        // The "ready" event should be welcomed with music and fireworks,
+        // go ask your boss about it! (just in case)
+        store.ready(function() {
+
+            console.log("\\o/ STORE READY \\o/");
+            var product;
+
+            if (auth.type == 4){ // Se o usuario esta logado, verifica se sua assinatura eh valida...
+
+                product = store.get(auth.subscriptionCode); // Captura produto na loja
+
+                if (!product.owned) { // Se na loja o produto nao esta assinado....
+
+                    console.log("A assinatura " + product.id + " eh NOT OWNED e na base de dados o usuario eh um assinante. Vai cancelar o servico...");
+
+                    // CANCELAR ASSINATURA!!
+                    loginService.unsubscribe(auth.token, function(response){
+                        console.log("A assinatura " + product.id + " foi cancelada na base de dados.");
+                        
+                        //@TODO PRECISA COLOCAR ESSA LINHA DE VOLTA!!!!
+
+                        //startLoading(); // Forca um novo login apos ter cancelado a assinatura para entrar com restricoes no app...
+                    
+                    });
+
+                } else {
+                    console.log("A assinatura " + product.id + " eh OWNED e na base de dados o usuario ja eh assinante. Nada a fazer");
+                }
+
+            } else {
+                console.log("Na base de dados, o usuario nao eh assinante de nenhum servico. Nada a fazer");
+            }
+
+
+
+
+
+/*
+          if ($stateParams.codigoNaLoja && $stateParams.codigoNaLoja != ''){ // So tenta realizar a compra se foi passado codigo de promocao como parametro da url
+            store.order($stateParams.codigoNaLoja);
+          }
+*/
+        });
+
+        // After we've done our setup, we tell the store to do
+        // it's first refresh. Nothing will happen if we do not call store.refresh()
+        store.refresh();
 
     }
 

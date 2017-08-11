@@ -42,6 +42,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	var PLAYER_TYPE_SINGLETRACK_LOCAL = 3;
 	var PLAYER_TYPE_SETLIST = 4;
 
+	var CIFRA_DELTA_TEMPO_MINIMO_ENTRE_ACORDE_FRASE = 250;
+	var CIFRA_TROCAR_ACORDE = 1;
+	var CIFRA_TROCAR_FRASE = 2;
+	var CIFRA_TROCAR_FRASE_ACORDE = 3;
+
 
 	var INTERVAL_MENSSAGE = 2000;
 	var INTERVAL_CHECK_GENERAL_STATUS = 500;
@@ -94,6 +99,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				  calculateLedsInterval : null,
 				  changeLevelInterval : null,
 				  seekInterval : null,
+				  bpmInterval : null,
 				  bufferPercentage : 0,
 				  currentMusicWasSuccessfullyDownloaded : false,
 				  mainLeds : {left : null, right : null}};
@@ -137,6 +143,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 
 		if (event.type.newStatus.isPlaying == true){
+
+			if (player.currentMusic.cifra && player.currentMusic.cifra.fraseIdx > -1 || player.currentMusic.cifra.acordeIdx > -1){
+
+				handleCifra();
+				
+			}
+
 			if (player.playerSlideInterval == null){
 				player.playerSlideInterval = $interval(function(){
 					player.currentTime++;
@@ -157,7 +170,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		// Se o evento for de buffering...
 		if (event.type.id == EVENT_BUFFERING.id){
-			$ionicLoading.show({ template: spinner + 'Carregando...' });
+			$ionicLoading.show({ template: spinner + 'Carregando...', animation: 'fade-in' });
 		} else if (player.status.id == STATUS_BUFFERING.id){ // Se o evento for diferente de buffering, mas o status atual eh buffering...
 			$ionicLoading.hide();
 		}
@@ -195,6 +208,59 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		}
 
 		player.status = event.type.newStatus;	
+
+	}
+
+	var handleCifra = function(){
+
+		var nextTime = -1;
+
+		if (player.bpmInterval){
+			$interval.cancel(player.bpmInterval);
+		}
+
+		if (player.currentMusic.cifra.fraseIdx > -1 && player.currentMusic.cifra.fraseIdx < player.currentMusic.cifra.fraseBeans.length - 1){
+			nextTime = player.currentMusic.cifra.fraseBeans[player.currentMusic.cifra.fraseIdx].tempo;
+			player.currentMusic.cifra.mostrar = CIFRA_TROCAR_FRASE;
+		}
+
+		if (player.currentMusic.cifra.acordeIdx > -1 && player.currentMusic.cifra.acordeIdx < player.currentMusic.cifra.acordeBeans.length - 1){
+	
+			if (Math.abs(nextTime - player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo) < 250){
+				player.currentMusic.cifra.mostrar = CIFRA_TROCAR_FRASE_ACORDE;
+			} else if (nextTime > player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo){
+				nextTime = player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo;
+				player.currentMusic.cifra.mostrar = CIFRA_TROCAR_ACORDE;
+			}
+	
+		}
+
+		if (nextTime > -1){
+
+			player.bpmInterval = $interval(function(){
+
+				if (player.currentMusic.cifra.mostrar == CIFRA_TROCAR_FRASE_ACORDE){
+					
+					player.currentMusic.cifra.fraseIdx++;
+					player.currentMusic.cifra.acordeIdx++;
+
+				} else if (player.currentMusic.cifra.mostrar == CIFRA_TROCAR_FRASE){
+
+					player.currentMusic.cifra.fraseIdx++;
+
+				} else {
+
+					player.currentMusic.cifra.acordeIdx++;
+
+				}
+
+				handleCifra();
+
+		   },
+		   nextTime, 
+		   1);
+
+		}
 
 	}
 
@@ -350,6 +416,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		promisses = [];
 
 		promisses.push(musicService.getMusicDetails(auth.token, musicId, trackType));
+		promisses.push(musicService.getCifra(auth.token, musicId));
 
 		$q.all(promisses).then(
 
@@ -359,6 +426,24 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
         		player.currentMusic = response[0].bean;
         		player.currentMusic.iniciaImediatamente = startImmediately;
+
+        		if (response[1].success == true){
+
+	        		player.currentMusic.cifra = response[1];
+	
+					if (response[1].fraseBeans.length > 0){
+	       				player.currentMusic.cifra.fraseIdx = 0;
+					} else {
+						player.currentMusic.cifra.fraseIdx = -1;
+					}
+
+					if (response[1].acordeBeans.length > 0){
+		       			player.currentMusic.cifra.acordeIdx = 0;
+					}else{
+						player.currentMusic.cifra.acordeIdx = -1;
+					}
+
+        		}
 
         		player.currentMusic.trackCards = [];
 
@@ -390,7 +475,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
         		console.log(player.currentMusic.trackCards);
 
-            	if (response[0].bean.status != 1){
+            	if (response[0].bean.music.status != 1){
             		player.currentMusic.calculatedTotalTime = 29;
             	}else{
 		        	player.currentMusic.calculatedTotalTime = parseInt(player.currentMusic.music.totalTimeInSeconds) - 1;
@@ -555,15 +640,15 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		msCordovaPluginPlayer.play();
 
 
-			if (player.currentMusic.music.status != 1){
+		if (player.currentMusic.music.status != 1){
 
-				player.currentMusic.tracks.forEach(function (entry){
-					//msCordovaPluginPlayer.fade(0, entry.level * player.masterLevel, 2000, entry.id);
-				});
+			player.currentMusic.tracks.forEach(function (entry){
+				//msCordovaPluginPlayer.fade(0, entry.level * player.masterLevel, 2000, entry.id);
+			});
 
-			}
+		}
 
-   	  		handleEvent({type : EVENT_STARTED_PLAYING, caller : 'play', success : true, obj : null});
+	  		handleEvent({type : EVENT_STARTED_PLAYING, caller : 'play', success : true, obj : null});
 
 	}
 /*
@@ -678,6 +763,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				if (player.checkStatusSoundInterval){
 		       		$interval.cancel(player.checkStatusSoundInterval);
 		       		player.checkStatusSoundInterval = null;
+				}
+
+				if (player.bpmInterval){
+		       		$interval.cancel(player.bpmInterval);
+		       		player.bpmInterval = null;
 				}
 
 				msCordovaPluginPlayer.unload(function(message){
@@ -963,7 +1053,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			player.downloadProgress = 1;
 
-			$ionicLoading.show({ template: spinner + 'Sua música está sendo preparada e o download começará em alguns segundos. Por favor, aguarde.' });
+			$ionicLoading.show({ template: spinner + 'Download sendo realizado...', noBackdrop: true, duration:2000, animation: 'fade-in' });
 
 			player.currentMusic.tracks.forEach(function (entry){
 		        promises.push(configService.changeMusicConfig(auth.token, entry.id, entry.level, entry.pan, entry.enabled, entry.solo));
@@ -992,22 +1082,40 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 					intervalToCheckDownload = $interval(
 						function(){
 							msCordovaPluginPlayer.checkDownloadPercentage(
+
 								function(message){
-									if (message.percentage > 0 && !player.downloadStarted){
-										player.downloadStarted = true;
-										$ionicLoading.hide();
-										$ionicLoading.show({ template: spinner + 'Download sendo realizado!<br/><progress id="_progressbar" max="100" style="width: 150px;" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>'});
+
+									player.downloadStarted = true;
+
+									if (message.readyToStart == true){
+
+										if (message.songId == player.currentMusic.music.musicId){
+
+											if (message.percentage > 0 && !player.downloadStarted){
+												//$ionicLoading.hide();
+												//$ionicLoading.show({ template: spinner + 'Download sendo realizado!<br/><progress id="_progressbar" max="100" style="width: 150px;" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>', noBackdrop: true});
+											}
+
+											if (message.percentage == 1 || message.stillDownloading == false){
+
+												player.downloadStarted = false;
+												$interval.cancel(intervalToCheckDownload);
+												player.currentMusicWasSuccessfullyDownloaded = message.percentage == 1;
+												player.downloadProgress = 0;
+												$ionicLoading.hide();
+												$ionicLoading.show({ template: spinner + 'Sua playback já está disponível em \'Músicas\'!', animation: 'fade-in', noBackdrop: true, duration:2000});
+												player.currentMusic.status = 1;
+
+											}else if (message.stillDownloading == true){
+												player.downloadProgress = message.percentage * 100
+												document.getElementById("_progressbar").value = player.downloadProgress;
+											}
+
+										}
+
 									}
-									if (message.percentage == 1 || message.stillDownloading == false){
-										player.downloadStarted = false;
-										$interval.cancel(intervalToCheckDownload);
-										player.currentMusicWasSuccessfullyDownloaded = message.percentage == 1;
-										player.downloadProgress = 0;
-										$ionicLoading.hide();
-									}else if (message.stillDownloading == true){
-										player.downloadProgress = message.percentage * 100
-										document.getElementById("_progressbar").value = player.downloadProgress;
-									}
+
+
 								}, function(error){
 									console.log("ERROR WHILE DOWNLOADING SONG");
 									console.log(error);
@@ -1018,7 +1126,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 								}
 							);
 						}, 
-					500);
+					250);
 
 	            }
 

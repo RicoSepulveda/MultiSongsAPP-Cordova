@@ -242,7 +242,13 @@ ms-setlist .item-right-edit {
                                     </p>
                                 </div>
 
-                                
+                                <div class="row" ng-if="musics.length < 1">
+                                    <div class="col ms-font-dark-gray" style="margin-top:0px;margin-bottom:0px;text-align: center;">
+                                        <i ng-click="go('/#');" class="icon ion-ios-cloud-download-outline" style="color:#FD6631;font-size: 48px;padding-top:40px;"></i>
+                                        <p style="margin:0px;padding-top:20px;padding-bottom: 20px;ms-font-dark-gray;">Para criar uma setlist primeiro você precisa baixar músicas para seu celular na Loja de Playbacks.</p>
+                                    </div>
+                                </div>
+
                                 <ion-toggle ng-repeat="music in musics" style="padding:0px;" ng-model="music.added" ng-checked="music.added">
                                     <div class="item-thumbnail-left toggle-small" >
                                     
@@ -253,7 +259,7 @@ ms-setlist .item-right-edit {
                                 </ion-toggle>
                                                             
 
-                            <div class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
+                            <div ng-if="musics.length > 0" class="row" style="padding-top:20px;padding-bottom:20px;text-align:center;">
                                 <div class="col">
                                     <button class="button small-button" ng-click="changeSetList()">
                                       {{i18.general.saveLabel}}

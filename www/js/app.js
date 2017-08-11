@@ -139,17 +139,17 @@ module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider)
 
 module.provider("auth", [function () {
     
-  var token;
+  var token = '';
+  var type;
+  var subscriptionCode = '';
     
   return {
-      
-    setType: function (value) {
-      token = value;
-    },
 
     $get: function () {
       return {
-        token: token
+        token: token,
+        type : type,
+        subscriptionCode : subscriptionCode
       };
     }
   };

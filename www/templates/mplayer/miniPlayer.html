@@ -53,16 +53,16 @@
                                     <div class="file-info-button-title">Tipo</div>
                                     <div class="file-info-button-value">Monopista</div>
                                 </div>
-                                <div ng-if="miniPlayer.getPlayer().currentMusic.music.premium && auth.type != 4" class="file-info-button" style="width:120px;">
+                                <div ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type != 4" class="file-info-button" style="width:120px;">
                                     <div class="file-info-button-title">Playback Premium</div>
                                     <div class="file-info-button-value">Somente para assinantes</div>
                                 </div>
-                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().currentMusic.music.premium && auth.type == 4" class="file-info-button" style="width:120px;">
-                                    <div class="file-info-button-title">Playback Premium</div>
+                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type == 4" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
+                                    <div class="file-info-button-title">Playback Disponível</div>
                                     <div class="file-info-button-value">Clique para baixar</div>
                                 </div>
-                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="!miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status == 0" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
-                                    <div class="file-info-button-title">Playback Gratuíto</div>
+                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="!miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
+                                    <div class="file-info-button-title">Playback Gratuíta</div>
                                     <div class="file-info-button-value">Clique para baixar</div>
                                 </div>
                             </div>

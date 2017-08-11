@@ -43,6 +43,8 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
         PLAYER_TYPE_SINGLETRACK_LOCAL : msPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL,
         PLAYER_TYPE_SETLIST : msPlayer.PLAYER_TYPE_SETLIST,
 
+        auth : auth,
+
 
         loadPlayer : function(){
 

@@ -14,10 +14,20 @@
       {{i18.store.barTitleLabel}}
     </ion-nav-title>
 
+    <ng-include src="'templates/mplayer/miniPlayer.html'">
+
+    </ng-include>
+
     <ion-content class="has-header">
         
         <ms-featured>
         
+            <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+            </div>
+
+            <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+            </div>
+
             <div style="background-color:#000000;">
 
                 <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{featuredSong.photoPath}}" style="border:0px;margin:0px;width:100%;">
@@ -36,7 +46,7 @@
                 <ion-list>
 
 
-                    <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in featuredSong.musics" href="#/tracks/{{music.musicId}}">
+                    <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in featuredSong.musics" ng-click="play(music.musicId)">
 
                         <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 
@@ -55,7 +65,7 @@
                             {{music.price != "0" ? "Comprar" + music.price : "Baixar"}}
                         </ion-option-button>
 -->
-                        <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.5em;"></i>
+                        <i class="icon ion-play ms-font-multisongs" style="font-size:1.5em;"></i>
 
                     </ion-item>
 

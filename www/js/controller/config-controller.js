@@ -47,9 +47,6 @@ module.controller('ConfigController', function($scope,
 
             if (response.success == true){
                 
-                auth.token = response.token;
-                auth.type = response.userType;
-                
                 window.localStorage.setItem("key", $rootScope.createAccountData.key);
                 window.localStorage.setItem("password", $rootScope.createAccountData.password);
 
@@ -134,7 +131,7 @@ module.controller('ConfigController', function($scope,
         $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
         $rootScope.originalDescription = $rootScope.description;
 
-        $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
+        $rootScope.callback = {func : function(args){}, args : "args"};
 
         $ionicModal.fromTemplateUrl('templates/login.html', {
             scope: $rootScope,
@@ -180,6 +177,8 @@ module.controller('ConfigController', function($scope,
 
     $scope.subscribe = function(objective){
 
+      $scope.justSubscribed = true;
+
       $scope.confirmPopup = $ionicPopup.show({
         template: '<input type="text" ng-model="discount.code">',
         title: $rootScope.i18.config.promotionCodeLabel,
@@ -191,25 +190,44 @@ module.controller('ConfigController', function($scope,
             type: 'button-positive',
             onTap: function(e) {
 
+              var codeOnStore;
+
               e.preventDefault();
 
-              if (!$scope.discount.code) {
+              loginService.getDiscountCodes(auth.token, function(response){
 
-                console.log("Product id = " + window.localStorage.getItem("subscription_id"));
+                response.promocaoBeans.forEach(function (entry){
 
-                $scope.discount.codeOnStore = window.localStorage.getItem("subscription_id");
+                  if (entry.codigo == $scope.discount.code){
+                    codeOnStore = entry.codigoNaLoja;
+                  }
 
-                store.order(window.localStorage.getItem("subscription_id"));
+                });
 
-                $scope.confirmPopup.close();
+                loginService.registerSubscriptionAttempt(token, codeOnStore, token, function(result){
 
-              } else {
+                  if(result.success){
+                    store.order(codeOnStore, {developerPayload : token});
+                  }else{
+                    var result = document.getElementsByClassName("popup-sub-title");
+                    angular.element(result).html($rootScope.i18.config.promotionCodeErrorDescriptionLabel);
+                  }
 
-                console.log("Vai validar o codigo promocional " + $scope.oferta.codigoNaLoja);
+                });
+
+              });
+/*
+                console.log("Vai validar o codigo promocional " + $scope.discount.code);
+
+                loginService.registerSubscriptionAttempt(token, $scope.promotion.discount.codigoNaLoja, token, function(){
+                    store.order($scope.promotion.discount.codigoNaLoja, {developerPayload : token});
+                });
 
                 loginService.validateDiscountCode($scope.discount.code, auth.token, 
 
                   function(obj){
+
+                    var alertPopup;
 
                     if (obj.success == true){
 
@@ -217,7 +235,19 @@ module.controller('ConfigController', function($scope,
 
                       $scope.discount.codeOnStore = obj.bean.codigoNaLoja;
 
-                      store.order(obj.bean.codigoNaLoja);
+                      try {
+                        store.order(obj.bean.codigoNaLoja);
+                      }catch(err){
+
+                        alertPopup = $ionicPopup.alert({
+                            title: "Ops!",
+                            template: "Algo deu errado e não conseguimos realizar sua assinatura. Tente novamente um pouco mais tarde."
+                        });
+
+                        alertPopup.then(function(res) {
+                        });
+
+                      }
 
                       $scope.confirmPopup.close();
 
@@ -236,13 +266,14 @@ module.controller('ConfigController', function($scope,
                 );
 
               }
+*/
             }
           }
         ]
       });
 
     }
-
+/*
     var initStore = function(){
 
         var promisses = [];
@@ -279,8 +310,15 @@ module.controller('ConfigController', function($scope,
               });
 
               store.when(entry.codigoNaLoja).verified(function(p) {
+                  
                   console.log("subscription verified");
+                  
+                  if (auth.subscriptionCode != p.id){
+                    loginService.subscribe(auth.token, p.id);
+                  }
+                  
                   p.finish();
+
               });
 
               store.when(entry.codigoNaLoja).unverified(function(p) {
@@ -291,28 +329,42 @@ module.controller('ConfigController', function($scope,
 
                   if (p.owned) {
 
-                      $scope.discount.code = null;
-                      auth.type = 4; // USUARIO PREMIUM. Esse codigo eh alterado quando o metodo subscribe eh chamado...
+                      if (auth.subscriptionCode != p.id){ // Por algum motivo a loja chama esse metodo varias vezes apos assinar o servico... 
+                                                          // Essa verificacao eh para garantir que o codigo abaixo sera chamado somente uma vez
+
+                        auth.type = 4; // USUARIO PREMIUM.
+                        auth.subscriptionCode = p.id;
 
                         alertPopup = $ionicPopup.alert({
                             title: "Legal!",
-                            template: "Sua assinatura da MultiSongs Premium está ativada. Agora você pode manter até 20 PSlaybacks Premium no seu celular."
+                            template: "Sua assinatura da MultiSongs Premium está ativa. Agora você pode manter até 20 Playbacks Premium no seu celular."
                         });
 
                         alertPopup.then(function(res) {
-                            $scope.shouldCreate = false;
+                            //$scope.shouldCreate = false;
                             $scope.modal.hide();
                         });
 
-                        loginService.subscribe(auth.token, $scope.discount.code);
+                        $scope.discount.code = null;
+
+                      } else if (auth.type == 4){
+                        console.log("NOT OWNED = > " + p);
+                      }
+
 
                   }
                   else {
-                      console.log("Nao assinou...");
+                    if (p.id == auth.subscriptionCode){
+                      // CANCELAR ASSINATURA!!
+                      loginService.unsubscribe(auth.token, function(response){
+                        auth.subscriptionCode = '';
+                        auth.type = 2; // Usuario Basico...
+                      });
+
+                    }
                   }
 
               });
-
 
           }else{
               console.log("Product " + entry.codigoNaLoja + " ALREADY registered before.");
@@ -320,9 +372,6 @@ module.controller('ConfigController', function($scope,
 
         });
 
-        // When every goes as expected, it's time to celebrate!
-        // The "ready" event should be welcomed with music and fireworks,
-        // go ask your boss about it! (just in case)
         store.ready(function() {
 
             console.log("\\o/ STORE READY \\o/");
@@ -333,12 +382,10 @@ module.controller('ConfigController', function($scope,
 
         });
 
-        // After we've done our setup, we tell the store to do
-        // it's first refresh. Nothing will happen if we do not call store.refresh()
         store.refresh();
 
     }
-
+*/
     $scope.changeObjective = function(objective){
 
       if(objective.selected == false){
@@ -357,9 +404,12 @@ module.controller('ConfigController', function($scope,
         
         var promises = [];
 
-        $scope.userType = auth.type;
+        $scope.auth = auth;
         $ionicNavBarDelegate.showBar(false);
-
+/*
+        $scope.justSubscribed = false; // Configura variavel de sessao que descreve quando o usuario clicou no botao de subscribe.
+                                       // Usado no evento da loja de updated...
+*/
         console.log(auth.token);
 
         $rootScope.createAccountData = {key : "", 
@@ -373,7 +423,7 @@ module.controller('ConfigController', function($scope,
                                         generes : []};
 
         promises.push(configService.getAccountConfig(auth.token));
-        promises.push(loginService.getDiscountCodes(auth.token, function(){}));
+        //promises.push(loginService.getDiscountCodes(auth.token, function(){}));
 
         $q.all(promises).then(
 
@@ -413,19 +463,14 @@ module.controller('ConfigController', function($scope,
                       };
 
 
-          $scope.accountConfig = {instruments : instruments,
-                                  objectives : objectives,
-                                  generes : generes};
+            $scope.accountConfig = {instruments : instruments,
+                                    objectives : objectives,
+                                    generes : generes};
 
-          $scope.discount = {beans : response[1].promocaoBeans, code : $stateParams.codigoNaLoja, codeOnStore : null};
+            $scope.discount = {code : window.localStorage.getItem("discount_id"), codeOnStore : null};
 
-          if ($scope.discount.code && $scope.discount.code != '' && $scope.discount.code != null){
-            window.localStorage.setItem("subscription_code", $scope.discount.code); // Caso tenha passado por parametro...
-          } else {
-            $scope.discount.code = window.localStorage.getItem("subscription_code");
-          }
-
-          initStore();
+            //$scope.discount = {beans : response[1].promocaoBeans, code : $stateParams.codigoNaLoja, codeOnStore : null};
+            //initStore();
 
         },
             function() { 
