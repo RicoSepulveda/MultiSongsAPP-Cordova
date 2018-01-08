@@ -37,10 +37,11 @@
 .ms-collapse-button {
     color:#FD6631;
     background-color: #444444;
-    font-size:14px;
+    font-size:12px;
     text-align: center;
-    min-height: 20px;
+    min-height: 28px;
     width: 100%;
+    padding-top: 5px;
 }
 
 .no-padding {
@@ -78,16 +79,18 @@
     background-color: #FFFFFF !important;
     line-height: 5px !important;
     min-height: 32px !important;
+    font-weight: 200;
     font-size:14px !important;
 }
 
 .small-button-category{
-    color:#d0d0d0 !important;
-    border-color:#d0d0d0 !important;
+    color:#FD6631 !important;
+    border-color:#FD6631 !important;
     background-color: #FFFFFF !important;
     line-height: 5px !important;
     min-height: 24px !important;
     font-size:14px !important;
+    font-weight: 200;
     width: 100%;
     border-radius : 0px;
 }
@@ -478,6 +481,10 @@ ms-musics .button {
     border-radius: 0px;
 }
 
+ms-mini-player .button {
+    border-radius: 0px;
+}
+
 .ms-mini-player-main {
     width: 100%;
     background-color: #333333;
@@ -541,4 +548,62 @@ ms-musics .button {
 
 .ms-promotion-introduction{
     padding:10px;
+}
+
+.ms-mini-player-dashboard {
+    background-color: #333333;
+    font-size: 12px;
+    width: 100%;
+    padding-left:10px;
+    padding-right: 10px;
+    min-height: 290px
+}
+
+.ms-mini-player-lyrics{
+    width: 100%;
+    color: #707070;
+}
+.ms-mini-player-lyrics-phrase-current{
+    color:#FFFFFF;
+    font-family: 'monospace' !important;
+    font-weight: bold;
+    line-height: 13px;
+    min-height: 13px;
+}
+.ms-mini-player-lyrics-chords-current{
+    color:#FD6631;
+    font-family: 'monospace' !important;
+    padding-top:5px;
+    font-weight: bold;
+    line-height: 13px;
+    min-height: 18px;
+}
+.ms-mini-player-lyrics-chords{
+    color:#999999;
+    font-family: 'monospace' !important;
+    padding-top:5px;
+    line-height: 13px;
+    min-height: 18px;
+}
+.ms-mini-player-lyrics-phrase{
+    color:#999999;
+    font-family: 'monospace' !important;
+    line-height: 13px;
+    min-height: 13px;
+}
+.ms-mini-player-chords{
+    width: 100%
+    padding-left: 0px !important;
+}
+.ms-mini-player-chords-next{
+    float:left;
+}
+.ms-mini-player-chords-next img{
+    width: 60px;
+}
+
+.ms-mini-player-lyrics-scroll{
+    height: 155px;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
 }

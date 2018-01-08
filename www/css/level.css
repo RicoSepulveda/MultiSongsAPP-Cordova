@@ -32,7 +32,6 @@
   border-style: solid;
   text-align: center;
   border-radius: 5px;
-  position: relative;
   float:left;
   margin-right:5px;
   margin-bottom: 5px;
@@ -61,18 +60,17 @@ a:link, a:visited, a:hover, a:active{
 
 .ms-level-message-window{
   position: absolute;
-  top:6px;
+  bottom: -12px;
   left:10px;
   width:30px;
-  height: 18px;
+  height: 15px;
   text-align: center;
   background-color: #333333;
 }
 
 .ms-level-message{
   position: absolute;
-  top:-2px;
-  left:4px;
+  left:8px;
   padding-top:0px;
   margin-top:0px;
   vertical-align: center;
@@ -81,9 +79,9 @@ a:link, a:visited, a:hover, a:active{
 }
 
 .ms-levels-workspace {
-  background-color:#999999;
+  background-color:#333333;
   width:100%;
-  height:440px;
+  height:290px;
   padding:0px;
 }
 
@@ -97,7 +95,7 @@ a:link, a:visited, a:hover, a:active{
 .ms-level {
 
 	position: relative;
-	width:80px;
+	width:55px;
 	float:left;
 
 }
@@ -128,7 +126,7 @@ a:link, a:visited, a:hover, a:active{
 
 	position: absolute;
 	top: 6px;
-	left : 42px;
+	left : 14px;
 
 }
 
@@ -153,38 +151,30 @@ a:link, a:visited, a:hover, a:active{
 .ms-level-instrument-name{
 
 	position: absolute;
-	top: 288px;
+	top: 238px;
 	left: 0px;
 	width: 100%;
 	text-align: center;
 	font-family: Arial;
 	color: #333333;
-	font-size: 11px;
+	font-size: 10px;
 
 }
 
 .ms-level-instrument {
 
 	position: absolute;
-	top: 232px;
-	left : 15px;
-	width: 50px !important;
-	height: 50px !important;
+	top: 191px;
+	left : 7px;
+	width: 42px !important;
+	height: 42px !important;
 
-}
-
-.ms-level-pan {
-  position: absolute;
-	top: 200px;
-	left : 11px;
-	padding:0px;
-	margin:0px;
 }
 
 .ms-level-pan input[type=range]{
   -webkit-appearance: none;
   background: none;
-  width:58px;
+  width:42px;
   height:40px;
   margin:0px;
   padding:0px;
@@ -259,8 +249,8 @@ a:link, a:visited, a:hover, a:active{
     -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
     transform: rotate(-90deg);	position: absolute;
 
-	top: 100px;
-	left : -42px;
+	top: 85px;
+	left : -25px;
 	padding:0px;
 	margin:0px;
   margin-bottom: 30px;
@@ -269,8 +259,8 @@ a:link, a:visited, a:hover, a:active{
 .ms-level-level input[type=range]{
   -webkit-appearance: none;
   background: none;
-  height:40px;
-  width:167px;
+  height:20px;
+  width:125px;
   margin:0px;
   padding:0px;
 }
@@ -337,11 +327,10 @@ a:link, a:visited, a:hover, a:active{
 }
 
 
-
 .ms-level-pan {
   position: absolute;
-  top: 200px;
-  left : 11px;
+  top: 150px;
+  left : 6px;
   padding:0px;
   margin:0px;
 }
@@ -435,7 +424,7 @@ a:link, a:visited, a:hover, a:active{
 .ms-levels-content{
   overflow:auto;
   width:240px;
-  height: 330px;
+  height: 290px;
 }
 
 .ms-levels-right .ms-level {

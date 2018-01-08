@@ -10,39 +10,42 @@
         height: 20px;
     }
 
+    ms-mini-player .slider-pager {
+        bottom: 15px;
+    }
+
+    ms-mini-player .slider-pager .slider-pager-page{
+        color: #ffffff;
+        font-size: 8px;
+    }
+
+
+    ms-mini-player .small-button-category {
+        background-color : #444444 !important;
+    }
+
 </style>
 
 
 
     <ms-mini-player>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic" class="bar bar-subheader" style="padding:0px;margin:0px;">
+        <div ng-if="miniPlayer.getPlayer().currentMusic" class="bar bar-subheader" style="padding:0px;margin:0px;display:block;">
 
             <div style="width:100%;">
 
-                <ion-list ng-if="miniPlayer.isExpanded()" style="border-style: none;">
+                <ion-list ng-if="miniPlayer.getDisplayStatus() != miniPlayer.DISPLAY_MINIMIZED" style="border-style: none;">
 
                     <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" style="background:#333333;border-style: none;" ng-style="{'height' : miniPlayer.getPlayer().type == miniPlayer.PLAYER_TYPE_MULTITRACK?'80px':'80px'}">
 
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{miniPlayer.getPlayer().currentMusic.music.artistPhotoPath}}" style="width:58px;height:58px;">
-<!--
-                        <p ng-if="miniPlayer.getPlayer().currentMusic.music.status != 1" style="position:absolute;top:64px;left:5px;width:60px;text-align:center;color:#FFFFFF;">{{miniPlayer.getPlayer().currentTimeAsString}}</p>
--->
+                        <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{miniPlayer.getPlayer().currentMusic.music.artistPhotoPath}}" style="width:58px;height:58px;">
 
                         <h2 style="line-height:20px;margin-bottom:0px;color:#FFFFFF;">{{miniPlayer.getPlayer().currentMusic.music.musicName}}</h2>
-<!--
-                        <p style="padding:0px;margin:0px;line-height:15px;">{{miniPlayer.getPlayer().currentMusic.music.artistName}} - {{miniPlayer.getPlayer().currentMusic.music.style}}</p>
--->
-<!--
-                        <div class="ms-player-slider" style="vertical-align:middle;color:#FFFFFF !important;font-size:12px;line-height:20px;">
 
-                            <input id="slicePlayer" type="range" min=0 max={{miniPlayer.getPlayer().currentMusic.calculatedTotalTime}} step=1 ng-model="miniPlayer.getPlayer().currentTime" on-release="changePosition()"/>
-                            <div style="float:right;">&nbsp;{{miniPlayer.getPlayer().currentTimeAsString}}</div>
-                        </div>
--->
                         <div>
 
                             <div class="file-info-buttons">
+<!--
                                 <a href="#/tracks/{{miniPlayer.getPlayer().currentMusic.music.musicId}}">
                                     <div ng-if="miniPlayer.getPlayer().currentMusic.music.type == 'multitrack'" class="file-info-button" style="width:60px;background-color:#FD6631 !important;border-color:#FFFFFF;">
                                         <div class="file-info-button-title">Tipo</div>
@@ -53,15 +56,16 @@
                                     <div class="file-info-button-title">Tipo</div>
                                     <div class="file-info-button-value">Monopista</div>
                                 </div>
+-->
                                 <div ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type != 4" class="file-info-button" style="width:120px;">
                                     <div class="file-info-button-title">Playback Premium</div>
                                     <div class="file-info-button-value">Somente para assinantes</div>
                                 </div>
-                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type == 4" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
+                                <div ng-click="miniPlayer.verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type == 4" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
                                     <div class="file-info-button-title">Playback Disponível</div>
                                     <div class="file-info-button-value">Clique para baixar</div>
                                 </div>
-                                <div ng-click="verifyIfLoginIsNeededBeforeDownload()" ng-if="!miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
+                                <div ng-click="miniPlayer.verifyIfLoginIsNeededBeforeDownload()" ng-if="!miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
                                     <div class="file-info-button-title">Playback Gratuíta</div>
                                     <div class="file-info-button-value">Clique para baixar</div>
                                 </div>
@@ -69,9 +73,9 @@
 
                         </div>
                         
-                        <i ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && !miniPlayer.getPlayer().status.isPlaying && !miniPlayer.getPlayer().status.isDownloading" class = "icon ion-play" style="color:#FD6631;font-size:48px;" ng-click="resume()"></i>
+                        <i ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && !miniPlayer.getPlayer().status.isPlaying && !miniPlayer.getPlayer().status.isDownloading" class = "icon ion-play" style="color:#FD6631;font-size:48px;" ng-click="miniPlayer.resume()"></i>
 
-                        <i ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && miniPlayer.getPlayer().status.isPlaying" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="suspend()"></i>
+                        <i ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && miniPlayer.getPlayer().status.isPlaying" class = "icon ion-pause" style="color:#FD6631;font-size:48px;" ng-click="miniPlayer.suspend()"></i>
 
                         <i class = "icon"><ion-spinner ng-if="miniPlayer.getPlayer().status.isDownloading" icon="ios"></ion-spinner></i>
 
@@ -79,13 +83,217 @@
 
                 </ion-list>
 
-                <div class="ms-collapse-button" ng-click="changePlayerExpantion()">
-                    <i ng-if="miniPlayer.isExpanded()" class="icon ion-chevron-up" style="padding-top:4px;"></i>
-                    <i ng-if="!miniPlayer.isExpanded()" class="icon ion-chevron-down" style="padding-top:4px;"></i>
+                <div class="ms-mini-player-dashboard" ng-if="miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MAXIMIZED">
+
+                    <div class="row" style="margin:0px;border:0px;padding:0px;padding-top:10px;min-height: 40px;">
+                        <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                            <button ng-class="miniPlayer.lyricsClass" ng-click="miniPlayer.showLyrics()">Cifra</button>
+                        </div>
+                        <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                            <button ng-class="miniPlayer.instrumentsClass" ng-click="miniPlayer.showInstruments()">Instrumentos</button>
+                        </div>
+                        <!--
+                        <div class="col-33" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                            <button ng-class="miniPlayer.instrumentsClass" ng-click="loadRemovedSongs()">Instrumentos</button>
+                        </div>
+                        -->
+                    </div>
+
+                    <ion-scroll class="ms-mini-player-lyrics-scroll" delegate-handle="lyricsScrollHandle" scrollY="true" overflow-scroll="false" ng-if= "miniPlayer.shouldShowLyrics() == true">
+
+                        <div class="ms-mini-player-lyrics" ng-repeat="fraseBean in miniPlayer.getPlayer().currentMusic.cifra.fraseBeans">
+                            <pre ng-if="miniPlayer.getPlayer().currentMusic.cifra.fraseIdx == ($index)" class="ms-mini-player-lyrics-chords-current">{{fraseBean.chords}}</pre>
+                            <pre ng-if="miniPlayer.getPlayer().currentMusic.cifra.fraseIdx == ($index)" class="ms-mini-player-lyrics-phrase-current">{{fraseBean.phrase}}</pre>
+                            <pre ng-if="miniPlayer.getPlayer().currentMusic.cifra.fraseIdx != ($index)" class="ms-mini-player-lyrics-chords">{{fraseBean.chords}}</pre>
+                            <pre ng-if="miniPlayer.getPlayer().currentMusic.cifra.fraseIdx != ($index)" class="ms-mini-player-lyrics-phrase">{{fraseBean.phrase}}</pre>
+                        </div>
+
+                    </ion-scroll>
+
+                    <ion-slide-box auto-play="false" does-continue="false" show-pager="true" ng-if= "miniPlayer.shouldShowLyrics() == true">
+
+                        <ion-slide ng-repeat="chordCard in miniPlayer.getPlayer().chordCards">
+
+                            <div class="row" style="min-height: 115px;">
+                                <div class="col-20 ms-mini-player-chords-next" ng-repeat="chord in chordCard" style="{{musicStyle.margin}}border:0px;margin:0px">
+                                    <a href="#">
+                                        <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{chord.accordImagePath}}" width="100%" style="width:100%;"/>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </ion-slide>
+
+                    </ion-slide-box>
+
+<!--
+                    <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false" ng-if= "miniPlayer.shouldShowLyrics() == true">
+
+                        <ion-slide>
+                            <div class="row">
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Em.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/A.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Dm.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/F5.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/D.png" width="100%"/>
+                                </div>
+                            </div>
+                        </ion-slide>
+
+                        <ion-slide>
+                            <div class="row">
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/E.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Am.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Bm.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/G.png" width="100%"/>
+                                </div>
+                                <div class="col-20 ms-mini-player-chords-next">
+                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/D.png" width="100%"/>
+                                </div>
+                            </div>
+                        </ion-slide>
+
+                    </ion-slide-box>
+<!--
+                    <div class="file-info-buttons">
+
+                        <a href="#/tracks/{{miniPlayer.getPlayer().currentMusic.music.musicId}}">
+                            <div ng-if="miniPlayer.getPlayer().currentMusic.music.type == 'multitrack'" class="file-info-button" style="width:185px;background-color:#FD6631 !important;border-color:#FFFFFF;margin-bottom: 0px !important;float: none;">
+                                <div class="file-info-button-title">Configuração dos Instrumentos</div>
+                                <div class="file-info-button-value">DISPONÍVEL</div>
+                            </div>
+                        </a>
+                        <div ng-if="miniPlayer.getPlayer().currentMusic.music.type != 'multitrack'" class="file-info-button" style="width:185px;margin-bottom: 0px !important;float: none;">
+                            <div class="file-info-button-title">Configuração dos Instrumentos</div>
+                            <div class="file-info-button-value">INDISPONÍVEL</div>
+                        </div>
+
+                    </div>
+-->
+                    <div class="ms-levels-workspace" ng-if="miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MAXIMIZED  && miniPlayer.shouldShowInstruments() == true">
+
+                        <div class="ms-levels-left" id="msLevelsLeft">
+
+                            <div id="msLevelsContent" class="ms-levels-content">
+
+                                <ion-slides auto-play="true" options="slides.options" slider="data.slider" ng-if="miniPlayer.getPlayer().showCards == true">
+
+                                    <ion-slide-page ng-repeat="trackCard in miniPlayer.getPlayer().currentMusic.trackCards">
+
+
+                                        <div id="" class="ms-level" ng-repeat="track in trackCard">
+                                            
+                                            <img class="ms-level-base" src="img/level-medium.png"/>
+
+                                            <div class="ms-level-message-window">   
+                                                <div class="ms-level-message" ng-if="track.showMessage">{{track.message}}</div>
+                                            </div>
+                                            
+
+                                            <a ng-click="miniPlayer.changeSolo(track)">
+                                                <img ng-if="track.solo == false && track.enabled == true" class="ms-level-solo-btn" src="img/solo-disabled-btn.png"/>
+                                                <img ng-if="track.solo == true && track.enabled == true" class="ms-level-solo-btn" src="img/solo-active-btn.png"/>
+                                                <img ng-if="track.enabled == false" class="ms-level-solo-btn" src="img/solo-btn.png"/>
+                                            </a>
+
+                                            <div class="ms-level-pan">
+                                                    <input ng-if="track.enabled == true" type="range" min=-1 max=1 step=0.05 ng-model="track.pan" ng-change="miniPlayer.getMSPlayer().changePan(track)"/>
+                                                    <input ng-if="track.enabled == false" type="range" min=-1 max=1 step=0.05 value=0 disabled/>
+                                            </div>
+
+                                            <div class="ms-level-level">
+                                                    <input ng-if="track.enabled == true"  type="range" min=0 max=1 step=0.05 ng-model="track.level" ng-change="miniPlayer.getMSPlayer().changeLevel(track)"/>
+                                                    <input ng-if="track.enabled == false"  type="range" min=0 max=1 step=0.05 value=0 disabled/>
+                                            </div>
+<!--
+                                            <img class="ms-level-leds-left" ng-src="{{track.leds.left}}"/>
+                                            <img class="ms-level-leds-right" ng-src="{{track.leds.right}}"/>
+-->
+                                            <a ng-click="miniPlayer.changeEnabled(track)">
+                                            
+                                                <img ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && track.enabled == true" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentEnabledImagePath}}"/>
+
+                                                <img ng-if="track.enabled == false || (miniPlayer.getPlayer().status.isPlayerInConsistentStatus && track.isLoaded == true)" class="ms-level-instrument" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{track.instrumentDisabledImagePath}}"/>
+
+                                                <img ng-if="miniPlayer.getPlayer().status.isPlayerInConsistentStatus && track.isLoaded == false" class="ms-level-instrument" src="img/loading.gif"/>
+                                            </a>
+                                            
+                                            <div class="ms-level-instrument-name">{{track.instrumentName}}</div>
+
+                                        </div>
+
+
+                                    </ion-slide-page>
+
+                                </ion-slides>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ms-levels-right" id="msLevelsRight">
+
+                            <div class="ms-level">
+                                    
+                                <img class="ms-level-base" src="img/level-medium.png"/>
+
+                                <div class="ms-level-pan">
+                                        <input type="range" min=-1 max=1 step=0.1 ng-model="miniPlayer.getPlayer().masterPan" ng-change="miniPlayer.getMSPlayer().changeMasterPan()"/>
+                                </div>
+                                <div class="ms-level-level">
+                                        <input type="range" min=0 max=1 step=0.05 ng-model="miniPlayer.getPlayer().masterLevel" ng-change="miniPlayer.getMSPlayer().changeMasterLevel()"/>
+                                </div>
+
+                                <div class="ms-level-message-window">   
+                                    <div class="ms-level-message" ng-if="miniPlayer.getPlayer().showMessage">{{miniPlayer.getPlayer().message}}</div>
+                                </div>
+<!--
+                                <img class="ms-level-leds-left" ng-src="{{miniPlayer.getPlayer().mainLeds.left}}"/>
+                                <img class="ms-level-leds-right" ng-src="{{miniPlayer.getPlayer().mainLeds.right}}"/>
+-->
+                                <img class="ms-level-instrument" src="img/instruments/main.jpg"/>
+                                <div class="ms-level-instrument-name">Master</div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
+            <div class="ms-collapse-button" ng-click="miniPlayer.changeDisplayStatus(miniPlayer.DISPLAY_MAXIMIZED)" ng-if="miniPlayer.getPlayer().currentMusic.cifra.fraseIdx > -1 && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_NORMAL">
+                <i class="icon ion-chevron-down" style="padding-top:4px;"></i>
+                <span style="color:#ffffff;">&nbsp;VER A CIFRA DA MÚSICA</span>
+            </div>
+
+            <div class="ms-collapse-button" ng-click="miniPlayer.changeDisplayStatus(miniPlayer.DISPLAY_NORMAL)" ng-if="miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MINIMIZED">
+                <i class="icon ion-chevron-down" style="padding-top:4px;"></i>
+                <span style="color:#ffffff;">&nbsp;ABRIR O PLAYER</span>
+            </div>
+
+            <div class="ms-collapse-button" ng-click="miniPlayer.changeDisplayStatus(miniPlayer.DISPLAY_MINIMIZED)" ng-if="miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MAXIMIZED || (miniPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1 && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_NORMAL)">
+                <i class="icon ion-chevron-up" style="padding-top:4px;"></i>
+                <span style="color:#ffffff;">&nbsp;FECHAR O PLAYER</span>
+            </div>
 
         </div>
 

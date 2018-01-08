@@ -19,10 +19,10 @@ module.controller('TrackController', function($scope,
 
         if (track.solo == true){
             track.solo = false;
-            msPlayer.unactivateSolo($scope, track);
+            msPlayer.unactivateSolo(track);
         } else {
             track.solo = true;
-            msPlayer.activateSolo($scope, track);
+            msPlayer.activateSolo(track);
         }
 
     };
@@ -110,41 +110,41 @@ module.controller('TrackController', function($scope,
     $scope.changeEnabled = function(track){
 
         if (track.enabled == true){
-            msPlayer.mute($scope, track);
+            msPlayer.mute(track);
         } else {
             track.enabled = true;
-            msPlayer.unMute($scope, track);
+            msPlayer.unMute(track);
         }
 
     };
 
     $scope.changeLevel = function(track){
 
-        msPlayer.changeLevel($scope, track);
+        msPlayer.changeLevel(track);
 
     };
 
     $scope.changeMasterLevel = function(){
 
-        msPlayer.changeMasterLevel($scope);
+        msPlayer.changeMasterLevel();
 
     };
 
     $scope.changeMasterPan = function(){
 
-        msPlayer.changeMasterPan($scope);
+        msPlayer.changeMasterPan();
 
     };
 
     $scope.changePan = function(track){
 
-        msPlayer.changePan($scope, track);
+        msPlayer.changePan(track);
 
     };
 
     $scope.suspend = function(){
 
-        msPlayer.suspend($scope);
+        msPlayer.suspend();
 
         $scope.isPlaying = false;
 
@@ -152,7 +152,7 @@ module.controller('TrackController', function($scope,
 
     $scope.changePosition = function(){
 
-        msPlayer.changePosition($scope);
+        msPlayer.changePosition();
 
     };
 

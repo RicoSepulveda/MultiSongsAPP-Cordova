@@ -1,6 +1,11 @@
-module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, msPlayer, auth, musicService){
+module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, $ionicScrollDelegate, msPlayer, auth, musicService){
      
-    var miniPlayerObj = {isPlaying : false, playerExpanded : true, token : null, showDownload : true};
+    var DISPLAY_MAXIMIZED = 1;
+    var DISPLAY_NORMAL = 2;
+    var DISPLAY_MINIMIZED = 3;
+
+
+    var miniPlayerObj = {isPlaying : false, displayStatus : DISPLAY_MAXIMIZED, token : null, showDownload : true, showInstruments : false, showLyrics : true};
 
     var download = function(callbackFunction){
 
@@ -43,18 +48,23 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
         PLAYER_TYPE_SINGLETRACK_LOCAL : msPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL,
         PLAYER_TYPE_SETLIST : msPlayer.PLAYER_TYPE_SETLIST,
 
+        DISPLAY_MAXIMIZED : DISPLAY_MAXIMIZED,
+        DISPLAY_NORMAL : DISPLAY_NORMAL,
+        DISPLAY_MINIMIZED : DISPLAY_MINIMIZED,
+
         auth : auth,
 
+        lyricsClass : "button small-button-category-selected",
+        instrumentsClass : "button small-button-category",
 
         loadPlayer : function(){
-
-            //miniPlayerObj.playerExpanded = true;
 
             miniPlayerObj.msPlayer = msPlayer;
 
             miniPlayerObj.token = auth.token;
 
             isAnApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
+
 
             if ( isAnApp ) {
                 
@@ -67,15 +77,55 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
         play : function(musicId, playerType){
 
-            console.log("=========>>>>>>>>>>>>> PLAYERTYPE: " + playerType);
+            if (!msPlayer.getPlayer().status.isPlaying || 
+                (msPlayer.getPlayer().status.isPlaying && 
+                msPlayer.getPlayer().currentMusic.music.musicId != musicId)){
 
-                if (!msPlayer.getPlayer().status.isPlaying || 
-                    msPlayer.getPlayer().status.isPlaying && 
-                    msPlayer.getPlayer().currentMusic.music.musicId != musicId){
-                        msPlayer.loadMusic(musicId, true, playerType);
-                }
+                msPlayer.setLyricsChangedCallback(function(lyricsIdx){
+
+                    if ($ionicScrollDelegate.$getByHandle('lyricsScrollHandle') && $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').getScrollPosition()){
+
+                        if (lyricsIdx % 3 == 0 || 
+                            Math.abs(lyricsIdx * 31 - $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').getScrollPosition().top) > 155 ){
+                            $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').scrollTo(0, (lyricsIdx * 31), true);
+                        }
+
+                    }
+
+                });
+
+                msPlayer.loadMusic(musicId, true, playerType, function(obj){
+                    
+                    if (obj.success == true){
+
+                        if (msPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1){
+                            miniPlayerObj.displayStatus = DISPLAY_NORMAL;
+                        } else {
+                            miniPlayerObj.displayStatus = DISPLAY_MAXIMIZED;
+                        }
+
+                    }
+
+                });
+                    
+            }
 
         },
+
+        showLyrics : function(){
+            miniPlayerObj.showInstruments = false;
+            miniPlayerObj.showLyrics = true;
+            this.lyricsClass = "button small-button-category-selected";
+            this.instrumentsClass = "button small-button-category";
+        },
+
+        showInstruments : function(){
+            miniPlayerObj.showInstruments = true;
+            miniPlayerObj.showLyrics = false;
+            this.lyricsClass = "button small-button-category";
+            this.instrumentsClass = "button small-button-category-selected";
+        },
+
 
         suspend : function(){
 
@@ -91,6 +141,14 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
         shouldShowDownload : function(){
             return miniPlayerObj.showDownload;
+        },
+
+        shouldShowInstruments : function(){
+            return miniPlayerObj.showInstruments;
+        },
+
+        shouldShowLyrics : function(){
+            return miniPlayerObj.showLyrics;
         },
 
         resume : function(musicDetail){
@@ -115,12 +173,38 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
             return msPlayer.getPlayer();
         },
 
-        isExpanded : function(){
-            return miniPlayerObj.playerExpanded;
+        getMSPlayer : function(){
+            return msPlayer;
         },
 
-        changePlayerExpantion : function(){
-            miniPlayerObj.playerExpanded = (miniPlayerObj.playerExpanded == false);
+        getDisplayStatus : function(){
+            return miniPlayerObj.displayStatus;
+        },
+
+        changeEnabled : function(track){
+
+            if (track.enabled == false){
+                msPlayer.unMute(track);
+            } else {
+                msPlayer.mute(track);
+            }
+
+        },
+
+        changeSolo : function(track){
+
+            if (track.solo == false){
+                msPlayer.activateSolo(track);
+            } else {
+                msPlayer.unactivateSolo(track);
+            }
+
+        },
+
+        changeDisplayStatus : function(newStatus){
+
+            miniPlayerObj.displayStatus = newStatus;
+
         },
 
         verifyIfLoginIsNeededBeforeDownload : function(){

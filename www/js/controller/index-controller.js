@@ -374,36 +374,7 @@ module.controller('IndexController', function($scope,
     $scope.$watch("$viewContentLoaded", function() {
 
     });
-/*
-    var loadPlayer = function(){
 
-        $scope.playerExpanded = true;
-
-        $scope.msPlayer = msPlayer;
-
-        $scope.token = auth.token;
-
-        isAnApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
-
-        if ( isAnApp ) {
-            
-            msPlayer.setFileSystem(cordova.file.dataDirectory);
-
-        }else{
-        }
-
-    }
-
-    $scope.play = function(musicId){
-
-            if (!msPlayer.getPlayer().status.isPlaying || 
-                msPlayer.getPlayer().status.isPlaying && 
-                msPlayer.getPlayer().currentMusic.music.musicId != musicId){
-                    msPlayer.loadMusic(musicId, true);
-            }
-
-    }
-*/
     var startLoading = function(){
 
         var key;
@@ -462,149 +433,7 @@ module.controller('IndexController', function($scope,
         window.localStorage.setItem("key", loginData.key);
         window.localStorage.setItem("password", loginData.password);
 
-        //$rootScope.languageModal.hide();
-
-        //window.location.reload(true);
-
     }    
-/*
-    $scope.changePlayerExpantion = function(){
-
-        $scope.playerExpanded = ($scope.playerExpanded == false);
-
-    }
-
-    $scope.suspend = function(){
-
-        msPlayer.suspend($scope);
-
-        $scope.isPlaying = false;
-
-    };
-
-    $scope.resume = function(musicDetail){
-
-        if (msPlayer.getPlayer().status.isPaused){ //IS_SUSPENDED_STATUS
-
-            msPlayer.resume();
-
-        } else {
-            
-            msPlayer.play();
-
-        }
-
-        $scope.isPlaying = true;
-
-        //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
-
-    };
-
-    $scope.verifyIfLoginIsNeededBeforeDownload = function(){
-
-        var promises = [];
-
-        if (auth.type == 1){
-
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Download restrito.',
-                template: 'Você precisa entrar na sua conta para usar essa música. Deseja entrar em sua conta agora?'
-            });
-
-            confirmPopup.then(function(res) {
-
-                if(res) {
-
-                    $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
-                    $rootScope.originalDescription = $rootScope.description;
-
-                    $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
-
-                    $ionicModal.fromTemplateUrl('templates/login.html', {
-                        scope: $rootScope,
-                        animation: 'slide-in-up'
-                    }).then(function(modal) {
-                        $rootScope.loginModal = modal;
-                        $rootScope.loginModal.show();
-                    });
-
-                } else {
-
-                }
-
-            });
-
-        } else {
-
-            if (msPlayer.getPlayer().currentMusic.status == 1){ // Musica ja comprada anteriormente. Somente realizando novo download
-
-                var confirmPopup = $ionicPopup.confirm({
-                  title: 'Sobreposição de Música!',
-                  template: 'Você quer sobrepor as suas configurações anteriores por essa nova configuração?'
-                });
-
-                confirmPopup.then(function(res) {
-                    if(res) {
-                        download();
-                    }
-                });
-
-            } else {
-
-                if (msPlayer.getPlayer().currentMusic.price == 0){ // Se musica gratuita...
-                    
-                    download();
-
-                }else{
-
-                    // SO REALIZA A COMPRA SE ESTIVER CONFIGURADO PARA ISSO
-                    //if (window.localStorage.getItem("shouldFinishPurchase") == true){
-                        download();
-                        //store.order(productId); // O evento approved da Store ira chamar o finishPurchase.
-                    //} else {
-                    //    console.log("ATTENTION! =======>>>>>>> PURCHASE WAS NOT REGISTRED ON THE STORE! APP MUST BE RECONFIGURED AND REDEPLOYED.");
-                    //    finishPurchase(); // Chama diretamente o finishPurchase sem o uso do evento da store
-                    //}
-
-                }
-
-
-            }
-
-
-        }
-
-
-    }
-
-
-    var download = function(callbackFunction){
-
-        var promisses = [];
-
-        console.log("Will start download...");
-        promisses.push(musicService.buy($scope, msPlayer.getPlayer().currentMusic.music.musicId, auth.token));
-
-        $q.all(promisses).then(
-            function(response) { 
-
-                if (callbackFunction){
-                    callbackFunction();
-                }
-
-                msPlayer.download();
-
-            },
-            function(err) {
-                // PRECISA TRATAR O ERRO NO DOWNLOAD
-                console.log(err);
-            }
-        ).finally(function() {
-            
-        });
-
-    }
-*/
 
     $ionicModal.fromTemplateUrl('templates/newPlaybackRequest.html', {
         scope: $scope,
@@ -733,45 +562,29 @@ module.controller('IndexController', function($scope,
 
     $scope.openPromotion = function(){
 
-            var promises = [];
+        var promises = [];
 
-            if (auth.type == 1){ // Nao logado...
-/*
-                var confirmPopup = $ionicPopup.confirm({
-                    title: 'Ops!',
-                    template: 'Você precisa entrar na sua conta para participar dessa promoção. Deseja entrar em sua conta agora?'
-                });
+        if (auth.type == 1){ // Nao logado...
 
-                confirmPopup.then(function(res) {
+            $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
+            $rootScope.originalDescription = $rootScope.description;
 
-                if(res) {
-*/
-                    $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
-                    $rootScope.originalDescription = $rootScope.description;
+            $rootScope.callback = {func : function(args){
+                $scope.userType = auth.type;
+                startLoading();
+            }, args : "args"};
 
-                    $rootScope.callback = {func : function(args){
-                        $scope.userType = auth.type;
-                        startLoading();
-                    }, args : "args"};
+            $ionicModal.fromTemplateUrl('templates/login.html', {
+                scope: $rootScope,
+                animation: 'slide-in-up'
+            }).then(function(modal) {
+                $rootScope.loginModal = modal;
+                $rootScope.loginModal.show();
+            });
 
-                    $ionicModal.fromTemplateUrl('templates/login.html', {
-                        scope: $rootScope,
-                        animation: 'slide-in-up'
-                    }).then(function(modal) {
-                        $rootScope.loginModal = modal;
-                        $rootScope.loginModal.show();
-                    });
-/*
-                } else {
-
-                }
-
-                });
-*/
-            } else {
-                $scope.promotionModal.show();
-            }
-
+        } else {
+            $scope.promotionModal.show();
+        }
 
     }
 
@@ -814,7 +627,6 @@ module.controller('IndexController', function($scope,
             alertPopup.then(function(res) {
             });
 
-
         }else{
 
             promises.push(musicService.newPlayback(auth.token, $scope.newPlaybackRequest.musicName, $scope.newPlaybackRequest.artistName));
@@ -823,25 +635,27 @@ module.controller('IndexController', function($scope,
 
                 function(response) {
 
-                        var alertPopup = $ionicPopup.alert({
-                            title: "Pedido registrado",
-                            template: "Avisaremos você quando seu Playback estiver disponível na MultiSongs."
-                        });
+                    var alertPopup = $ionicPopup.alert({
+                        title: "Pedido registrado",
+                        template: "Avisaremos você quando seu Playback estiver disponível na MultiSongs."
+                    });
 
-                        alertPopup.then(function(res) {
-                            $scope.modal.hide();
-                        });
+                    alertPopup.then(function(res) {
+                        $scope.modal.hide();
+                    });
 
                 },
                 function() { 
-                        var alertPopup = $ionicPopup.alert({
-                            title: "Ops!",
-                            template: "Não conseguimos registrar seu pedido. Tente novamente em alguns minutos."
-                        });
 
-                        alertPopup.then(function(res) {
-                            $scope.modal.hide();
-                        });
+                    var alertPopup = $ionicPopup.alert({
+                        title: "Ops!",
+                        template: "Não conseguimos registrar seu pedido. Tente novamente em alguns minutos."
+                    });
+
+                    alertPopup.then(function(res) {
+                        $scope.modal.hide();
+                    });
+                    
                 }
             );
 
@@ -1029,9 +843,9 @@ module.controller('IndexController', function($scope,
     }
 
     $scope.play = function(musicId){
-        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK); // Carrega musica com player singletrack e download da musica remota
+        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_MULTITRACK); // Carrega musica com player singletrack e download da musica remota
     }
-
+/*
     $scope.suspend = function(){
         miniPlayer.suspend();
     }
@@ -1044,9 +858,17 @@ module.controller('IndexController', function($scope,
         miniPlayer.verifyIfLoginIsNeededBeforeDownload();
     }
 
-    $scope.changePlayerExpantion = function(){
-        miniPlayer.changePlayerExpantion();
+    $scope.showLyrics = function(){
+        miniPlayer.showLyrics();
     }
 
+    $scope.showInstruments = function(){
+        miniPlayer.showInstruments();
+    }
+
+    $scope.changeDisplayStatus = function(newStatus){
+        miniPlayer.changeDisplayStatus(newStatus);
+    }
+*/
 });
 
