@@ -84,7 +84,7 @@ module.controller('SearchByTypeController', function($scope,
 
         $scope.miniPlayer = miniPlayer;
 
-        miniPlayer.loadPlayer();
+        //miniPlayer.loadPlayer();
 
         
     });

@@ -175,7 +175,7 @@ module.controller('SearchController', function($scope,
 
         $scope.searchDone = false;
 
-        miniPlayer.loadPlayer();
+        //miniPlayer.loadPlayer();
 
         $scope.newPlaybackRequest = {musicName : "", artistName : ""};
 

@@ -33,7 +33,7 @@ module.controller('WishlistController', function($scope,
 
         $scope.miniPlayer = miniPlayer;
 
-        miniPlayer.loadPlayer();
+        //miniPlayer.loadPlayer();
 
         $scope.$parent.showSearch = false;
 

@@ -1,17 +1,34 @@
-module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, $ionicScrollDelegate, msPlayer, auth, musicService){
+module.factory('miniPlayer', function($q, 
+                                      $ionicModal, 
+                                      $ionicPopup, 
+                                      $rootScope,  
+                                      $ionicLoading, 
+                                      $ionicScrollDelegate, 
+                                      msPlayer, 
+                                      auth, 
+                                      musicService){
      
     var DISPLAY_MAXIMIZED = 1;
     var DISPLAY_NORMAL = 2;
     var DISPLAY_MINIMIZED = 3;
 
 
-    var miniPlayerObj = {isPlaying : false, displayStatus : DISPLAY_MAXIMIZED, token : null, showDownload : true, showInstruments : false, showLyrics : true};
-
+    var miniPlayerObj = {isPlaying : false, 
+                         displayStatus : DISPLAY_MAXIMIZED, 
+                         token : null, 
+                         showDownload : true, 
+                         showInstruments : false, 
+                         showLyrics : true,
+                         showReconfigurationWarning : false};
+/*
     var download = function(callbackFunction){
 
         var promisses = [];
 
         console.log("Will start download...");
+
+        msPlayer.download();
+
         promisses.push(musicService.buy(msPlayer.getPlayer().currentMusic.music.musicId, auth.token));
 
         $q.all(promisses).then(
@@ -34,9 +51,10 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
     };
 
+*/
 
     return {
-
+/*
         STATUS_UNAVAILABLE : msPlayer.STATUS_UNAVAILABLE,
         STATUS_INITIAL : msPlayer.STATUS_INITIAL,
         STATUS_PLAYING : msPlayer.STATUS_PLAYING,
@@ -47,7 +65,7 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
         PLAYER_TYPE_SINGLETRACK : msPlayer.PLAYER_TYPE_SINGLETRACK,
         PLAYER_TYPE_SINGLETRACK_LOCAL : msPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL,
         PLAYER_TYPE_SETLIST : msPlayer.PLAYER_TYPE_SETLIST,
-
+*/
         DISPLAY_MAXIMIZED : DISPLAY_MAXIMIZED,
         DISPLAY_NORMAL : DISPLAY_NORMAL,
         DISPLAY_MINIMIZED : DISPLAY_MINIMIZED,
@@ -56,7 +74,7 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
         lyricsClass : "button small-button-category-selected",
         instrumentsClass : "button small-button-category",
-
+/*
         loadPlayer : function(){
 
             miniPlayerObj.msPlayer = msPlayer;
@@ -74,12 +92,13 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
             }
 
         },
+*/
 
         play : function(musicId, playerType){
 
-            if (!msPlayer.getPlayer().status.isPlaying || 
-                (msPlayer.getPlayer().status.isPlaying && 
-                msPlayer.getPlayer().currentMusic.music.musicId != musicId)){
+            if ((!msPlayer.getPlayer().status.isPlaying || 
+                (msPlayer.getPlayer().status.isPlaying) && 
+                (msPlayer.getPlayer().currentMusic.music.musicId != musicId) || (msPlayer.getPlayer().type != playerType))) {
 
                 msPlayer.setLyricsChangedCallback(function(lyricsIdx){
 
@@ -94,20 +113,30 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
                 });
 
-                msPlayer.loadMusic(musicId, true, playerType, function(obj){
-                    
-                    if (obj.success == true){
+                msPlayer.unloadSetlist(function(){
 
-                        if (msPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1){
-                            miniPlayerObj.displayStatus = DISPLAY_NORMAL;
-                        } else {
-                            miniPlayerObj.displayStatus = DISPLAY_MAXIMIZED;
+                    msPlayer.loadMusic(musicId, true, playerType, function(obj){
+
+                        if (obj.success == true){
+
+                            if (msPlayer.getPlayer().currentMusic.music.status == 1){
+                                miniPlayerObj.showReconfigurationWarning = true;
+                            }else{
+                                miniPlayerObj.showReconfigurationWarning = false;
+                            }
+
+                            if (msPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1){
+                                miniPlayerObj.displayStatus = DISPLAY_NORMAL;
+                            } else {
+                                miniPlayerObj.displayStatus = DISPLAY_MAXIMIZED;
+                            }
+
                         }
 
-                    }
+                    });
 
                 });
-                    
+
             }
 
         },
@@ -120,10 +149,19 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
         },
 
         showInstruments : function(){
+
             miniPlayerObj.showInstruments = true;
             miniPlayerObj.showLyrics = false;
             this.lyricsClass = "button small-button-category";
             this.instrumentsClass = "button small-button-category-selected";
+
+            if (miniPlayerObj.showReconfigurationWarning){
+                
+                //$ionicLoading.show({ template: 'Ao reconfigurar a música, faça o download dela novamente para poder usá-la em suas playlists! ;)', animation: 'fade-in', noBackdrop: true, duration:3000});
+                miniPlayerObj.showReconfigurationWarning = false;
+
+            }
+
         },
 
 
@@ -135,14 +173,16 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
         },
 
+/*
         showDownload : function(showDownload){
             miniPlayerObj.showDownload = showDownload;
         },
-
+*/
+/*
         shouldShowDownload : function(){
             return miniPlayerObj.showDownload;
         },
-
+*/
         shouldShowInstruments : function(){
             return miniPlayerObj.showInstruments;
         },
@@ -252,7 +292,7 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
                     confirmPopup.then(function(res) {
                         if(res) {
-                            download();
+                            msPlayer.download();
                         }
                     });
 
@@ -260,11 +300,11 @@ module.factory('miniPlayer', function($q, $ionicModal, $ionicPopup, $rootScope, 
 
                     if (msPlayer.getPlayer().currentMusic.price == 0){ // Se musica gratuita...
                         
-                        download();
+                        msPlayer.download();
 
                     }else{
 
-                        download();
+                        msPlayer.download();
 
                     }
 

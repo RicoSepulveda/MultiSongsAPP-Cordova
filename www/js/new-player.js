@@ -3,30 +3,37 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	var calculateLedscounter = 0;
 
 	var ANALIZER_NODE_BUFFER_SIZE = 1000;
-
 /*
-	var STATUS_UNAVAILABLE = {id : -1, isPlayerInConsistentStatus : false, isPlaying : false, isPaused : false, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
-	var STATUS_INITIAL = {id : 0, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
-	var STATUS_PAUSED = {id : 1, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : true, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
-	var STATUS_PLAYING = {id : 2, isPlayerInConsistentStatus : true, isPlaying : true, isPaused : false, isDownloading : false, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : true};
-	var STATUS_DOWNLOADING = {id : 3, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : true, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : false};
-	var STATUS_BUFFERING = {id : 4, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : true, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : false};
-*/
 	var STATUS_UNAVAILABLE = {id : -1, isPlayerInConsistentStatus : false, isPlaying : false, isPaused : false, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
 	var STATUS_INITIAL = {id : 4, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
 	var STATUS_PAUSED = {id : 2, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : true, isDownloading : false, shouldMonitorStatusChange : false, shouldKeepMonitoringLeds : false};
 	var STATUS_PLAYING = {id : 1, isPlayerInConsistentStatus : true, isPlaying : true, isPaused : false, isDownloading : false, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : true};
 	var STATUS_BUFFERING = {id : 6, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : true, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : false};
 	var STATUS_TRANSIENT_TO_PLAY = {id : 7, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : false, shouldMonitorStatusChange : true, shouldKeepMonitoringLeds : true};
+*/
+
+/**
+ STATUS_UNLOADED: Loader esta indisponivel e deve ser configurado antes do uso
+ STATUS_INICIAL : Loader ja foi configurado e esta pronto para comecar a ser iniciado
+ STATUS_PLAYING: Loader esta atualmente tocando a musica que foi configurada anteriormente
+ STATUS_PAUSED: Loader esta em pause
+ STATUS_BUFFERING: Loader esta configurado porem nao conseguiu carregar os pacotes a tempo de evitar um underrun
+ STATUS_LOADING: Status assumido pelo player enquanto esta configurando a musica. Utilizado no new-player.js para monitrar as mudancas de estado do player em java
+ */
+
+	var STATUS_UNLOADED = {id : -1, isPlayerInConsistentStatus : false, isPlaying : false, isPaused : false, isDownloading : false, shouldKeepMonitoringLeds : false};
+	var STATUS_INITIAL = {id : 0, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : false, shouldKeepMonitoringLeds : false};
+	var STATUS_PLAYING = {id : 1, isPlayerInConsistentStatus : true, isPlaying : true, isPaused : false, isDownloading : false, shouldKeepMonitoringLeds : true};
+	var STATUS_PAUSED = {id : 2, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : true, isDownloading : false, shouldKeepMonitoringLeds : false};
+	var STATUS_BUFFERING = {id : 3, isPlayerInConsistentStatus : true, isPlaying : false, isPaused : false, isDownloading : true, shouldKeepMonitoringLeds : false};
 
 	var EVENT_STARTED_PLAYING = {id : 1, newStatus : STATUS_PLAYING, shouldResetCounters : false};
-	var EVENT_SEEKING = {id : 1, newStatus : STATUS_PAUSED, shouldResetCounters : false};
-	var EVENT_TRACKS_LOADED = {id : 2, newStatus : STATUS_INITIAL, shouldResetCounters : true};
-	var EVENT_SOUND_STOPPED = {id : 3, newStatus : STATUS_INITIAL, shouldResetCounters : true};
-	var EVENT_START_DOWNLOADING_TRACKS = {id : 4, newStatus : STATUS_BUFFERING, shouldResetCounters : false};
-	var EVENT_SEVERAL_ERROR = {id : 5, newStatus : STATUS_UNAVAILABLE, shouldResetCounters : true};
-	var EVENT_PAUSED = {id : 6, newStatus : STATUS_PAUSED, shouldResetCounters : false};
-	var EVENT_BUFFERING = {id : 7, newStatus : STATUS_BUFFERING, shouldResetCounters : false};
+	var EVENT_SEEKING = {id : 2, newStatus : STATUS_PAUSED, shouldResetCounters : false};
+	var EVENT_TRACKS_LOADED = {id : 3, newStatus : STATUS_INITIAL, shouldResetCounters : true};
+	var EVENT_SOUND_STOPPED = {id : 4, newStatus : STATUS_UNLOADED, shouldResetCounters : true};
+	var EVENT_SEVERAL_ERROR = {id : 6, newStatus : STATUS_UNLOADED, shouldResetCounters : true};
+	var EVENT_PAUSED = {id : 7, newStatus : STATUS_PAUSED, shouldResetCounters : false};
+	var EVENT_BUFFERING = {id : 8, newStatus : STATUS_BUFFERING, shouldResetCounters : false};
 
 	var TRACK_TYPE_INSTRUMENT = 1;
 	var TRACK_TYPE_MIXED = 2;
@@ -59,7 +66,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		var logLevelAsString = ["ERROR", "INFO", "DEBUG", "DEBUG_DETAILS"];
 
-		if (player.logLevel <= level){
+		if (player.logLevel >= level){
 			console.log("[" + caller + "] - " + logLevelAsString[level-1] + ": " + message);
 			if (args){
 				console.log(args);
@@ -69,7 +76,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	}
 
 	// Objeto com informacoes a serem expostas pelo servico que sao uteis para leitura de status
-	var player = {status : STATUS_INITIAL, 
+	var player = {status : STATUS_UNLOADED, 
 				  fileSystem : null, 
 				  setlist : {musics : null, 
 				  			 name : '', 
@@ -87,11 +94,12 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				  masterLevel : 0.8,
 				  type : 0,
 				  currentTimeAsString : '',
+				  musicBeenDownloaded : null,
 				  message : '',
 				  showMessage : false,
 				  messageInterval : null,
 				  playerSlideInterval : null,
-				  checkStatusSoundInterval : null,
+				  //statusChangedInterval : null,
 				  currentTime : 0,
 				  lastMainDecibels : 128,
 				  saveButtonEnabled : false,
@@ -99,7 +107,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				  calculateLedsInterval : null,
 				  changeLevelInterval : null,
 				  seekInterval : null,
-				  lyricsInterval : null,
 				  timestampNextChangeInLyrics : 0,
 				  timestampWhenPauseWasPressed : 0,
 				  firstFraseIdx : -1,
@@ -116,21 +123,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		player.log(LOG_LEVEL_DEBUG, "Event received.", "handleEvent", event);
 
-		if (!event.type.newStatus.shouldMonitorStatusChange){
-
-       		$interval.cancel(player.checkStatusSoundInterval);
-       		player.checkStatusSoundInterval = null;
-
-		} else {
-
-			if (player.checkStatusSoundInterval == null){
-				player.checkStatusSoundInterval = $interval(function(){
-					checkStatusSound();
-				}, 250);
-			}
-
-		}
-
 		if (event.type.newStatus.shouldKeepMonitoringLeds == true){
 
 			player.mainLeds.left = "img/level-led-0.png";
@@ -140,9 +132,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				entry.leds.left = "img/level-led-0.png";
 				entry.leds.right = "img/level-led-0.png";
 			});
-
-			player.setlist.timeToNext = -1;
-			player.setlist.nextMusic = null;
 
 		}
 
@@ -175,25 +164,18 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
        		player.timestampNextChangeInLyrics = 0;
        		player.timestampWhenPauseWasPressed = 0;
 	
-			if (player.lyricsInterval != null){
-				$interval.cancel(player.lyricsInterval);
-			}
+			if (player.currentMusic != null && player.currentMusic.cifra !== undefined && player.currentMusic.cifra != null){
 
-   			calculateFirstFraseIdx();
+	   			calculateFirstFraseIdx();
 
-			if (player.lyticsChangedCallback != null){
-				player.lyticsChangedCallback(player.currentMusic.cifra.fraseIdx);
+				if (player.lyticsChangedCallback != null){
+					player.lyticsChangedCallback(player.currentMusic.cifra.fraseIdx);
+				}
+
 			}
 
 		}
-/*
-		// Se o evento for de buffering...
-		if (event.type.id == EVENT_BUFFERING.id){
-			$ionicLoading.show({ template: spinner + 'Carregando...', animation: 'fade-in' });
-		} else if (player.status.id == STATUS_BUFFERING.id){ // Se o evento for diferente de buffering, mas o status atual eh buffering...
-			$ionicLoading.hide();
-		}
-*/
+
 		// Se o evento for sound ended em uma selits e ainda existem musicas a serem tocadas, carrega a proxima
 		if (event.type.id == EVENT_SOUND_STOPPED.id){
 
@@ -201,6 +183,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				prepareMusicToBePlayed(player.setlist.musics[getIndexOfCurrentMusicInSetlist()+1].musicId, function(){
 
 				});
+			} else {
+				prepareMusicToBePlayed(player.currentMusic.music.musicId, function(){}, false);
 			}
 
 		}
@@ -210,18 +194,18 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			if (player.currentMusic.iniciaImediatamente){
 
-				console.log("INICIANDO MUSICA AUTOMATICAMENTE");
+            	player.log(LOG_LEVEL_DEBUG, "Musica sera iniciada automaticamente.", "handleEvent", null);
 
-				player.status = STATUS_TRANSIENT_TO_PLAY; // Garante que o player nao envie um evento startPlaying pelo checkStatusSound enquanto o player esta iniciando a execucao da musica...
+				//player.status = STATUS_TRANSIENT_TO_PLAY; // Garante que o player nao envie um evento startPlaying pelo checkStatusSound enquanto o player esta iniciando a execucao da musica...
 
-				player.currentMusic.iniciaImediatamente = false; // Para garantir que apos o fim da musica ela nao reinicia automaticamente novamente...
+				//player.currentMusic.iniciaImediatamente = false; // Para garantir que apos o fim da musica ela nao reinicia automaticamente novamente...
 
 				_play();
 
 				return;
 
 			}else{
-				console.log("MUSICA NAO INICIARA AUTOMATICAMENTE");
+            	player.log(LOG_LEVEL_DEBUG, "Musica NAO sera iniciada automaticamente.", "handleEvent", null);
 			}
 
 		}
@@ -232,6 +216,29 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 	var handleCifra = function(){
 
+		var onSuccessCallback = function(obj){
+
+			player.log(LOG_LEVEL_DEBUG, "Atingiu o segundo para mudanca de frase... ", "handleCifra", null);
+
+			player.currentMusic.cifra.fraseIdx++; 
+
+			if (player.lyticsChangedCallback != null){
+				player.lyticsChangedCallback(player.currentMusic.cifra.fraseIdx);
+			}
+
+
+			handleCifra();
+
+		};
+
+		if (player.currentMusic.cifra.fraseIdx > -1 && player.currentMusic.cifra.fraseIdx < player.currentMusic.cifra.fraseBeans.length - 1){
+
+			msCordovaPluginPlayer.setMark(player.currentMusic.cifra.fraseBeans[player.currentMusic.cifra.fraseIdx+1].tempo, "", onSuccessCallback, function(obj){});
+
+		}
+
+
+/*
 		var nextTime = -1;
 
 		if (player.lyricsInterval != null){
@@ -260,39 +267,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 			player.currentMusic.cifra.mostrar = -1;
 		}
 
-/*
-		if (player.currentMusic.cifra.acordeIdx > -1 && player.currentMusic.cifra.acordeIdx < player.currentMusic.cifra.acordeBeans.length - 1){
-	
-			if (Math.abs(nextTime - player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo) < 250){
-				player.currentMusic.cifra.mostrar = CIFRA_TROCAR_FRASE_ACORDE;
-			} else if (nextTime > player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo){
-				nextTime = player.currentMusic.cifra.acordeBeans[player.currentMusic.cifra.acordeIdx].tempo;
-				player.currentMusic.cifra.mostrar = CIFRA_TROCAR_ACORDE;
-			}
-	
-		}
-*/
 		if (nextTime > -1){
 
 			player.timestampNextChangeInLyrics = Date.now() + nextTime;
 
 			player.lyricsInterval = $interval(function(){
-/*
-				if (player.currentMusic.cifra.mostrar == CIFRA_TROCAR_FRASE_ACORDE){
-					
-					player.currentMusic.cifra.fraseIdx++;
-					player.currentMusic.cifra.acordeIdx++;
-
-				} else if (player.currentMusic.cifra.mostrar == CIFRA_TROCAR_FRASE){
-
-					player.currentMusic.cifra.fraseIdx++;
-
-				} else {
-
-					player.currentMusic.cifra.acordeIdx++;
-
-				}
-*/
 
 				if (player.currentMusic.cifra.mostrar == CIFRA_TROCAR_FRASE){
 
@@ -311,60 +290,51 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		   1);
 
 		}
-
+*/
 	}
 
-	var checkStatusSound = function(){
+	var statusChanged = function(newStatus){
 
-        if (player.currentMusic){
+//        if (player.currentMusic){
+
+	player.log(LOG_LEVEL_DEBUG, "Status alterado ============>>>>>>>>>>>>>> " + newStatus, "statusChanged", null);
+
+/*
+
+
 
 			msCordovaPluginPlayer.playing(
+
 				function(response){
+*/
 					// Se estava tocando e parou por algum problema irreversivel...
-					if(response.status == STATUS_UNAVAILABLE.id && player.status.id == STATUS_PLAYING.id){ 
-						handleEvent({type : EVENT_SOUND_STOPPED, caller : 'checkStatusSound', success : true, obj : null});
+					if(newStatus == STATUS_UNLOADED.id && player.status.id == STATUS_PLAYING.id){ 
+						handleEvent({type : EVENT_SOUND_STOPPED, caller : 'statusChanged', success : true, obj : null});
 					// Se pausou e o status era diferente de pausado...
-					} else if(response.status == STATUS_PAUSED.id && player.status.id != STATUS_PAUSED.id){ 
-						handleEvent({type : EVENT_PAUSED, caller : 'checkStatusSound', success : true, obj : null});
+					} else if(newStatus == STATUS_PAUSED.id && player.status.id != STATUS_PAUSED.id){ 
+						handleEvent({type : EVENT_PAUSED, caller : 'statusChanged', success : true, obj : null});
 					// Se iniciou bufferizancao e  status atual nao eh bufferizando...
-					} else if (response.status == STATUS_BUFFERING.id && player.status.id != STATUS_BUFFERING.id){
-						handleEvent({type : EVENT_BUFFERING, caller : 'checkStatusSound', success : true, obj : null});
+					} else if (newStatus == STATUS_BUFFERING.id && player.status.id != STATUS_BUFFERING.id){
+						handleEvent({type : EVENT_BUFFERING, caller : 'statusChanged', success : true, obj : null});
 					// Se comecou a tocar e status atual nao eh toncando...
-					} else if (response.status == STATUS_PLAYING.id && player.status.id != STATUS_PLAYING.id && player.status.id != STATUS_TRANSIENT_TO_PLAY.id){
-						handleEvent({type : EVENT_STARTED_PLAYING, caller : 'checkStatusSound', success : true, obj : null});
+					} else if (newStatus == STATUS_PLAYING.id && player.status.id != STATUS_PLAYING.id){
+						handleEvent({type : EVENT_STARTED_PLAYING, caller : 'statusChanged', success : true, obj : null});
 					// Se o player esta pronto e estava bufferizando...
-					} else if (response.status == STATUS_INITIAL.id && player.status.id == STATUS_BUFFERING.id){
-						handleEvent({type : EVENT_TRACKS_LOADED, caller : 'checkStatusSound', success : true, obj : null});
+					} else if (newStatus == STATUS_INITIAL.id && player.status.id == STATUS_BUFFERING.id){
+						handleEvent({type : EVENT_TRACKS_LOADED, caller : 'statusChanged', success : true, obj : null});
 					// Se pausou e o status era diferente de pausado...
-					} else if(response.status == STATUS_INITIAL.id && player.status.id != STATUS_INITIAL.id){ 
-						handleEvent({type : EVENT_SOUND_STOPPED, caller : 'checkStatusSound', success : true, obj : null});
+					} else if(newStatus == STATUS_INITIAL.id && player.status.id != STATUS_INITIAL.id){ 
+						handleEvent({type : EVENT_TRACKS_LOADED, caller : 'statusChanged', success : true, obj : null});
 					}
-					/*
-					if(response.status == 4 || response.status == -1 || response.status == 5){ // NOT PLAYING
-						console.log(response);
-						handleEvent({type : EVENT_SOUND_STOPPED, caller : 'checkStatusSound', success : true, obj : null});
-					} else if(response.status == 6 && player.status.id != STATUS_BUFFERING.id){ // BUFFERING
-						handleEvent({type : EVENT_BUFFERING, caller : 'checkStatusSound', success : true, obj : null});
-					} else if (player.status.id == STATUS_BUFFERING.id && response.status == 1){
-						handleEvent({type : EVENT_STARTED_PLAYING, caller : 'checkStatusSound', success : true, obj : null});
-					} else if (player.status.id == STATUS_BUFFERING.id){
-						//$ionicLoading.show({ template: spinner + 'BufferinSTATUS_TRANSIENT_TO_PLAY.idg. Please wait ' + response.buffer + '% ...' });
-						$ionicLoading.show({ template: spinner + 'Buffering. Please wait...' });
-					}
-					*/
+/*
 				}, function(error){
 					// @TODO TRATAR QUANDO NAO EH POSSIVEL CAPTURAR O STATUS DO PLAYER. POR ENQUANTO ESTA PARANDO
 					console.log(error);
-					handleEvent({type : EVENT_SOUND_STOPPED, caller : 'checkStatusSound', success : true, obj : null});
+					handleEvent({type : EVENT_SEVERAL_ERROR, caller : 'statusChanged', success : true, obj : null});
 				}
 			);
-	/*
-			if (player.currentMusic.calculatedTotalTime - player.currentTime == 2 && player.currentMusic.status != 1){
-				player.currentMusic.tracks.forEach(function (entry){
-					msCordovaPluginPlayer.fade(entry.level * player.masterLevel, 0, 2000, entry.id);
-				});
-			}
-	*/
+*/
+
 			if (player.setlist != null && player.setlist.musics != null && player.setlist.musics.length > 0 && getIndexOfCurrentMusicInSetlist() + 1 < player.setlist.musics.length){
 				if (player.currentMusic.calculatedTotalTime - player.currentTime < 10){
 					player.setlist.timeToNext = player.currentMusic.music.totalTimeInSeconds - player.currentTime;
@@ -372,7 +342,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				}
 			}
 
-		}
+//		}
+
+		msCordovaPluginPlayer.setStatusCallback(statusChanged, new function(err){});
 
 	}
 
@@ -456,6 +428,14 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		var promisses;
 		var trackType;
+		var configObj, configs;
+		var mode;
+
+		if (player.type == PLAYER_TYPE_SINGLETRACK_LOCAL  || player.type == PLAYER_TYPE_SETLIST){
+			mode = "local";
+		} else {
+			mode = "remote";
+		}
 
 		if (player.type == PLAYER_TYPE_MULTITRACK || player.type == PLAYER_TYPE_SETLIST){
 			trackType = TRACK_TYPE_INSTRUMENT;
@@ -488,35 +468,6 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 						separateLyricsAndChords(entry);
 					});
 
-
-/*
-		       		player.currentMusic.cifra.fraseBeans.forEach(function(entry){
-
-						while ((m = regex.exec(entry.phrase)) !== null) {
-						    // This is necessary to avoid infinite loops with zero-width matches
-						    if (m.index === regex.lastIndex) {
-						        regex.lastIndex++;
-						    }
-						    
-						    // The result can be accessed through the `m`-variable.
-						    m.forEach((match, groupIndex) => {
-						        console.log(`Found match, group ${groupIndex}: ${match}`);
-								entry.phraseReviewed = entry
-						    });
-
-						}
-
-		       		});
-*/
-
-/*
-					if (response[1].acordeBeans.length > 0){
-		       			player.currentMusic.cifra.acordeIdx = 0;
-					}else{
-						player.currentMusic.cifra.acordeIdx = -1;
-					}
-*/
-
         		}
 
         		player.currentMusic.trackCards = [];
@@ -534,7 +485,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
         		player.currentMusic.tracks.forEach(function(entry){
 
-        			if (idx % 3 == 0 && idx > 0){
+        			if (idx % 4 == 0 && idx > 0){
         				idy++;
 		        		player.currentMusic.trackCards[idy] = [];
         			}
@@ -547,7 +498,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
         		/** FINAL DO DETALHE DE VISUALIZACAO */
 
-        		console.log(player.currentMusic.trackCards);
+
+        		player.log(LOG_LEVEL_DEBUG, "Track cards carregados", "prepareMusicToBePlayed", player.currentMusic.trackCards);
 
             	if (response[0].bean.music.status != 1){
             		player.currentMusic.calculatedTotalTime = 29;
@@ -555,6 +507,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		        	player.currentMusic.calculatedTotalTime = parseInt(player.currentMusic.music.totalTimeInSeconds) - 1;
             	}
 
+				configs = {trackConfigs : []};
 
 		 		player.currentMusic.tracks.forEach(function(entry) {
 
@@ -564,11 +517,24 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 					entry.instrumentDisabledImagePath = entry.instrumentImagePath + "-disabled.jpg";
 					entry.instrumentEnabledImagePath = entry.instrumentImagePath + ".jpg";
 
+					configObj = {filePath : entry.filePath, level : entry.level, pan : entry.pan, enabled : entry.enabled, solo : entry.solo};
+
+					configs.trackConfigs.push(configObj);
+
         		});
 
-    			loadCurrentMusicTracks();
+    			//loadCurrentMusicTracks();
 
-            	callback(response[0]);
+				msCordovaPluginPlayer.configPlayer(JSON.stringify(configs), player.currentMusic.music.musicId, (player.currentMusic.music.status != 1), player.currentMusic.music.artistName, player.currentMusic.music.musicName, player.fileSystem, mode,
+					function(message){
+						callback(response[0]);
+					},
+					function(err){
+						$ionicLoading.hide();
+					}
+				);
+
+            	//callback(response[0]);
 
             },
 
@@ -576,7 +542,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
             	player.log(LOG_LEVEL_ERROR, "ERROR WHILE LOADING MUSIC DETAIL.", "prepareMusicToBePlayed", response[0]);
 
-            	callback(response[0]);
+            	callback();
 
             }
 
@@ -633,6 +599,10 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		var totalTime;
 
+      	player.log(LOG_LEVEL_DEBUG, "calculateFirstFraseIdx foi chamado. ", "calculateFirstFraseIdx", null);
+
+      	console.log(player);
+
 		totalTime = 0;
 
 		if (player.currentMusic.cifra.fraseBeans.length == 0){
@@ -654,38 +624,63 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
        	if (player.currentMusic.music.status != 1){ // Se for uma demo...
 
-			player.currentMusic.cifra.fraseBeans.every(function(entry, fraseIdx){
-				
-				totalTime += entry.tempo;
+           	player.log(LOG_LEVEL_DEBUG, "player.currentMusic.music.status != 1 ", "calculateFirstFraseIdx", null);
 
-				if (totalTime >= 30){
+       		player.firstFraseIdx = -1;
 
-					totalTime = totalTime - 30;
-					player.currentMusic.cifra.fraseIdx = fraseIdx;
+			player.currentMusic.cifra.fraseBeans.forEach(function(entry, fraseIdx){
 
-					player.currentMusic.cifra.fraseBeans[fraseIdx].tempo = 0; // Zera o tempo do primeiro frase bean para mostrar logo
+				console.log(entry);
 
-					if (fraseIdx < player.currentMusic.cifra.fraseBeans.length - 1){
-						player.currentMusic.cifra.fraseBeans[fraseIdx + 1].tempo = totalTime;
+				if (entry.tempo >= 30){
+
+           			player.log(LOG_LEVEL_DEBUG, "entry.tempo >= 30 ", "calculateFirstFraseIdx", null);
+
+					player.currentMusic.cifra.fraseBeans[fraseIdx].tempo = entry.tempo - 30; // Zera o tempo do primeiro frase bean para mostrar logo
+
+					if (player.firstFraseIdx == -1){
+						
+						player.firstFraseIdx = fraseIdx - 1;
+						player.currentMusic.cifra.fraseBeans[player.firstFraseIdx].tempo = 0;
+
+						player.currentMusic.cifra.fraseIdx = player.firstFraseIdx;
+
+		            	player.log(LOG_LEVEL_DEBUG, "player.currentMusic.cifra.fraseIdx: " + player.currentMusic.cifra.fraseIdx + "; ", "calculateFirstFraseIdx", null);
+
 					}
-
-					player.firstFraseIdx = fraseIdx;
-
-					return false;
-
-				} else {
-
-					return true;
 
 				}
 
 			});
-
+			
        	} else {
        		player.currentMusic.cifra.fraseIdx = 0;
        	}
 
 	};
+
+	var changeTrackConfig = function(track){
+
+		var promises = [];
+
+		track.showMessage = false
+
+		player.log(LOG_LEVEL_DEBUG, "Enviando configuracao de trilha para servidor...", null);
+
+        promises.push(configService.changeMusicConfig(auth.token, track.id, track.level, track.pan, track.enabled, track.solo));
+
+        $q.all(promises).then(
+
+            function(response) { 
+				player.log(LOG_LEVEL_DEBUG, "Alteracao de trilha enviada para servidor com sucesso", null);
+            },
+            function(response) { 
+				player.log(LOG_LEVEL_DEBUG, "Falha ao alterar a trilha no servidor...", null);
+            }
+
+        );
+
+	}
 
 
 	var separateLyricsAndChords = function(fraseBean) {
@@ -733,6 +728,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 	/**
 	* Carrega as trilhas da musica corrente
 	*/
+/*
 	var loadCurrentMusicTracks = function(){
 
 		var urls = [];
@@ -740,64 +736,8 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
         var uri;
         var intervalToCheckStatus;
 
-        //$ionicLoading.show({ template: spinner + 'Buffering. Please wait 0%...' });
-
-        ms_hostname = window.localStorage.getItem("environment");
-
-        // Prepara URLs de leitura das tracks para player SingleTrack local ou setlist
-        if (player.type == PLAYER_TYPE_SETLIST || player.type == PLAYER_TYPE_SINGLETRACK_LOCAL){
-
-          	player.log(LOG_LEVEL_ERROR, "LOADING SONG FROM FILE.", "loadCurrentMusicTracks", null);
-
-	        uri = {uri : player.currentMusic.music.musicId + ".song" ,
-	               id : player.currentMusic.music.musicId,
-	               isMute : false,
-	               isSolo : false,
-	               level : 1,
-	               pan : 0};
-
-			urls.push(uri);
-
-        } else {
-
-			player.currentMusic.tracks.forEach(function (entry){
-
-	            uri = {uri : ms_hostname + "/MultiSongs/api/download/music/track/" + auth.token + "/" + entry.id + "/" + (player.currentMusic.music.status != 1),
-	                   id : entry.id,
-	                   isMute : entry.enabled == false,
-	                   isSolo : entry.solo,
-	                   level : entry.level,
-	                   channels : entry.canais,
-	                   pan : entry.pan};
-
-				urls.push(uri);
-
-			});
-
-        }
-
-		msCordovaPluginPlayer.createPlugin((player.currentMusic.music.status != 1), 44100, 16, 2, urls, player.fileSystem, 
+		msCordovaPluginPlayer.configPlayer((player.currentMusic.music.status != 1), player.currentMusic.music.artistName, player.currentMusic.music.musicName, player.fileSystem, 
 			function(message){
-/*
-				intervalToCheckStatus = $interval(
-					function(){
-						msCordovaPluginPlayer.playing(
-							function(message){
-								if (message.status == 4){
-						        	handleEvent({type : EVENT_TARCKS_LOADED, caller : 'loadCurrentMusicTracks', success : true, obj : null});
-									$ionicLoading.hide();
-									player.showCards = true;
-									$interval.cancel(intervalToCheckStatus);
-								}
-							}, function(error){
-								console.log(error);
-								$interval.cancel(intervalToCheckStatus);
-								$ionicLoading.hide();
-							}
-						);
-					}, 
-				500);
-*/
 			},
 			function(err){
 				$ionicLoading.hide();
@@ -805,7 +745,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		);
 
 	};
-
+*/
 
 	var calculateLeds = function(){
 
@@ -865,7 +805,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		}
 
-	  		handleEvent({type : EVENT_STARTED_PLAYING, caller : 'play', success : true, obj : null});
+	  	//handleEvent({type : EVENT_STARTED_PLAYING, caller : 'play', success : true, obj : null});
 
 	}
 /*
@@ -895,10 +835,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 	return {
 
-		STATUS_UNAVAILABLE : STATUS_UNAVAILABLE,
+		STATUS_UNLOADED : STATUS_UNLOADED,
 		STATUS_INITIAL : STATUS_INITIAL,
 		STATUS_PLAYING : STATUS_PLAYING,
 		STATUS_PAUSED : STATUS_PAUSED,
+		STATUS_BUFFERING : STATUS_BUFFERING,
 
 		PLAYER_TYPE_NOT_DEFINED_YET : PLAYER_TYPE_NOT_DEFINED_YET,
 		PLAYER_TYPE_MULTITRACK : PLAYER_TYPE_MULTITRACK,
@@ -924,11 +865,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		gotoMusicInSetlist: function(musicId){
 
-			handleEvent({type : EVENT_SOUND_STOPPED, caller : 'gotoMusicInSetlist', success : true, obj : null});
+			//handleEvent({type : EVENT_SOUND_STOPPED, caller : 'gotoMusicInSetlist', success : true, obj : null});
 
 			//_gotoMusicInSetlist(musicId);
 
-			prepareMusicToBePlayed(musicId, function(obj){}, player.setlist.musics[getIndexOfMusicInSetlist(musicId)].inicio == 1);
+			msCordovaPluginPlayer.unload();
+
+			prepareMusicToBePlayed(musicId, function(){}, player.setlist.musics[getIndexOfMusicInSetlist(musicId)].inicio == 1);
 
 		},
 
@@ -939,9 +882,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			player.type = PLAYER_TYPE_SETLIST;
 
+			msCordovaPluginPlayer.setStatusCallback(statusChanged, new function(err){});
+
       		//handleEvent({type : EVENT_START_DOWNLOADING_TRACKS, caller : 'loadSetlist', success : true, obj : setlistId});
 
-      		handleEvent({type : EVENT_BUFFERING, caller : 'loadSetlist', success : true, obj : setlistId});
+      		//handleEvent({type : EVENT_BUFFERING, caller : 'loadSetlist', success : true, obj : setlistId});
 
 			getSetlistDetail(setlistId, function(response){
 
@@ -954,7 +899,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 	            	// Carrega detalhe da musica atual (primeira) da setlist
 	            	//_gotoMusicInSetlist(player.setlist.musics[0].musicId);
-	            	prepareMusicToBePlayed(player.setlist.musics[0].musicId, function(obj){}, player.setlist.musics[0].inicio == 1);
+	            	prepareMusicToBePlayed(player.setlist.musics[0].musicId, function(){}, player.setlist.musics[0].inicio == 1);
 
 				} else {
 
@@ -973,52 +918,25 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		*/
 		loadMusic: function(musicId, startImmediately, playerType, callback){
 
-			player.type = playerType;
+			msCordovaPluginPlayer.setStatusCallback(statusChanged, new function(err){});
 
-			if ((player.setlist != null && player.setlist.musics != null) || (!player.currentMusic) || (player.currentMusic.music.musicId != musicId)){
+			if ((player.setlist != null && player.setlist.musics != null) || (!player.currentMusic) || (player.currentMusic.music.musicId != musicId) || (player.type != playerType)){
 
-				if (player.checkStatusSoundInterval){
-		       		$interval.cancel(player.checkStatusSoundInterval);
-		       		player.checkStatusSoundInterval = null;
-				}
-
-				if (player.lyricsInterval){
-		       		$interval.cancel(player.lyricsInterval);
-		       		player.lyricsInterval = null;
-				}
+				player.type = playerType;
 
 				msCordovaPluginPlayer.unload(function(message){
 
-		      		handleEvent({type : EVENT_BUFFERING, caller : 'loadMusic', success : true, obj : musicId});
+		      		//handleEvent({type : EVENT_BUFFERING, caller : 'loadMusic', success : true, obj : musicId});
 
-		        	prepareMusicToBePlayed(musicId, function(response){
+					//handleEvent({type : EVENT_SOUND_STOPPED, caller : 'checkStatusSound', success : true, obj : null});
+ 
+		        	prepareMusicToBePlayed(musicId, callback, startImmediately);
 
-		        		if (callback){
-		        			callback(response);
-		        		}
-
-		        		if (response.success){
-
-		        			player.log(LOG_LEVEL_ERROR, "Music detail successfully read. startImmediately = " + startImmediately, "loadMusic", response);
-
-							player.setlist = {musics : null, 
-								  			 name : '', 
-								  			 id: -1,
-								  			 timeToNext : -1,
-								  			 nextMusic : ''};
-				  			 
-		           		}else{
-
-		        			// @TODO: Mensagem para usuario - Musica nao carregada com sucesso
-
-		        			player.log(LOG_LEVEL_ERROR, "Music detail NOT read.", "loadMusic", response);
-
-		        			// Dispara evento de STATUS_INITIAL do player apos a carga com sucesso da playlist
-		    	        	handleEvent({type : EVENT_SEVERAL_ERROR, caller : 'loadMusic', success : false, obj : response});
-
-		        		}
-
-		        	}, startImmediately);
+					player.setlist = {musics : null, 
+			  			 name : '', 
+			  			 id: -1,
+			  			 timeToNext : -1,
+			  			 nextMusic : ''};
 
 				});
 			}else{
@@ -1034,7 +952,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		*/
 		changeLevel: function(track){
 
-			msCordovaPluginPlayer.volume(track.level * player.masterLevel, track.id);
+			msCordovaPluginPlayer.volume(track.level * player.masterLevel, track.filePath);
 
 			track.message = parseInt(track.level * 100) + "%";
 			track.showMessage = true;
@@ -1043,7 +961,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				$interval.cancel(track.interval);
 			}
 
-			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
+			track.interval = $interval(function(){
+				changeTrackConfig(track);
+			}, INTERVAL_MENSSAGE, 1);
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1094,7 +1014,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		*/
 		changePan: function(track){
 
-			msCordovaPluginPlayer.stereo(parseFloat(track.pan), track.id);
+			msCordovaPluginPlayer.stereo(parseFloat(track.pan), track.filePath);
 			track.message = Math.abs(parseInt(track.pan * 100)) + ((track.pan > 0)?"R":"L");
 			track.showMessage = true;
 
@@ -1102,7 +1022,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				$interval.cancel(track.interval);
 			}
 
-			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
+			track.interval = $interval(function(){
+				changeTrackConfig(track);
+			}, INTERVAL_MENSSAGE, 1);
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1117,7 +1039,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		unactivateSolo: function(track){
 
 			track.solo = false;
-			msCordovaPluginPlayer.unsolo(track.id);
+			msCordovaPluginPlayer.unsolo(track.filePath);
+
+			changeTrackConfig(track);
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1132,7 +1056,10 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		activateSolo: function(track){
 
 			track.solo = true;
-			msCordovaPluginPlayer.solo(track.id);
+			msCordovaPluginPlayer.solo(track.filePath);
+
+			changeTrackConfig(track);
+
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1146,7 +1073,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		*/
 		mute: function(track){
 
-			msCordovaPluginPlayer.mute(true, track.id);
+			msCordovaPluginPlayer.mute(true, track.filePath);
 
 			track.enabled = false;
 
@@ -1157,9 +1084,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				$interval.cancel(track.interval);
 			}
 
-			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
+			track.interval = $interval(function(){
+				changeTrackConfig(track);
+			}, INTERVAL_MENSSAGE, 1);
 
-			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track mutted: " + track.id, "mute");
+			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track mutted: " + track.filePath, "mute");
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1173,7 +1102,7 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		*/
 		unMute: function(track){
 
-			msCordovaPluginPlayer.mute(false, track.id);
+			msCordovaPluginPlayer.mute(false, track.filePath);
 
 			track.enabled = true;
 
@@ -1184,9 +1113,11 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				$interval.cancel(track.interval);
 			}
 
-			track.interval = $interval(function(){track.showMessage = false}, INTERVAL_MENSSAGE, 1);
+			track.interval = $interval(function(){
+				changeTrackConfig(track);
+			}, INTERVAL_MENSSAGE, 1);
 
-			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track unmutted: " + track.id, "unMute");
+			player.log(LOG_LEVEL_DEBUG_DETAILS, "Track unmutted: " + track.filePath, "unMute");
 
 			if (player.saveButtonEnabled == false){
 				player.saveButtonEnabled = true;
@@ -1208,9 +1139,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 		},
 
-		stop: function(){
+		stop: function(successCallback){
 
-			msCordovaPluginPlayer.unload();
+			msCordovaPluginPlayer.unload(successCallback);
 
 			player.currentMusic = null;
 			
@@ -1220,13 +1151,13 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 				  			 timeToNext : -1,
 				  			 nextMusic : ''};
 
-			handleEvent({type : EVENT_SOUND_STOPPED, caller : 'stop', success : true});
+			//handleEvent({type : EVENT_SOUND_STOPPED, caller : 'stop', success : true});
 
 		},
 
-		unloadSetlist : function(){
+		unloadSetlist : function(successCallback){
 
-			msCordovaPluginPlayer.unload();
+			msCordovaPluginPlayer.unload(successCallback);
 
 			player.setlist = {musics : null, 
 				  			 name : '', 
@@ -1240,17 +1171,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			msCordovaPluginPlayer.play();
 
-			/*
-
-			player.currentMusic.tracks.forEach(function (entry){
-				msCordovaPluginPlayer.seek(parseInt(player.currentTime), entry.id);
-			});
-
-			*/
-
 			calculateTimeAsString();
 
-			handleEvent({type : EVENT_STARTED_PLAYING, caller : 'resume', success : true});
+			//handleEvent({type : EVENT_STARTED_PLAYING, caller : 'resume', success : true});
 
 		},
 
@@ -1258,13 +1181,9 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 
 			player.timestampWhenPauseWasPressed = Date.now();
 
-			if (player.lyricsInterval){
-				$interval.cancel(player.lyricsInterval);
-			}
-
 			msCordovaPluginPlayer.pause();
 
-			handleEvent({type : EVENT_PAUSED, caller : 'suspend', success : true});
+			//handleEvent({type : EVENT_PAUSED, caller : 'suspend', success : true});
 
 		},
 
@@ -1272,93 +1191,150 @@ module.factory('msPlayer', function($interval, $q, $cordovaFileTransfer, $ionicL
 		download: function(){
 
 			var ms_hostname = window.localStorage.getItem("environment");
-			var intervalToCheckDownload;
+			//var intervalToCheckDownload;
 	        var promises = [];
+			var configObj, configs;
 
-			player.currentMusic.music.status = 1;
-			player.saveButtonEnabled = false;
+			var checkDownloadPercentage = function(percentage){
 
-			player.downloadProgress = 1;
+				//player.log(LOG_LEVEL_DEBUG, "Registrando pedido para callback quand percentual = " + percentage, "checkDownloadPercentage", null);
 
-			$ionicLoading.show({ template: spinner + 'Download sendo realizado...', noBackdrop: true, duration:2000, animation: 'fade-in' });
+				msCordovaPluginPlayer.checkDownloadPercentage(
 
-			player.currentMusic.tracks.forEach(function (entry){
-		        promises.push(configService.changeMusicConfig(auth.token, entry.id, entry.level, entry.pan, entry.enabled, entry.solo));
-			});
+					percentage,
 
+					function(messageAsString){
+
+						player.log(LOG_LEVEL_DEBUG, "Callback " + messageAsString + " chamado" , "checkDownloadPercentage", null);
+
+						message = JSON.parse(messageAsString);
+
+						if (message.songName === player.currentMusic.music.musicName.split(' ').join('')){
+
+							player.downloadStarted = true;
+
+							if (message.error == false && message.stillDownloading == false){
+
+								player.downloadStarted = false;
+								player.currentMusicWasSuccessfullyDownloaded = true;
+								player.downloadProgress = 0;
+
+								$ionicLoading.hide();
+								$ionicLoading.show({ template: spinner + 'Sua playback já está disponível em \'Músicas\'! :)', animation: 'fade-in', noBackdrop: true, duration:3000});
+								
+								player.currentMusic.status = 1;
+
+								player.saveButtonEnabled = false;
+
+								player.musicBeenDownloaded = null;
+
+							}else if (message.stillDownloading == true){
+
+								player.downloadProgress = message.percentage;
+								/*
+								document.getElementById("_progressbar").value = player.downloadProgress;
+								*/
+								checkDownloadPercentage(message.percentage + 1);
+
+							} else if (message.error == true){
+
+								$ionicLoading.hide();
+								$ionicLoading.show({ template: spinner + 'Houve um problema ao realizar o download da sua música! :(', animation: 'fade-in', noBackdrop: true, duration:2000});
+								
+								player.currentMusicWasSuccessfullyDownloaded = false;
+								player.downloadStarted = false;
+								player.downloadProgress = 0;
+
+								player.musicBeenDownloaded = null;
+							
+							}
+
+						}
+
+
+					}, function(error){
+						
+						console.log("ERROR WHILE DOWNLOADING SONG");
+						console.log(error);
+
+						$ionicLoading.hide();
+						$ionicLoading.show({ template: spinner + 'Houve um problema ao realizar o download da sua música! :(', animation: 'fade-in', noBackdrop: true, duration:2000});
+
+						player.currentMusicWasSuccessfullyDownloaded = false;
+						player.downloadStarted = false;
+						player.downloadProgress = 0;
+
+						player.musicBeenDownloaded = null;
+
+					}
+				);
+
+			}
+
+			//player.currentMusic.music.status = 1;
+			
+	        promises.push(musicService.buy(player.currentMusic.music.musicId, auth.token));
 
 	        $q.all(promises).then(
 
 	            function(response) { 
 
-	            	console.log("Music config was successfully created. Starting download");
+	            	player.currentMusic.music.status = 1;
+					player.log(LOG_LEVEL_DEBUG, "Song was successfully bought.", "download", null);
 
-					msCordovaPluginPlayer.download(player.currentMusic.music.musicId, ms_hostname + "/MultiSongs/api/download/music/mix/ogg/" + auth.token + "/" + player.currentMusic.music.musicId, 
+					configs = {trackConfigs : []};
+
+					player.currentMusic.tracks.forEach(function (entry){
+
+						configObj = {filePath : entry.filePath, level : entry.level, pan : entry.pan, enabled : entry.enabled, solo : entry.solo};
+
+						configs.trackConfigs.push(configObj);
+
+				        //promises.push(configService.changeMusicConfig(auth.token, entry.id, entry.level, entry.pan, entry.enabled, entry.solo));
+
+					});
+
+		        	console.log("Music config was successfully created. Starting download");
+
+					msCordovaPluginPlayer.download(JSON.stringify(configs), player.currentMusic.music.musicId, player.fileSystem, player.currentMusic.music.artistName, player.currentMusic.music.musicName,
+						
 						function(message){
-							console.log(message)
+
+							player.musicBeenDownloaded = player.currentMusic.music;
+							
+							console.log(message);
+							checkDownloadPercentage(1); // Player sera avisado quando o download atingir 1%
+
 						}, 
 						function(error){
+
 							console.log(error);
-							$interval.cancel(intervalToCheckDownload);
-							player.currentMusic.music.status = 0;
+
+							player.musicBeenDownloaded = null;
+
+							$ionicLoading.hide();
+							$ionicLoading.show({ template: spinner + 'Houve um problema ao realizar o download da sua música! :(', animation: 'fade-in', noBackdrop: true, duration:2000});
+
 						}
+
 					);
 
-					player.downloadStarted = false;
-
-					intervalToCheckDownload = $interval(
-						function(){
-							msCordovaPluginPlayer.checkDownloadPercentage(
-
-								function(message){
-
-									player.downloadStarted = true;
-
-									if (message.readyToStart == true){
-
-										if (message.songId == player.currentMusic.music.musicId){
-
-											if (message.percentage > 0 && !player.downloadStarted){
-												//$ionicLoading.hide();
-												//$ionicLoading.show({ template: spinner + 'Download sendo realizado!<br/><progress id="_progressbar" max="100" style="width: 150px;" value="{{ msPlayer.getPlayer().downloadProgress}}"> </progress>', noBackdrop: true});
-											}
-
-											if (message.percentage == 1 || message.stillDownloading == false){
-
-												player.downloadStarted = false;
-												$interval.cancel(intervalToCheckDownload);
-												player.currentMusicWasSuccessfullyDownloaded = message.percentage == 1;
-												player.downloadProgress = 0;
-												$ionicLoading.hide();
-												$ionicLoading.show({ template: spinner + 'Sua playback já está disponível em \'Músicas\'!', animation: 'fade-in', noBackdrop: true, duration:2000});
-												player.currentMusic.status = 1;
-
-											}else if (message.stillDownloading == true){
-												player.downloadProgress = message.percentage * 100
-												document.getElementById("_progressbar").value = player.downloadProgress;
-											}
-
-										}
-
-									}
 
 
-								}, function(error){
-									console.log("ERROR WHILE DOWNLOADING SONG");
-									console.log(error);
-									$interval.cancel(intervalToCheckDownload);
-									player.currentMusicWasSuccessfullyDownloaded = false;
-									player.downloadProgress = 0;
-									$ionicLoading.hide();
-								}
-							);
-						}, 
-					250);
-
+	            },
+	            function(err) {
+					player.log(LOG_LEVEL_DEBUG, "Was not possible to buy the song.", "checkDownloadPercentage", null);
 	            }
 
-	        );
+	        ).finally(function() {
+	            
+	        });
 
+			player.downloadProgress = 0;
+
+			$ionicLoading.show({ template: spinner + 'Download sendo realizado...', noBackdrop: true, duration:2000, animation: 'fade-in' });
+
+			player.downloadStarted = false;
 
 		},
 

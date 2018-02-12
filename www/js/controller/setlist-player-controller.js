@@ -10,7 +10,7 @@ module.controller('SetlistPlayerController', function($scope,
 
     $scope.suspend = function(){
 
-        msPlayer.suspend($scope);
+        msPlayer.suspend();
 
     };
 

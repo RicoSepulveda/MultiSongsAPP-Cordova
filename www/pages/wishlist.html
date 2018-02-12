@@ -24,10 +24,10 @@
         
         <ms-wishlist>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_NORMAL" style="min-height:105px">
         </div>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MINIMIZED" style="min-height:25px">
         </div>
 
         

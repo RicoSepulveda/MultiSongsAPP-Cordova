@@ -4,12 +4,25 @@ module.factory('msCordovaPluginPlayer', function(){
 
 	return {
 
-		createPlugin : function(isDemo, khz, encode, channels, uriObjects, fileDirectory, onSuccessCallback, onErrorCallback){
+		configPlayer : function(config, musicId, isDemo, artistName, songName, fileDirectory, mode, onSuccessCallback, onErrorCallback){
 
 			var configuration = [];
 
-			configuration[0] = {demoMode : isDemo, khz : khz, encode : encode, channels : channels, fileDirectory : fileDirectory};
+			//configuration[0] = {demoMode : isDemo, khz : khz, encode : encode, channels : channels, fileDirectory : fileDirectory};
+			configuration[0] = {musicId : musicId, mode : mode, config : config, demoMode : isDemo, artistName : artistName, songName : songName, fileDirectory : fileDirectory};
 
+	        cordova.exec(
+	        	function(message){
+	        		onSuccessCallback(message);
+	        	}, 
+	        	function(error){
+	        		onErrorCallback(error);
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"config", 
+	        	configuration);
+
+/*
 	        cordova.exec(
 	        	function(message){
 
@@ -31,7 +44,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	"MultiSongsPlugin", 
 	        	"config", 
 	        	configuration);
-		
+*/		
 		},
 
 		unload : function(onSuccessCallback, onErrorCallback){
@@ -86,25 +99,44 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		play : function(onSuccessCallback, onErrorCallback){
 
-			        cordova.exec(
-			        	function(message){
-			        		isPlaying = true;
-			        		if (onSuccessCallback){
-				        		onSuccessCallback(message);
-			        		}
-			        	}, 
-			        	function(error){
-			        		if (onErrorCallback){
-			        			onErrorCallback(error);
-			        		}
-			        	}, 
-			        	"MultiSongsPlugin", 
-			        	"play", 
-			        	[]);
+	        cordova.exec(
+	        	function(message){
+	        		isPlaying = true;
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"play", 
+	        	[]);
 
 		},
 
-		volume : function(level, trackId, onSuccessCallback, onErrorCallback){
+		setStatusCallback : function(onSuccessCallback, onErrorCallback){
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"statusCallback", 
+	        	[]);
+
+		},
+
+		volume : function(level, filePath, onSuccessCallback, onErrorCallback){
 
 	        cordova.exec(
 	        	function(message){
@@ -119,7 +151,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"level", 
-	        	[{id : trackId, value : level}]);
+	        	[{filePath : filePath, level : parseInt(level * 127)}]);
 
 		},
 
@@ -142,7 +174,28 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		},
 
-		solo : function(trackId, onSuccessCallback, onErrorCallback){
+		setMark : function(seconds, phrase, onSuccessCallback, onErrorCallback){
+
+			console.log("Esperando chegar " + seconds + " segundos...");
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"mark", 
+	        	[{seconds : seconds, phrase : phrase}]);
+
+		},
+
+		solo : function(filePath, onSuccessCallback, onErrorCallback){
 
 	        cordova.exec(
 	        	function(message){
@@ -157,11 +210,11 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"solo", 
-	        	[{id : trackId}]);
+	        	[{filePath : filePath}]);
 
 		},
 
-		unsolo : function(trackId, onSuccessCallback, onErrorCallback){
+		unsolo : function(filePath, onSuccessCallback, onErrorCallback){
 
 	        cordova.exec(
 	        	function(message){
@@ -176,7 +229,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"unsolo", 
-	        	[{id : trackId}]);
+	        	[{filePath : filePath}]);
 
 		},
 
@@ -184,7 +237,7 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		},
 
-		stereo : function(pan, trackId, onSuccessCallback, onErrorCallback){
+		stereo : function(pan, filePath, onSuccessCallback, onErrorCallback){
 
 	        cordova.exec(
 	        	function(message){
@@ -199,11 +252,11 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"pan", 
-	        	[{id : trackId, value : pan}]);
+	        	[{filePath : filePath, pan : parseInt(pan * 127)}]);
 
 		},
 
-		mute : function(isMute, trackId){
+		mute : function(isMute, filePath){
 
 			var command;
 
@@ -224,11 +277,11 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	command, 
-	        	[{id : trackId}]);
+	        	[{filePath : filePath}]);
 
 		},
 
-		download : function(songId, uri, onSuccessCallback, onErrorCallback){
+		download : function(config, musicId, audioPath, artistName, musicName, onSuccessCallback, onErrorCallback){
 
 			var uri;
 
@@ -245,11 +298,11 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"download", 
-	        	[{id : songId, uri : uri}]);
+	        	[{musicId : musicId, artistName : artistName, musicName : musicName, audioPath : audioPath, config : config}]);
 
 		},
 
-		checkDownloadPercentage : function(onSuccessCallback, onErrorCallback){
+		checkDownloadPercentage : function(percentage, onSuccessCallback, onErrorCallback){
 
 			var uri;
 
@@ -266,7 +319,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"percentage", 
-	        	[]);
+	        	[{percentage : percentage}]);
 
 		},
 

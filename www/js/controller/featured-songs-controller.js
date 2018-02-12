@@ -26,7 +26,7 @@ module.controller('FeaturedSongController', function($scope,
 
         $scope.miniPlayer = miniPlayer;
 
-        miniPlayer.loadPlayer();
+       // miniPlayer.loadPlayer();
 
 
     });

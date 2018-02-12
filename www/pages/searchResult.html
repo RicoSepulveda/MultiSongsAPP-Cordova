@@ -35,10 +35,10 @@
             <label ng-click="closeSearchWindow()" class="button button-clear" style="color:#FD6631;">Cancelar</label>
         </label>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_NORMAL" style="min-height:105px">
         </div>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MINIMIZED" style="min-height:25px">
         </div>
 
         <div class="row" ng-if="byNameResult.length == 0 && byArtistResult.length == 0 && byStyleResult.length == 0 && byStudioResult.length == 0 && byAlbumResult.length == 0">

@@ -14,7 +14,7 @@ module.controller('TrackController', function($scope,
     var intervalToMusicPosition;
     var fileSystem;
     var isAnApp;
-
+/*
     $scope.changeSolo = function(track){
 
         if (track.solo == true){
@@ -26,7 +26,8 @@ module.controller('TrackController', function($scope,
         }
 
     };
-
+*/
+/*
     $scope.verifyIfLoginIsNeededBeforeDownload = function(){
 
         var promises = [];
@@ -106,7 +107,8 @@ module.controller('TrackController', function($scope,
 
 
     }
-
+*/
+/*
     $scope.changeEnabled = function(track){
 
         if (track.enabled == true){
@@ -117,31 +119,36 @@ module.controller('TrackController', function($scope,
         }
 
     };
-
+*/
+/*
     $scope.changeLevel = function(track){
 
         msPlayer.changeLevel(track);
 
     };
-
+*/
+/*
     $scope.changeMasterLevel = function(){
 
         msPlayer.changeMasterLevel();
 
     };
-
+*/
+/*
     $scope.changeMasterPan = function(){
 
         msPlayer.changeMasterPan();
 
     };
-
+*/
+/*
     $scope.changePan = function(track){
 
         msPlayer.changePan(track);
 
     };
-
+*/
+/*
     $scope.suspend = function(){
 
         msPlayer.suspend();
@@ -149,13 +156,15 @@ module.controller('TrackController', function($scope,
         $scope.isPlaying = false;
 
     };
-
+*/
+/*
     $scope.changePosition = function(){
 
         msPlayer.changePosition();
 
     };
-
+*/
+/*
     $scope.play = function(musicDetail){
 
         if ($scope.msPlayer.getPlayer().status.isPaused){ //IS_SUSPENDED_STATUS
@@ -173,11 +182,12 @@ module.controller('TrackController', function($scope,
         //intervalToMusicPosition = $interval(function(){$scope.timer.value++;}, 240 * 1000 / 100, 100 - $scope.timer.value);
 
     };
-
+*/
+/*
     $scope.closeModal = function() {
         $scope.modal.hide();
     };
-
+*/
     var calculateLeftLevelsSize = function(){
 
         var width = screen.height;
@@ -248,33 +258,16 @@ module.controller('TrackController', function($scope,
 
         
     });
-
+/*
     var download = function(callbackFunction){
 
         var promisses = [];
 
         console.log("Will start download...");
 
-        promisses.push(musicService.buy($stateParams.musicId, auth.token));
+        msPlayer.download();
 
-        $q.all(promisses).then(
-            function(response) { 
-
-                if (callbackFunction){
-                    callbackFunction();
-                }
-
-                msPlayer.download();
-
-            },
-            function(err) {
-                // PRECISA TRATAR O ERRO NO DOWNLOAD
-                console.log(err);
-            }
-        ).finally(function() {
-            
-        });
 
     }
-
+*/
 });

@@ -96,13 +96,11 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
         <ms-home>
     
-
-        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.isExpanded()" style="min-height:100px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_NORMAL" style="min-height:105px">
         </div>
 
-        <div ng-if="miniPlayer.getPlayer().currentMusic && !miniPlayer.isExpanded()" style="min-height:20px">
+        <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MINIMIZED" style="min-height:25px">
         </div>
-
 
 <!--
 
@@ -167,7 +165,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                 <!--<a href="#/tracks/{{music.musicId}}">-->
 
-                <div class="col" style="{{music.margin}};border:0px;padding:0px;" ng-click="play(music.musicId)">
+                <div class="col" style="{{music.margin}};border:0px;padding:0px;" ng-click="miniPlayer.play(music.musicId, miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK)">
                     <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" width="100%" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                     <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                     <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
@@ -185,7 +183,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                 <!--<a href="#/tracks/{{music.musicId}}">-->
 
-                    <div class="col" style="{{music.margin}};border:0px;padding:0px;" ng-click="play(music.musicId)">
+                    <div class="col" style="{{music.margin}};border:0px;padding:0px;" ng-click="miniPlayer.play(music.musicId, miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK)">
                         <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:100%;border:1px;border-color:#dddddd;border-style:solid;"/>
                         <p class="ms-font-medium ms-font-dark-gray" style="text-align:center;line-height:1.4;margin-bottom:1px;">{{music.musicName}}</p>
                         <p class="ms-font-little ms-font-light-gray" style="text-align:center;line-height:1.4">{{music.artistName}}</p>
@@ -228,7 +226,7 @@ artists .item-thumbnail-left, artists .item-thumbnail-left .item-content{
 
                     <!--<ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in topMusics" href="#/tracks/{{music.musicId}}">-->
 
-                    <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in topMusics" ng-click="play(music.musicId)">
+                    <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-repeat="music in topMusics" ng-click="miniPlayer.play(music.musicId, miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK)">
 
                         <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 

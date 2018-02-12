@@ -119,15 +119,15 @@ module.controller('MainController', function($scope,
 
 */
 
-        window.localStorage.setItem("environment_homolog", "http://homolog.multisongs.audio");
-        window.localStorage.setItem("environment_dev", "http://192.168.0.12:8180");
+        window.localStorage.setItem("environment_dev", "http://192.168.0.14:8080");
+        window.localStorage.setItem("environment_homolog", "http://192.168.0.28:8080");
         window.localStorage.setItem("environment_prod", "http://api.multisongs.audio");
 
         //window.localStorage.setItem("subscription_id", "audio.multisongs.premium_account");
 
         window.localStorage.setItem("discount_id", "");
         
-        window.localStorage.setItem("environment_name", "environment_homolog");
+        window.localStorage.setItem("environment_name", "environment_dev");
 
         window.localStorage.setItem("environment", window.localStorage.getItem(window.localStorage.getItem("environment_name")));
         //window.localStorage.setItem("shouldFinishPurchase", true); // COLOCAR TRUE PARA PRODUCAO

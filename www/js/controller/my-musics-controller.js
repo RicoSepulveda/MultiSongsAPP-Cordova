@@ -142,7 +142,7 @@ module.controller('MyMusicsController', function($scope,
 
         $scope.miniPlayer = miniPlayer;
 
-        miniPlayer.loadPlayer();
+        //miniPlayer.loadPlayer();
 
     });
 

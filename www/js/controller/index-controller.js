@@ -360,7 +360,7 @@ module.controller('IndexController', function($scope,
 
             $scope.miniPlayer = miniPlayer;
 
-            miniPlayer.loadPlayer();
+            //miniPlayer.loadPlayer();
 
             $scope.intervals = [];
 
@@ -841,10 +841,11 @@ module.controller('IndexController', function($scope,
         store.refresh();
 
     }
-
+/*
     $scope.play = function(musicId){
         miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_MULTITRACK); // Carrega musica com player singletrack e download da musica remota
     }
+*/
 /*
     $scope.suspend = function(){
         miniPlayer.suspend();
