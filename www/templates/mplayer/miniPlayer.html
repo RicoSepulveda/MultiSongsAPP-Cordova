@@ -69,7 +69,7 @@
                                     <div class="file-info-button-title">Playback Gratuíta</div>
                                     <div class="file-info-button-value">Clique para baixar</div>
                                 </div>
-                                <div ng-click="miniPlayer.verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().saveButtonEnabled && !miniPlayer.getPlayer().downloadStarted" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
+                                <div ng-click="miniPlayer.verifyIfLoginIsNeededBeforeDownload()" ng-if="miniPlayer.getPlayer().saveButtonEnabled && !miniPlayer.getPlayer().downloadStarted && miniPlayer.getPlayer().currentMusic.music.status == 1" class="file-info-button" style="width:120px;background-color:#FD6631 !important;border-color:#FFFFFF;">
                                     <div class="file-info-button-title">Download</div>
                                     <div class="file-info-button-value">Salvar essa versão</div>
                                 </div>

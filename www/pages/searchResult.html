@@ -41,7 +41,164 @@
         <div ng-if="miniPlayer.getPlayer().currentMusic && miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MINIMIZED" style="min-height:25px">
         </div>
 
-        <div class="row" ng-if="byNameResult.length == 0 && byArtistResult.length == 0 && byStyleResult.length == 0 && byStudioResult.length == 0 && byAlbumResult.length == 0">
+        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byNameResult.length > 0">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            {{i18.search.playbacksLabel}} '{{search.keyword}}'
+                        </p>
+                    </div>
+
+                    <div ng-repeat="playback in byNameResult">
+
+
+                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId, playback.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
+                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
+                            <i class="icon ion-play ms-font-multisongs" style="font-size:1.2em;"></i>
+                          <!--</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+                            
+            </div>
+
+        </div>
+            
+        <div class="row" style="margin:0px;border:0px;padding:0px;"  ng-if="byArtistResult.length > 0">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            {{i18.search.artistsLabel}} '{{search.keyword}}'
+                        </p>
+                    </div>
+
+                    <div ng-repeat="playback in byArtistResult">
+
+                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId, playback.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
+                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
+                          <!--</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        
+        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byStyleResult.length > 0">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            {{i18.search.stylesLabel}} '{{search.keyword}}'
+                        </p>
+                    </div>
+
+                    <div ng-repeat="playback in byStyleResult">
+
+                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId, playback.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
+                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estilo: {{playback.style}}</p>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
+                          <!--</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byStudioResult.length > 0">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            {{i18.search.studiosLabel}} '{{search.keyword}}'
+                        </p>
+                    </div>
+
+                    <div ng-repeat="playback in byStudioResult">
+
+                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId, playback.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
+                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estúdio: {{playback.studio}}</p>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
+                          <!--</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byAlbumResult.length > 0">
+            
+            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+
+                <div class="list" >
+
+                    <div class="item item-divider" style="background-color:#ffffff;">
+                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
+                            {{i18.search.albunsLabel}} '{{search.keyword}}'
+                        </p>
+                    </div>
+
+                    <div ng-repeat="playback in byAlbumResult">
+
+                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId, playback.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
+                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
+                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
+                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
+                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
+                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
+                          <!--</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+                <div class="row" ng-if="byNameResult.length == 0 && byArtistResult.length == 0 && byStyleResult.length == 0 && byStudioResult.length == 0 && byAlbumResult.length == 0">
             <div class="col ms-font-dark-gray" style="margin-top:0px;margin-bottom:0px;text-align: center;">
                 <i class="icon ion-sad-outline" style="color:#FD6631;font-size: 48px;padding-top:40px;"></i>
                 <p style="margin:0px;padding-top:20px;padding-bottom: 20px;ms-font-dark-gray;">Ops! Nenhuma playback com '{{search.keyword}}'.</p>
@@ -86,163 +243,6 @@
 
         </div>
 
-        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byNameResult.length > 0">
-            
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                
-                <div class="list" >
-
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            {{i18.search.playbacksLabel}} '{{search.keyword}}'
-                        </p>
-                    </div>
-
-                    <div ng-repeat="playback in byNameResult">
-
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId)">
-                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
-                            <i class="icon ion-play ms-font-multisongs" style="font-size:1.2em;"></i>
-                          <!--</a>-->
-                        </div>
-
-                    </div>
-
-                </div>
-                            
-            </div>
-
-        </div>
-            
-        <div class="row" style="margin:0px;border:0px;padding:0px;"  ng-if="byArtistResult.length > 0">
-            
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-
-                <div class="list" >
-
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            {{i18.search.artistsLabel}} '{{search.keyword}}'
-                        </p>
-                    </div>
-
-                    <div ng-repeat="playback in byArtistResult">
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId)">
-                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
-                          <!--</a>-->
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        
-        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byStyleResult.length > 0">
-            
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-
-                <div class="list" >
-
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            {{i18.search.stylesLabel}} '{{search.keyword}}'
-                        </p>
-                    </div>
-
-                    <div ng-repeat="playback in byStyleResult">
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId)">
-                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estilo: {{playback.style}}</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
-                          <!--</a>-->
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-        
-        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byStudioResult.length > 0">
-            
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-
-                <div class="list" >
-
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            {{i18.search.studiosLabel}} '{{search.keyword}}'
-                        </p>
-                    </div>
-
-                    <div ng-repeat="playback in byStudioResult">
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId)">
-                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}} - Estúdio: {{playback.studio}}</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
-                          <!--</a>-->
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-        
-        <div class="row" style="margin:0px;border:0px;padding:0px;" ng-if="byAlbumResult.length > 0">
-            
-            <div class="col" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-
-                <div class="list" >
-
-                    <div class="item item-divider" style="background-color:#ffffff;">
-                        <p class="ms-font-big ms-font-dark-gray" style="font-decoration:none;font-weight:normal;">
-                            {{i18.search.albunsLabel}} '{{search.keyword}}'
-                        </p>
-                    </div>
-
-                    <div ng-repeat="playback in byAlbumResult">
-
-                        <div class="item item-thumbnail-left item-complex item-icon-right" ng-click="play(playback.musicId)">
-                          <!--<a class="item-content" href="#/tracks/{{playback.musicId}}">-->
-                            <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{playback.artistPhotoPath}}" style="width:45px;height:45px;">
-                            <h2 style="line-height:20px;">{{playback.musicName}}</h2>
-                            <p style="padding:0px;margin:0px;line-height:20px;">{{playback.artistName}}</p>
-                            <i class="icon ion-android-more-horizontal ms-font-multisongs" style="font-size:1.2em;"></i>
-                          <!--</a>-->
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-        
         <div class="row" ng-if="searchDone">
 
             <div class="col" class="ms-config-logout" style="padding-top:40px; text-align: center;">

@@ -803,13 +803,13 @@ module.controller('IndexController', function($scope,
 
                 product = store.get(auth.subscriptionCode); // Captura produto na loja
 
-                if (!product.owned) { // Se na loja o produto nao esta assinado....
+                if (!product || !product.owned) { // Se na loja o produto nao esta assinado....
 
-                    console.log("A assinatura " + product.id + " eh NOT OWNED e na base de dados o usuario eh um assinante. Vai cancelar o servico...");
+                    console.log("A assinatura " + (product?product.id:"") + " eh NOT OWNED e na base de dados o usuario eh um assinante. Vai cancelar o servico...");
 
                     // CANCELAR ASSINATURA!!
                     loginService.unsubscribe(auth.token, function(response){
-                        console.log("A assinatura " + product.id + " foi cancelada na base de dados.");
+                        console.log("A assinatura " + (product?product.id:"") + " foi cancelada na base de dados.");
                         
                         //@TODO PRECISA COLOCAR ESSA LINHA DE VOLTA!!!!
 

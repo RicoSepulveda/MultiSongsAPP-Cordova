@@ -4,12 +4,12 @@ module.factory('msCordovaPluginPlayer', function(){
 
 	return {
 
-		configPlayer : function(config, musicId, isDemo, artistName, songName, fileDirectory, mode, onSuccessCallback, onErrorCallback){
+		configPlayer : function(config, musicId, isDemo, artistName, songName, fileDirectory, mode, isMultitrack, onSuccessCallback, onErrorCallback){
 
 			var configuration = [];
 
 			//configuration[0] = {demoMode : isDemo, khz : khz, encode : encode, channels : channels, fileDirectory : fileDirectory};
-			configuration[0] = {musicId : musicId, mode : mode, config : config, demoMode : isDemo, artistName : artistName, songName : songName, fileDirectory : fileDirectory};
+			configuration[0] = {musicId : musicId, mode : mode, config : config, demoMode : isDemo, multitrack : isMultitrack, artistName : artistName, songName : songName, fileDirectory : fileDirectory};
 
 	        cordova.exec(
 	        	function(message){
@@ -155,6 +155,45 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		},
 
+		masterLevel : function(level, onSuccessCallback, onErrorCallback){
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"masterLevel", 
+	        	[{level : parseInt(level * 127)}]);
+
+		},
+
+		masterPan : function(pan, onSuccessCallback, onErrorCallback){
+
+	        cordova.exec(
+	        	function(message){
+	        		if (onSuccessCallback){
+		        		onSuccessCallback(message);
+	        		}
+	        	}, 
+	        	function(error){
+	        		if (onErrorCallback){
+	        			onErrorCallback(error);
+	        		}
+	        	}, 
+	        	"MultiSongsPlugin", 
+	        	"masterPan", 
+	        	[{pan : parseInt(pan * 127)}]);
+
+		},
+
+
 		getDecibels : function(milliseconds, onSuccessCallback, onErrorCallback){
 
 	        cordova.exec(
@@ -281,7 +320,7 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		},
 
-		download : function(config, musicId, audioPath, artistName, musicName, onSuccessCallback, onErrorCallback){
+		download : function(config, musicId, audioPath, artistName, musicName, isMultitrack, onSuccessCallback, onErrorCallback){
 
 			var uri;
 
@@ -298,7 +337,7 @@ module.factory('msCordovaPluginPlayer', function(){
 	        	}, 
 	        	"MultiSongsPlugin", 
 	        	"download", 
-	        	[{musicId : musicId, artistName : artistName, musicName : musicName, audioPath : audioPath, config : config}]);
+	        	[{isMultitrack : isMultitrack, musicId : musicId, artistName : artistName, musicName : musicName, audioPath : audioPath, config : config}]);
 
 		},
 
@@ -346,10 +385,13 @@ module.factory('msCordovaPluginPlayer', function(){
 
 		},
 
-		pause : function(){
+		pause : function(onSuccessCallback){
 
 	        cordova.exec(
 	        	function(message){
+	        		if (onSuccessCallback){
+	        			onSuccessCallback();
+	        		}
 	        		isPlaying = false;
 	        	}, 
 	        	function(error){

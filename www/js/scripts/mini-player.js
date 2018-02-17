@@ -96,6 +96,8 @@ module.factory('miniPlayer', function($q,
 
         play : function(musicId, playerType){
 
+console.log("==============>>>>>>>>>> musicId = " + musicId + "; playerType = " + playerType);
+
             if ((!msPlayer.getPlayer().status.isPlaying || 
                 (msPlayer.getPlayer().status.isPlaying) && 
                 (msPlayer.getPlayer().currentMusic.music.musicId != musicId) || (msPlayer.getPlayer().type != playerType))) {
@@ -105,37 +107,41 @@ module.factory('miniPlayer', function($q,
                     if ($ionicScrollDelegate.$getByHandle('lyricsScrollHandle') && $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').getScrollPosition()){
 
                         if (lyricsIdx % 3 == 0 || 
-                            Math.abs(lyricsIdx * 31 - $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').getScrollPosition().top) > 155 ){
-                            $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').scrollTo(0, (lyricsIdx * 31), true);
+                            Math.abs((lyricsIdx-1>0?lyricsIdx-1:lyricsIdx) * 31 - $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').getScrollPosition().top) > 155 ){
+                            $ionicScrollDelegate.$getByHandle('lyricsScrollHandle').scrollTo(0, ((lyricsIdx-1>0?lyricsIdx-1:lyricsIdx) * 31), true);
                         }
 
                     }
 
                 });
 
-                msPlayer.unloadSetlist(function(){
+                msPlayer.suspend(function(){
 
-                    msPlayer.loadMusic(musicId, true, playerType, function(obj){
+                    msPlayer.unloadSetlist(function(){
 
-                        if (obj.success == true){
+                        msPlayer.loadMusic(musicId, true, playerType, function(obj){
 
-                            if (msPlayer.getPlayer().currentMusic.music.status == 1){
-                                miniPlayerObj.showReconfigurationWarning = true;
-                            }else{
-                                miniPlayerObj.showReconfigurationWarning = false;
+                            if (obj.success == true){
+
+                                if (msPlayer.getPlayer().currentMusic.music.status == 1){
+                                    miniPlayerObj.showReconfigurationWarning = true;
+                                }else{
+                                    miniPlayerObj.showReconfigurationWarning = false;
+                                }
+
+                                if (msPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1){
+                                    miniPlayerObj.displayStatus = DISPLAY_NORMAL;
+                                } else {
+                                    miniPlayerObj.displayStatus = DISPLAY_MAXIMIZED;
+                                }
+
                             }
 
-                            if (msPlayer.getPlayer().currentMusic.cifra.fraseIdx == -1){
-                                miniPlayerObj.displayStatus = DISPLAY_NORMAL;
-                            } else {
-                                miniPlayerObj.displayStatus = DISPLAY_MAXIMIZED;
-                            }
-
-                        }
+                        });
 
                     });
 
-                });
+                })
 
             }
 

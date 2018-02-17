@@ -181,8 +181,8 @@ module.controller('SearchController', function($scope,
 
     });
 
-    $scope.play = function(musicId){
-        miniPlayer.play(musicId, miniPlayer.PLAYER_TYPE_SINGLETRACK);
+    $scope.play = function(musicId, playerType){
+        miniPlayer.play(musicId, playerType);
     }
 
     $scope.suspend = function(){

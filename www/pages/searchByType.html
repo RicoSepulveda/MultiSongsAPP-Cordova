@@ -48,7 +48,7 @@
                         
                             <div ng-repeat="music in musics" >
 
-                                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-click="play(music.musicId)">
+                                <ion-item can-swipe="true" class="item-thumbnail-left item-icon-right" ng-click="play(music.musicId, miniPlayer.getPlayer().currentMusic.music.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK)">
 
                                     <img ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{music.artistPhotoPath}}" style="width:65px;height:65px;">
 

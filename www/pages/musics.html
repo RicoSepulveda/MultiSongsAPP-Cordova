@@ -108,7 +108,7 @@
                                 </a>
 -->
 
-                                <div ng-click="miniPlayer.play(music.musicId, miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK)">
+                                <div ng-click="miniPlayer.play(music.musicId, music.type == 'multitrack'?miniPlayer.getMSPlayer().PLAYER_TYPE_MULTITRACK:miniPlayer.getMSPlayer().PLAYER_TYPE_SINGLETRACK_LOCAL)">
                                     <h2 style="line-height:20px;">{{music.musicName}}</h2>
                                     <progress ng-if="miniPlayer.getPlayer().downloadStarted && miniPlayer.getPlayer().currentMusic.music.musicId == music.musicId" id="_progressbar" max="100" style="width: 100px;height: 5px;display: inline;margin: 0;" value="{{miniPlayer.getPlayer().downloadProgress}}"></progress>
                                     <p ng-if="!miniPlayer.getPlayer().downloadStarted || miniPlayer.getPlayer().currentMusic.music.musicId != music.musicId" style="padding:0px;margin:0px;line-height:20px;">{{music.artistName}}
