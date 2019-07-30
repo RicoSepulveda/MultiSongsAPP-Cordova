@@ -1,4 +1,4 @@
-var module = angular.module('ionicApp', ['ionic', 'ngCordova']);
+var module = angular.module('ionicApp', ['ionic', 'ngCordova', 'ui.swiper']);
 
 
 module.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {

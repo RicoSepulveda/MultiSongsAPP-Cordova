@@ -17,55 +17,12 @@ module.factory('miniPlayer', function($q,
                          displayStatus : DISPLAY_MAXIMIZED, 
                          token : null, 
                          showDownload : true, 
-                         showInstruments : false, 
-                         showLyrics : true,
+                         showInstruments : true, 
+                         showLyrics : false,
                          showReconfigurationWarning : false};
-/*
-    var download = function(callbackFunction){
-
-        var promisses = [];
-
-        console.log("Will start download...");
-
-        msPlayer.download();
-
-        promisses.push(musicService.buy(msPlayer.getPlayer().currentMusic.music.musicId, auth.token));
-
-        $q.all(promisses).then(
-            function(response) { 
-
-                if (callbackFunction){
-                    callbackFunction();
-                }
-
-                msPlayer.download();
-
-            },
-            function(err) {
-                // PRECISA TRATAR O ERRO NO DOWNLOAD
-                console.log(err);
-            }
-        ).finally(function() {
-            
-        });
-
-    };
-
-*/
 
     return {
-/*
-        STATUS_UNAVAILABLE : msPlayer.STATUS_UNAVAILABLE,
-        STATUS_INITIAL : msPlayer.STATUS_INITIAL,
-        STATUS_PLAYING : msPlayer.STATUS_PLAYING,
-        STATUS_PAUSED : msPlayer.STATUS_PAUSED,
 
-        PLAYER_TYPE_NOT_DEFINED_YET : msPlayer.PLAYER_TYPE_NOT_DEFINED_YET,
-        PLAYER_TYPE_MULTITRACK : msPlayer.PLAYER_TYPE_MULTITRACK,
-        PLAYER_TYPE_SINGLETRACK : msPlayer.PLAYER_TYPE_SINGLETRACK,
-        PLAYER_TYPE_SINGLETRACK_LOCAL : msPlayer.PLAYER_TYPE_SINGLETRACK_LOCAL,
-        PLAYER_TYPE_SETLIST : msPlayer.PLAYER_TYPE_SETLIST,
-*/
         DISPLAY_MAXIMIZED : DISPLAY_MAXIMIZED,
         DISPLAY_NORMAL : DISPLAY_NORMAL,
         DISPLAY_MINIMIZED : DISPLAY_MINIMIZED,
@@ -74,29 +31,10 @@ module.factory('miniPlayer', function($q,
 
         lyricsClass : "button small-button-category-selected",
         instrumentsClass : "button small-button-category",
-/*
-        loadPlayer : function(){
-
-            miniPlayerObj.msPlayer = msPlayer;
-
-            miniPlayerObj.token = auth.token;
-
-            isAnApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
-
-
-            if ( isAnApp ) {
-                
-                msPlayer.setFileSystem(cordova.file.dataDirectory);
-
-            }else{
-            }
-
-        },
-*/
 
         play : function(musicId, playerType){
 
-console.log("==============>>>>>>>>>> musicId = " + musicId + "; playerType = " + playerType);
+            console.log("==============>>>>>>>>>> musicId = " + musicId + "; playerType = " + playerType);
 
             if ((!msPlayer.getPlayer().status.isPlaying || 
                 (msPlayer.getPlayer().status.isPlaying) && 
@@ -179,16 +117,6 @@ console.log("==============>>>>>>>>>> musicId = " + musicId + "; playerType = " 
 
         },
 
-/*
-        showDownload : function(showDownload){
-            miniPlayerObj.showDownload = showDownload;
-        },
-*/
-/*
-        shouldShowDownload : function(){
-            return miniPlayerObj.showDownload;
-        },
-*/
         shouldShowInstruments : function(){
             return miniPlayerObj.showInstruments;
         },
@@ -258,35 +186,20 @@ console.log("==============>>>>>>>>>> musicId = " + musicId + "; playerType = " 
             var promises = [];
 
             if (auth.type == 1){
-/*
-                var confirmPopup = $ionicPopup.confirm({
-                    title: 'Download restrito.',
-                    template: 'Você precisa entrar na sua conta para usar essa música. Deseja entrar em sua conta agora?'
+
+                $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
+                $rootScope.originalDescription = $rootScope.description;
+
+                $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
+
+                $ionicModal.fromTemplateUrl('templates/login.html', {
+                    scope: $rootScope,
+                    animation: 'slide-in-up'
+                }).then(function(modal) {
+                    $rootScope.loginModal = modal;
+                    $rootScope.loginModal.show();
                 });
 
-                confirmPopup.then(function(res) {
-
-                    if(res) {
-*/
-                        $rootScope.description = $rootScope.i18.general.loginDescriptionMessage;
-                        $rootScope.originalDescription = $rootScope.description;
-
-                        $rootScope.callback = {func : function(args){$scope.userType = auth.type}, args : "args"};
-
-                        $ionicModal.fromTemplateUrl('templates/login.html', {
-                            scope: $rootScope,
-                            animation: 'slide-in-up'
-                        }).then(function(modal) {
-                            $rootScope.loginModal = modal;
-                            $rootScope.loginModal.show();
-                        });
-/*
-                    } else {
-
-                    }
-
-                });
-*/
             } else {
 
                 if (msPlayer.getPlayer().currentMusic.status == 1){ // Musica ja comprada anteriormente. Somente realizando novo download

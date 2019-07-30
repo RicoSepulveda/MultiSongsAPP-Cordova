@@ -145,7 +145,7 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
 
 
 
-        login: function(key, password, callbackFunction) { 
+        login: function(key, password, mobileToken, callbackFunction) { 
 
             var ms_hostname = window.localStorage.getItem("environment");
             
@@ -156,7 +156,7 @@ module.factory('loginService', function($http, $rootScope, $ionicModal, $q, auth
                    "Accept": "application/json;charset=utf-8"
                },
                dataType:"json",
-               data: {key : key, password: password, locale : $rootScope.locale}
+               data: {key : key + "|" + mobileToken, password: password, locale : $rootScope.locale}
             });
 
 

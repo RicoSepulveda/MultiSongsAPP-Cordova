@@ -379,6 +379,7 @@ module.controller('IndexController', function($scope,
 
         var key;
         var password;
+        var mobileToken;
         var promises = [];
         var spinner = '<ion-spinner icon="dots" class="spinner-stable"></ion-spinner><br/>';
 
@@ -391,8 +392,15 @@ module.controller('IndexController', function($scope,
 
         key = window.localStorage.getItem("key");
         password = window.localStorage.getItem("password");
+
+        if (window.localStorage.getItem("mobile_token")){
+            mobileToken = window.localStorage.getItem("mobile_token");
+        }else{
+            mobileToken = window.location.origin.substring(7) + "/" + (Math.random() * 100000);
+            window.localStorage.setItem("mobile_token", mobileToken);
+        }
         
-        loginService.login(key, password, function(response){
+        loginService.login(key, password, mobileToken, function(response){
 
             promises.push(promotionService.getPromotion(response.token));
 

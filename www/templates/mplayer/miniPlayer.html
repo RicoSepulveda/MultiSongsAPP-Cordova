@@ -45,18 +45,7 @@
                         <div>
 
                             <div class="file-info-buttons">
-<!--
-                                <a href="#/tracks/{{miniPlayer.getPlayer().currentMusic.music.musicId}}">
-                                    <div ng-if="miniPlayer.getPlayer().currentMusic.music.type == 'multitrack'" class="file-info-button" style="width:60px;background-color:#FD6631 !important;border-color:#FFFFFF;">
-                                        <div class="file-info-button-title">Tipo</div>
-                                        <div class="file-info-button-value">Multipista</div>
-                                    </div>
-                                </a>
-                                <div ng-if="miniPlayer.getPlayer().currentMusic.music.type != 'multitrack'" class="file-info-button" style="width:60px;">
-                                    <div class="file-info-button-title">Tipo</div>
-                                    <div class="file-info-button-value">Monopista</div>
-                                </div>
--->
+
                                 <div ng-if="miniPlayer.getPlayer().currentMusic.music.premium && miniPlayer.getPlayer().currentMusic.music.status != 1 && miniPlayer.auth.type != 4 && !miniPlayer.getPlayer().downloadStarted" class="file-info-button" style="width:120px;">
                                     <div class="file-info-button-title">Playback Premium</div>
                                     <div class="file-info-button-value">Somente para assinantes</div>
@@ -96,16 +85,11 @@
 
                     <div class="row" style="margin:0px;border:0px;padding:0px;padding-top:10px;min-height: 40px;">
                         <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                            <button ng-class="miniPlayer.lyricsClass" ng-click="miniPlayer.showLyrics()">Cifra</button>
-                        </div>
-                        <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
                             <button ng-class="miniPlayer.instrumentsClass" ng-click="miniPlayer.showInstruments()">Instrumentos</button>
                         </div>
-                        <!--
-                        <div class="col-33" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
-                            <button ng-class="miniPlayer.instrumentsClass" ng-click="loadRemovedSongs()">Instrumentos</button>
+                        <div class="col-50" style="margin-left:0px;margin-right:0px;border:0px;padding-left:0px;padding-right:0px;">
+                            <button ng-class="miniPlayer.lyricsClass" ng-click="miniPlayer.showLyrics()">Cifra</button>
                         </div>
-                        -->
                     </div>
 
                     <ion-scroll class="ms-mini-player-lyrics-scroll" delegate-handle="lyricsScrollHandle" scrollY="true" overflow-scroll="false" ng-if= "miniPlayer.shouldShowLyrics() == true">
@@ -118,6 +102,28 @@
                         </div>
 
                     </ion-scroll>
+<!--
+                    <swiper ng-if= "miniPlayer.shouldShowLyrics() == true">
+                        <slides>
+                            <slide ng-repeat="chordCard in miniPlayer.getPlayer().chordCards">
+
+                                <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{chord.accordImagePath}}" width="100%" style="width:100%;"/>
+
+                            </slide>
+                        </slides>
+                    </swiper>
+
+                    <ui-swiper instance="swp" ng-if= "miniPlayer.shouldShowLyrics() == true">
+
+                        <ui-swiper-slides>
+
+                            <ui-swiper-slide ng-repeat="chordCard in miniPlayer.getPlayer().chordCards"><img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/{{chord.accordImagePath}}" width="100%" style="width:100%;"/>
+                            </ui-swiper-slide>
+
+                        </ui-swiper-slides>
+
+                    </ui-swiper>
+-->
 
                     <ion-slide-box auto-play="false" does-continue="false" show-pager="true" ng-if= "miniPlayer.shouldShowLyrics() == true">
 
@@ -135,66 +141,6 @@
 
                     </ion-slide-box>
 
-<!--
-                    <ion-slide-box auto-play="true" does-continue="true" slide-interval=3000 show-pager="false" ng-if= "miniPlayer.shouldShowLyrics() == true">
-
-                        <ion-slide>
-                            <div class="row">
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Em.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/A.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Dm.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/F5.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/D.png" width="100%"/>
-                                </div>
-                            </div>
-                        </ion-slide>
-
-                        <ion-slide>
-                            <div class="row">
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/E.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Am.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/Bm.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/G.png" width="100%"/>
-                                </div>
-                                <div class="col-20 ms-mini-player-chords-next">
-                                    <img class="full-image" ng-src="{{environment}}/MultiSongs/api/download/image/{{token}}/D.png" width="100%"/>
-                                </div>
-                            </div>
-                        </ion-slide>
-
-                    </ion-slide-box>
-
-                    <div class="file-info-buttons">
-
-                        <a href="#/tracks/{{miniPlayer.getPlayer().currentMusic.music.musicId}}">
-                            <div ng-if="miniPlayer.getPlayer().currentMusic.music.type == 'multitrack'" class="file-info-button" style="width:185px;background-color:#FD6631 !important;border-color:#FFFFFF;margin-bottom: 0px !important;float: none;">
-                                <div class="file-info-button-title">Configuração dos Instrumentos</div>
-                                <div class="file-info-button-value">DISPONÍVEL</div>
-                            </div>
-                        </a>
-                        <div ng-if="miniPlayer.getPlayer().currentMusic.music.type != 'multitrack'" class="file-info-button" style="width:185px;margin-bottom: 0px !important;float: none;">
-                            <div class="file-info-button-title">Configuração dos Instrumentos</div>
-                            <div class="file-info-button-value">INDISPONÍVEL</div>
-                        </div>
-
-                    </div>
--->
                     <div class="ms-levels-workspace" ng-if="miniPlayer.getDisplayStatus() == miniPlayer.DISPLAY_MAXIMIZED  && miniPlayer.shouldShowInstruments() == true">
 
                         <div class="ms-levels-left" id="msLevelsLeft">
